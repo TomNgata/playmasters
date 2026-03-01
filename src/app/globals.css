@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Teko:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Brand Kit Neutrals & Backgrounds */
+    --background: #080B3A;
+    /* Void Navy */
+    --foreground: #FFFFFF;
+
+    --card: #0E1260;
+    /* Deep Navy */
+    --card-foreground: #FFFFFF;
+
+    --popover: #0E1260;
+    --popover-foreground: #FFFFFF;
+
+    /* Brand Kit Accents */
+    --primary: #E82030;
+    /* Strike Red */
+    --primary-foreground: #FFFFFF;
+
+    --secondary: #1A2280;
+    /* Royal Navy */
+    --secondary-foreground: #FFFFFF;
+
+    --muted: #1A2280;
+    --muted-foreground: #8A8EBB;
+    /* Gray Mid */
+
+    --accent: #D42080;
+    /* Ball Pink */
+    --accent-foreground: #FFFFFF;
+
+    --destructive: #E82030;
+    /* Strike Red */
+    --destructive-foreground: #FFFFFF;
+
+    --border: rgba(255, 255, 255, 0.1);
+    --input: #1A2280;
+    --ring: #E82030;
+
+    --radius: 6px;
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    /* Set default to Inter from Brand Kit */
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+/* Custom Typography Utilities from Brand Kit */
+@layer utilities {
+  .font-wordmark {
+    font-family: 'Anton', impact, sans-serif;
+  }
+
+  .font-title {
+    font-family: 'Libre Baskerville', Georgia, serif;
+  }
+
+  .font-ui {
+    font-family: 'Teko', sans-serif;
+  }
+}
