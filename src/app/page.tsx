@@ -33,16 +33,16 @@ export default function Home() {
           </div>
         </div>
         <div className="bg-navy rounded-2xl border border-white/5 h-[300px] sm:h-[450px] flex items-center justify-center relative overflow-hidden group">
-          {/* Logo as background element */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-10 grayscale group-hover:grayscale-0 group-hover:opacity-20 transition-all duration-700">
-            <img src="/logo.jpg" alt="" className="w-3/4 object-contain" />
+          {/* Real Club Image as background */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-700">
+            <img src="/5860701352248413499.jpg" alt="Playmasters Training" className="w-full h-full object-cover" />
           </div>
           <div className="absolute inset-0 bg-gradient-to-tr from-navy-dark via-transparent to-transparent opacity-80" />
           <div className="relative z-10 flex flex-col items-center gap-4">
-            <div className="w-16 h-16 border border-white/20 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 border border-white/20 rounded-full flex items-center justify-center bg-navy-dark/40 backdrop-blur-sm">
               <div className="w-2 h-2 rounded-full bg-strike animate-ping" />
             </div>
-            <p className="font-ui text-gray-mid text-lg tracking-[4px] uppercase">[ Training Session Active ]</p>
+            <p className="font-ui text-white text-lg tracking-[4px] uppercase drop-shadow-lg">[ Training Session Active ]</p>
           </div>
         </div>
       </section>
@@ -94,14 +94,22 @@ export default function Home() {
         <h2 className="font-title text-[clamp(24px,4vw,40px)] text-center text-white mb-12 uppercase">Gallery & Partners</h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-24">
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all"><img src="/logo.jpg" className="w-1/2" /></div>
+          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden">
+            <img src="/5858096969979465002.jpg" className="w-full h-full object-cover" />
+          </div>
           <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center md:col-span-2 md:row-span-2 relative group overflow-hidden">
-            <img src="/logo.jpg" className="w-2/3 object-contain z-10" />
+            <img src="/5860367998361734483.jpg" className="w-full h-full object-cover z-10 grayscale group-hover:grayscale-0 transition-opacity" />
             <div className="absolute inset-0 bg-strike/5 group-hover:bg-strike/10 transition-colors" />
           </div>
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-40"><img src="/logo.jpg" className="w-1/2" /></div>
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-40"><img src="/logo.jpg" className="w-1/2" /></div>
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-40"><img src="/logo.jpg" className="w-1/2" /></div>
+          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden">
+            <img src="/5858168725998079239.jpg" className="w-full h-full object-cover" />
+          </div>
+          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden">
+            <img src="/5860677712748416291.jpg" className="w-full h-full object-cover" />
+          </div>
+          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden">
+            <img src="/logo.jpg" className="w-1/2 object-contain" />
+          </div>
         </div>
 
         <div className="flex flex-wrap justify-center items-center gap-x-16 gap-y-12 opacity-30 grayscale hover:opacity-80 transition-all">
