@@ -25,7 +25,7 @@ export default function ModernHero() {
             <div className="z-10 text-center px-4 flex flex-col items-center">
                 <div className="relative w-48 h-48 md:w-64 md:h-64 mb-6">
                     <img
-                        src="/logo.png"
+                        src="/logo.jpg"
                         alt="Playmasters Official Logo"
                         className="w-full h-full object-contain drop-shadow-[0_0_30px_rgba(232,32,48,0.3)] animate-float"
                     />

@@ -8,7 +8,7 @@ export default function Navbar() {
                 <Link href="/" className="px-8 flex items-center gap-4 border-r border-white/5 h-full group hover:bg-white/[0.02] transition-colors">
                     <div className="relative w-12 h-12 flex items-center justify-center">
                         <img
-                            src="/logo.png"
+                            src="/logo.jpg"
                             alt="Playmasters Logo"
                             className="w-full h-full object-contain filter group-hover:drop-shadow-[0_0_8px_#E82030] transition-all"
                         />
