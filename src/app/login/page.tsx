@@ -33,17 +33,17 @@ function LoginForm() {
     };
 
     return (
-        <div className="bg-navy-deep border border-white/10 rounded-2xl p-8 shadow-2xl">
+        <div className="bg-navy border border-white/10 rounded-2xl p-8 shadow-2xl">
             <h2 className="font-ui text-2xl uppercase tracking-widest text-white mb-1">
                 Sign In
             </h2>
-            <p className="font-sans text-playgray-mid text-sm mb-8">
+            <p className="font-sans text-gray-mid text-sm mb-8">
                 Access is free for all Playmasters roster members.
             </p>
 
             <form onSubmit={handleLogin} className="flex flex-col gap-5">
                 <div className="flex flex-col gap-2">
-                    <label htmlFor="email" className="font-ui text-xs uppercase tracking-[3px] text-playgray-mid">
+                    <label htmlFor="email" className="font-ui text-xs uppercase tracking-[3px] text-gray-mid">
                         Email
                     </label>
                     <input
@@ -53,13 +53,13 @@ function LoginForm() {
                         autoComplete="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="bg-navy-void border border-white/15 rounded-lg px-4 py-3 text-white font-sans focus:outline-none focus:border-strike transition-colors placeholder:text-playgray-dark"
+                        className="bg-navy-dark border border-white/15 rounded-lg px-4 py-3 text-white font-sans focus:outline-none focus:border-strike transition-colors placeholder:text-gray-dark"
                         placeholder="you@playmasters.co.ke"
                     />
                 </div>
 
                 <div className="flex flex-col gap-2">
-                    <label htmlFor="password" className="font-ui text-xs uppercase tracking-[3px] text-playgray-mid">
+                    <label htmlFor="password" className="font-ui text-xs uppercase tracking-[3px] text-gray-mid">
                         Password
                     </label>
                     <input
@@ -69,7 +69,7 @@ function LoginForm() {
                         autoComplete="current-password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="bg-navy-void border border-white/15 rounded-lg px-4 py-3 text-white font-sans focus:outline-none focus:border-strike transition-colors placeholder:text-playgray-dark"
+                        className="bg-navy-dark border border-white/15 rounded-lg px-4 py-3 text-white font-sans focus:outline-none focus:border-strike transition-colors placeholder:text-gray-dark"
                         placeholder="••••••••"
                     />
                 </div>
@@ -83,7 +83,7 @@ function LoginForm() {
                 <button
                     type="submit"
                     disabled={loading}
-                    className="mt-2 w-full px-6 py-4 rounded-lg bg-strike hover:bg-strike-deep text-white font-ui font-semibold text-lg tracking-[2px] uppercase transition-all shadow-[0_4px_0_#B81828] hover:shadow-[0_2px_0_#B81828] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-[0_4px_0_#B81828]"
+                    className="mt-2 w-full px-6 py-4 rounded-lg bg-strike hover:bg-strike-deep text-white font-ui font-semibold text-lg tracking-[2px] uppercase transition-all shadow-[0_4px_0_theme(colors.strike-deep)] hover:shadow-[0_2px_0_theme(colors.strike-deep)] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-[0_4px_0_theme(colors.strike-deep)]"
                 >
                     {loading ? 'Entering Hub...' : 'Strike In \u2192'}
                 </button>
@@ -94,29 +94,29 @@ function LoginForm() {
 
 export default function LoginPage() {
     return (
-        <main className="min-h-screen bg-navy-void flex items-center justify-center px-4">
+        <main className="min-h-screen bg-navy-dark flex items-center justify-center px-4">
             <div className="w-full max-w-md">
 
                 <div className="text-center mb-10">
-                    <h1 className="font-wordmark text-5xl text-white tracking-wide uppercase">
+                    <h1 className="font-wordmark text-5xl text-white tracking-wide uppercase text-center">
                         Play<span className="text-strike">masters</span>
                     </h1>
-                    <p className="font-ui text-playgray-mid text-sm tracking-[4px] uppercase mt-2">
+                    <p className="font-ui text-gray-mid text-sm tracking-[4px] uppercase mt-2">
                         Team Hub Access
                     </p>
                 </div>
 
                 <Suspense fallback={
-                    <div className="bg-navy-deep border border-white/10 rounded-2xl p-8 text-center text-playgray-mid font-ui">
+                    <div className="bg-navy border border-white/10 rounded-2xl p-8 text-center text-gray-mid font-ui">
                         Loading...
                     </div>
                 }>
                     <LoginForm />
                 </Suspense>
 
-                <p className="text-center font-sans text-xs text-playgray-dark mt-6">
+                <p className="text-center font-sans text-xs text-gray-dark mt-6">
                     Not on the roster yet?{' '}
-                    <span className="text-playgray-mid">Contact your team captain.</span>
+                    <span className="text-gray-mid">Contact your team captain.</span>
                 </p>
             </div>
         </main>

@@ -67,25 +67,25 @@ export default function PlayerDashboard() {
     };
 
     return (
-        <div className="min-h-screen bg-navy-void text-white">
+        <div className="min-h-screen bg-navy-dark text-white">
             <div className="max-w-5xl mx-auto px-6 py-12">
 
                 {/* Header */}
                 <header className="mb-10 flex items-end justify-between border-b border-white/10 pb-6">
                     <div>
                         <h1 className="text-5xl font-wordmark tracking-wide text-white">PLAYER HQ</h1>
-                        <p className="text-playgray-mid mt-2 font-sans font-medium">
+                        <p className="text-gray-mid mt-2 font-sans font-medium">
                             Welcome back, {mockStats.name}.
                         </p>
                     </div>
                     <div className="flex flex-col items-end gap-3">
                         <div className="text-right">
-                            <p className="font-ui text-sm text-playgray-mid uppercase tracking-[2px]">Current Avg</p>
+                            <p className="font-ui text-sm text-gray-mid uppercase tracking-[2px]">Current Avg</p>
                             <p className="font-wordmark text-5xl text-strike">{mockStats.avgScore}</p>
                         </div>
                         <button
                             onClick={handleLogout}
-                            className="font-ui text-xs uppercase tracking-[3px] text-playgray-mid hover:text-strike transition-colors border border-white/10 hover:border-strike/40 px-3 py-1.5 rounded"
+                            className="font-ui text-xs uppercase tracking-[3px] text-gray-mid hover:text-strike transition-colors border border-white/10 hover:border-strike/40 px-3 py-1.5 rounded"
                         >
                             Sign Out
                         </button>
@@ -94,7 +94,7 @@ export default function PlayerDashboard() {
 
                 {/* Frame 7 Headline — Front and Center per architecture SOP */}
                 <section className="mb-12">
-                    <div className="w-full bg-navy-deep border-l-4 border-strike rounded-xl p-8 relative overflow-hidden shadow-xl">
+                    <div className="w-full bg-navy border-l-4 border-strike rounded-xl p-8 relative overflow-hidden shadow-xl">
                         <div className="absolute top-[-20px] right-2 p-4 opacity-[0.03] pointer-events-none text-[180px] font-wordmark leading-none text-white">
                             7
                         </div>
@@ -102,7 +102,7 @@ export default function PlayerDashboard() {
                             <span className="w-3 h-3 rounded-full bg-strike animate-pulse shadow-[0_0_10px_#E82030]" />
                             Critical Focus Drop
                         </h2>
-                        <p className="text-playgray-mid font-sans text-lg max-w-2xl leading-relaxed">
+                        <p className="text-gray-mid font-sans text-lg max-w-2xl leading-relaxed">
                             Your strike probability drops by{' '}
                             <span className="text-strike font-bold text-xl">34%</span> after{' '}
                             <span className="text-white font-bold">Frame 7</span>. This focus fatigue is costing
@@ -118,15 +118,15 @@ export default function PlayerDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
                     {/* CSV Upload Card — wired to /api/upload-csv */}
-                    <div className="bg-navy-deep border border-white/5 p-6 rounded-xl flex flex-col justify-between">
+                    <div className="bg-navy border border-white/5 p-6 rounded-xl flex flex-col justify-between">
                         <div>
                             <h3 className="font-ui text-2xl uppercase tracking-widest text-ball-pink mb-2">
                                 Upload Scores
                             </h3>
-                            <p className="text-sm font-sans text-playgray-mid mb-1">
+                            <p className="text-sm font-sans text-gray-mid mb-1">
                                 Drop your CSV from your last session. Takes less than 2 minutes.
                             </p>
-                            <p className="text-xs font-ui text-playgray-dark uppercase tracking-wider mb-6">
+                            <p className="text-xs font-ui text-gray-dark uppercase tracking-wider mb-6">
                                 Columns: player_name, match_id, f1–f10, total_score
                             </p>
                         </div>
@@ -134,12 +134,12 @@ export default function PlayerDashboard() {
                         {/* Drop Zone */}
                         <div
                             onClick={() => fileInputRef.current?.click()}
-                            className={`w-full h-32 border-2 border-dashed rounded-lg flex flex-col items-center justify-center hover:border-strike/50 transition-colors cursor-pointer group bg-navy-void ${uploadStatusColors[uploadStatus]}`}
+                            className={`w-full h-32 border-2 border-dashed rounded-lg flex flex-col items-center justify-center hover:border-strike/50 transition-colors cursor-pointer group bg-navy-dark ${uploadStatusColors[uploadStatus]}`}
                         >
                             {uploadStatus === 'uploading' ? (
                                 <p className="font-ui text-sm uppercase tracking-wider text-bat-blue">Uploading...</p>
                             ) : (
-                                <p className="font-ui text-lg uppercase tracking-wider text-playgray-mid group-hover:text-strike transition-colors">
+                                <p className="font-ui text-lg uppercase tracking-wider text-gray-mid group-hover:text-strike transition-colors">
                                     Tap to select CSV file...
                                 </p>
                             )}
@@ -166,18 +166,18 @@ export default function PlayerDashboard() {
                     </div>
 
                     {/* Active Rivalries Card */}
-                    <div className="bg-navy-deep border border-white/5 p-6 rounded-xl">
+                    <div className="bg-navy border border-white/5 p-6 rounded-xl">
                         <h3 className="font-ui text-2xl uppercase tracking-widest text-ball-pink mb-4">
                             Active Rivalries
                         </h3>
-                        <div className="flex items-center justify-between p-4 bg-navy-void rounded-lg border border-white/5">
+                        <div className="flex items-center justify-between p-4 bg-navy-dark rounded-lg border border-white/5">
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 rounded-full bg-bat-blue/20 flex items-center justify-center font-ui text-2xl text-bat-blue">
                                     VM
                                 </div>
                                 <div>
                                     <p className="font-sans font-bold">Viraj Mistry</p>
-                                    <p className="font-sans text-xs text-playgray-mid">Trailing by 4 Avg Pins</p>
+                                    <p className="font-sans text-xs text-gray-mid">Trailing by 4 Avg Pins</p>
                                 </div>
                             </div>
                             <div className="text-right">
