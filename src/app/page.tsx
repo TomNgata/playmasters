@@ -35,7 +35,7 @@ export default function Home() {
         <div className="bg-navy rounded-2xl border border-white/5 h-[300px] sm:h-[450px] flex items-center justify-center relative overflow-hidden group">
           {/* Logo as background element */}
           <div className="absolute inset-0 flex items-center justify-center opacity-10 grayscale group-hover:grayscale-0 group-hover:opacity-20 transition-all duration-700">
-            <img src="/logo.png" alt="" className="w-3/4 object-contain" />
+            <img src="/logo.jpg" alt="" className="w-3/4 object-contain" />
           </div>
           <div className="absolute inset-0 bg-gradient-to-tr from-navy-dark via-transparent to-transparent opacity-80" />
           <div className="relative z-10 flex flex-col items-center gap-4">
@@ -94,14 +94,14 @@ export default function Home() {
         <h2 className="font-title text-[clamp(24px,4vw,40px)] text-center text-white mb-12 uppercase">Gallery & Partners</h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-24">
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all"><img src="/logo.png" className="w-1/2" /></div>
+          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all"><img src="/logo.jpg" className="w-1/2" /></div>
           <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center md:col-span-2 md:row-span-2 relative group overflow-hidden">
-            <img src="/logo.png" className="w-2/3 object-contain z-10" />
+            <img src="/logo.jpg" className="w-2/3 object-contain z-10" />
             <div className="absolute inset-0 bg-strike/5 group-hover:bg-strike/10 transition-colors" />
           </div>
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-40"><img src="/logo.png" className="w-1/2" /></div>
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-40"><img src="/logo.png" className="w-1/2" /></div>
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-40"><img src="/logo.png" className="w-1/2" /></div>
+          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-40"><img src="/logo.jpg" className="w-1/2" /></div>
+          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-40"><img src="/logo.jpg" className="w-1/2" /></div>
+          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-40"><img src="/logo.jpg" className="w-1/2" /></div>
         </div>
 
         <div className="flex flex-wrap justify-center items-center gap-x-16 gap-y-12 opacity-30 grayscale hover:opacity-80 transition-all">
@@ -115,7 +115,7 @@ export default function Home() {
       <footer className="w-full bg-navy-dark border-t-8 border-strike py-16">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-12">
           <div className="flex flex-col sm:flex-row items-center gap-8">
-            <img src="/logo.png" alt="Playmasters Branding" className="w-24 h-24 object-contain" />
+            <img src="/logo.jpg" alt="Playmasters Branding" className="w-24 h-24 object-contain" />
             <div className="flex flex-col gap-2 text-center sm:text-left">
               <div className="font-wordmark text-4xl tracking-tight text-white uppercase flex flex-col leading-none">
                 PLAYMASTERS
