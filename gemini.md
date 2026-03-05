@@ -28,12 +28,12 @@
 - **Tone & Brand:** Energetic, competitive, and distinctly "Nairobi" ('Strike like Playmasters!'). Authentic, real-world imagery of Strikez at Westgate rather than generic stock aesthetics.
 - **Functionality:** 
   - Auto-updates standings/notifications, prevents data overwrites (versioned scores).
-  - 3D elements are powered by `@splinetool/react-spline`. The app embeds and interacts with scenes from Spline to elevate the landing page without taxing the main bundle.
+  - **Modern Functional Layout:** Replaces 3D elements with a high-contrast, structured grid system inspired by professional kits (Reference: Westlands Election Flyers). Emphasis on data panels, "Glass Morphism" overlays, and refined typography (Barlow Condensed).
   - Generates shareable PNG tournament bracket results automatically for Instagram.
   - "Frame 7 Focus Drop" analytics must be front-and-center for the player, not buried.
   - Provide player-vs-player comparison tools to build rivalry and engagement.
 - **Audience:** Split UX cleanly between Public outward-facing PR (Scrollable Landing Page) and Private inward-facing value (Authenticated Team Hub for analytics/uploading).
-- **Access:** Free for players, but analytics and score uploading must be gated behind Supabase Authentication. Mobile-first design tailored for on-the-go access.
+- **Access:** Free for players, but analytics and score uploading must be gated behind Supabase Authentication. Mobile-first design inspired by "Nairobi" on-the-go functional aesthetics.
 - **Data Entry:** Manual CSV upload from authenticated players is the PRIMARY path for data (must be <2 min frictionless).
 - **Security:** Do not expose raw scoring scrapers publicly.
 

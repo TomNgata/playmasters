@@ -6,7 +6,8 @@ This SOP defines the structure and rules for the Next.js frontend application.
 - **Framework**: Next.js 14/15 (App Router)
 - **Language**: TypeScript (`.tsx`, `.ts`)
 - **Styling**: Tailwind CSS for responsive, utility-first styling.
-- **3D Engine**: `@splinetool/react-spline` (Specifically using the `/next` adapter for SSR support and native blurred placeholders, per the Spline Skill guide).
+- **3D Engine**: DEPRIORITIZED. Replaced by high-fidelity CSS/Tailwind layouts.
+- **Typography**: Barlow Condensed (Headlines), Barlow (Body), IM Fell English (Decorative Italics).
 - **Database Client**: `@supabase/supabase-js`
 
 ## Core Principles
@@ -19,10 +20,14 @@ This SOP defines the structure and rules for the Next.js frontend application.
 3. **No Paywalls**: All functions are free for team members, but authentication is required to access the hub.
 
 ## Component Structure
-- `src/app/page.tsx`: The Public 3D HQ Scrollable Landing Page (Nairobi themed).
+- `src/app/page.tsx`: The Public Modern Functional Landing Page (Nairobi themed).
 - `src/app/dashboard/player/page.tsx`: Private authenticated Hub (Visceral player stat tracking & PvP rivalries).
 - `src/app/login/page.tsx`: Authentication wall.
 - `src/components/ui/`: Reusable Tailwind styled components.
 
-## 3D Integration Rule
-**Spline Data-Driven Approach**: The 3D Hero must utilize `Spline` from `@splinetool/react-spline/next`. The Spline iframe/asset provided must be interacted with. If the asset is purely decorative, we use a static fallback. Heavy models must be lazy-loaded to ensure mobile browser stability (following the `REACT_INTEGRATION.md` Skill guide).
+## Visual Hierarchy (The Flyer System)
+**Modular Data Panels**: The UI adopts the "Regal Meridian" registry from the Westlands kit.
+- **Grids**: Strict 2-column or 4-column grids with 1px contrast borders (#FFFFFF/5).
+- **Hero**: A typography-heavy data-driven header replacing the 3D scene.
+- **Consistency**: High-fidelity overlays and glass-morphism panels for data visualization (e.g., Frame 7 Analytics).
+- **Mobile-First**: High-legibility spacing and touch-optimized buttons.
