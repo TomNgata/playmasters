@@ -5,11 +5,20 @@ export default function Navbar() {
         <nav className="w-full border-b border-white/5 bg-navy-dark/90 backdrop-blur-md sticky top-0 z-50 overflow-hidden">
             <div className="max-w-7xl mx-auto flex items-center h-20">
                 {/* Logo Section */}
-                <Link href="/" className="px-8 flex items-center gap-3 border-r border-white/5 h-full group hover:bg-white/[0.02] transition-colors">
-                    <div className="w-6 h-6 rounded-full bg-strike group-hover:scale-110 group-hover:shadow-[0_0_15px_#E82030] transition-all" />
-                    <span className="font-wordmark text-2xl text-white uppercase tracking-wider">
-                        Play<span className="text-strike">Masters</span>
-                    </span>
+                <Link href="/" className="px-8 flex items-center gap-4 border-r border-white/5 h-full group hover:bg-white/[0.02] transition-colors">
+                    <div className="relative w-12 h-12 flex items-center justify-center">
+                        <img
+                            src="/logo.png"
+                            alt="Playmasters Logo"
+                            className="w-full h-full object-contain filter group-hover:drop-shadow-[0_0_8px_#E82030] transition-all"
+                        />
+                    </div>
+                    <div className="flex flex-col leading-none">
+                        <span className="font-wordmark text-xl text-white uppercase tracking-wider">
+                            Play<span className="text-strike">Masters</span>
+                        </span>
+                        <span className="font-ui text-[8px] text-gray-mid tracking-[3px] uppercase mt-1">Kenya Unit</span>
+                    </div>
                 </Link>
 
                 {/* Nav Links */}
