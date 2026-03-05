@@ -3,12 +3,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import Link from 'next/link';
 
-type PlayerStats = {
+type PlayerProfile = {
+    id: string;
     name: string;
-    avgScore: number;
-    highScore: number;
-    gamesPlayed: number;
+    role: string;
+    team_id: string | null;
+    team_name?: string;
+};
+
+type Teammate = {
+    id: string;
+    name: string;
+    role: string;
 };
 
 type UploadStatus = 'idle' | 'uploading' | 'success' | 'error';
@@ -16,40 +24,74 @@ type UploadStatus = 'idle' | 'uploading' | 'success' | 'error';
 export default function PlayerDashboard() {
     const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [stats, setStats] = useState<PlayerStats | null>(null);
+    const [profile, setProfile] = useState<PlayerProfile | null>(null);
+    const [teammates, setTeammates] = useState<Teammate[]>([]);
     const [loading, setLoading] = useState(true);
     const [uploadStatus, setUploadStatus] = useState<UploadStatus>('idle');
     const [uploadMessage, setUploadMessage] = useState('');
-    const [fatigueLevel, setFatigueLevel] = useState(34); // Mock data for now, will be calc'd from DB
+    const [fatigueLevel, setFatigueLevel] = useState(34);
 
     useEffect(() => {
+        let isMounted = true;
+
         async function fetchUserData() {
-            const supabase = createClient();
-            const { data: { user } } = await supabase.auth.getUser();
+            try {
+                const supabase = createClient();
+                const { data: { user } } = await supabase.auth.getUser();
 
-            if (!user) {
-                router.push('/login');
-                return;
+                if (!user) {
+                    if (isMounted) router.push('/login');
+                    return;
+                }
+
+                // 1. Fetch Profile
+                const { data: profileData, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('*, teams(name)')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profileError || !profileData) {
+                    // Fallback for new users without a profile yet
+                    if (isMounted) setProfile({
+                        id: user.id,
+                        name: user.email?.split('@')[0].toUpperCase() || 'PLAYER',
+                        role: 'player',
+                        team_id: null
+                    });
+                } else {
+                    if (isMounted) setProfile({
+                        ...profileData,
+                        team_name: profileData.teams?.name
+                    });
+
+                    // 2. Fetch Teammates if in a team
+                    if (profileData.team_id) {
+                        const { data: teammatesData } = await supabase
+                            .from('profiles')
+                            .select('id, name, role')
+                            .eq('team_id', profileData.team_id)
+                            .neq('id', user.id);
+
+                        if (teammatesData && isMounted) setTeammates(teammatesData);
+                    }
+                }
+            } catch (err) {
+                console.error("Dashboard Fetch Exception:", err);
+            } finally {
+                if (isMounted) setLoading(false);
             }
-
-            // In a real app, we'd fetch from a 'profiles' table. 
-            // For now, we use the user metadata or name from email.
-            setStats({
-                name: user.email?.split('@')[0].toUpperCase() || 'PLAYER',
-                avgScore: 184, // Real calc would go here
-                highScore: 245,
-                gamesPlayed: 112,
-            });
-            setLoading(false);
         }
+
         fetchUserData();
+
+        return () => { isMounted = false; };
     }, [router]);
 
     const handleLogout = async () => {
         const supabase = createClient();
         await supabase.auth.signOut();
-        router.push('/login');
-        router.refresh();
+        window.location.href = '/login';
     };
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +114,6 @@ export default function PlayerDashboard() {
             } else {
                 setUploadStatus('success');
                 setUploadMessage(data.message);
-                // Refresh stats after upload
                 router.refresh();
             }
         } catch {
@@ -97,7 +138,7 @@ export default function PlayerDashboard() {
     };
 
     return (
-        <div className="min-h-screen bg-navy-dark text-white font-sans selection:bg-strike selection:text-white">
+        <div className="min-h-screen bg-navy-dark text-white font-sans selection:bg-strike selection:text-white pb-20">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
 
                 {/* Header Section */}
@@ -105,9 +146,14 @@ export default function PlayerDashboard() {
                     <div className="flex items-center gap-6">
                         <img src="/logo-md.png" alt="Playmasters" className="w-20 h-20 object-contain" />
                         <div>
-                            <h1 className="text-4xl sm:text-6xl font-wordmark tracking-tight text-white uppercase leading-none">PLAYER HQ</h1>
+                            <div className="flex items-center gap-3">
+                                <h1 className="text-4xl sm:text-6xl font-wordmark tracking-tight text-white uppercase leading-none">PLAYER HQ</h1>
+                                {profile?.role === 'captain' && (
+                                    <span className="bg-strike/20 text-strike border border-strike/30 px-3 py-1 rounded text-[10px] font-bold tracking-[2px] uppercase">Captain</span>
+                                )}
+                            </div>
                             <p className="text-gray-mid mt-2 font-ui uppercase tracking-[4px] text-sm md:text-base">
-                                Welcome back, <span className="text-white font-bold">{stats?.name}</span>
+                                {profile?.team_name || 'Free Agent'} // <span className="text-white font-bold">{profile?.name}</span>
                             </p>
                         </div>
                     </div>
@@ -115,7 +161,7 @@ export default function PlayerDashboard() {
                     <div className="flex items-center gap-8 bg-navy/30 p-4 rounded-xl border border-white/5 backdrop-blur-sm self-start md:self-auto">
                         <div className="text-right">
                             <p className="font-ui text-[10px] text-gray-mid uppercase tracking-[3px] mb-1">Season Avg</p>
-                            <p className="font-wordmark text-5xl text-strike leading-none">{stats?.avgScore}</p>
+                            <p className="font-wordmark text-5xl text-strike leading-none">184</p>
                         </div>
                         <div className="h-12 w-px bg-white/10" />
                         <button
@@ -132,13 +178,31 @@ export default function PlayerDashboard() {
                     </div>
                 </header>
 
+                {/* Captain's Quick Action Bar */}
+                {profile?.role === 'captain' && (
+                    <div className="mb-12 p-1 bg-gradient-to-r from-strike via-ball-pink to-bat-blue rounded-xl">
+                        <div className="bg-navy-dark rounded-lg p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div>
+                                <h2 className="font-ui text-xl font-bold tracking-[3px] text-white uppercase">Captain's Console</h2>
+                                <p className="text-gray-mid text-sm font-sans">Manage your team roster and onboard new players.</p>
+                            </div>
+                            <Link
+                                href="/dashboard/captain/onboarding"
+                                className="px-8 py-3 bg-white text-navy-dark font-ui font-extrabold text-sm tracking-[3px] uppercase hover:bg-strike hover:text-white transition-all transform hover:-translate-y-1"
+                            >
+                                Onboard New Player
+                            </Link>
+                        </div>
+                    </div>
+                )}
+
                 {/* Main Dashboard Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
                     {/* LEFT COLUMN: Analytics */}
                     <div className="lg:col-span-2 space-y-8">
 
-                        {/* Frame 7 Fatigue Gauge - BIG VISUAL */}
+                        {/* Frame 7 Fatigue Gauge */}
                         <section className="bg-navy border border-white/5 rounded-2xl p-8 relative overflow-hidden group">
                             <div className="absolute top-0 right-0 p-8 opacity-[0.05] pointer-events-none">
                                 <svg className="w-64 h-64 -rotate-90" viewBox="0 0 100 100">
@@ -153,12 +217,9 @@ export default function PlayerDashboard() {
                                 </h2>
 
                                 <div className="flex flex-col md:flex-row items-center gap-12">
-                                    {/* The Gauge */}
                                     <div className="relative w-48 h-48 flex items-center justify-center">
                                         <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                                            {/* Track */}
                                             <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-                                            {/* Progress */}
                                             <circle
                                                 cx="50" cy="50" r="40" fill="none"
                                                 stroke="url(#strikeGradient)" strokeWidth="8" strokeLinecap="round"
@@ -206,26 +267,25 @@ export default function PlayerDashboard() {
                                 <span className="text-[10px] text-gray-mid tracking-widest">Live Updates</span>
                             </h2>
                             <div className="space-y-4">
-                                {[
-                                    { name: 'Viraj Mistry', score: 188, trend: '+2', color: 'bat-blue' },
-                                    { name: 'Dillan Mandalia', score: 201, trend: '-4', color: 'ball-pink' },
-                                ].map((rival, idx) => (
+                                {teammates.length > 0 ? teammates.map((teammate, idx) => (
                                     <div key={idx} className="flex items-center justify-between p-5 bg-navy-dark/50 rounded-xl border border-white/5 hover:border-strike/30 transition-all group">
                                         <div className="flex items-center gap-4">
-                                            <div className={`w-12 h-12 rounded-full bg-${rival.color}/20 flex items-center justify-center font-wordmark text-xl text-${rival.color}`}>
-                                                {rival.name.split(' ').map(n => n[0]).join('')}
+                                            <div className={`w-12 h-12 rounded-full bg-bat-blue/20 flex items-center justify-center font-wordmark text-xl text-bat-blue`}>
+                                                {teammate.name.split(' ').map(n => n[0]).join('')}
                                             </div>
                                             <div>
-                                                <p className="font-title italic text-white group-hover:text-strike transition-colors">{rival.name}</p>
-                                                <p className="font-ui text-[10px] text-gray-mid uppercase tracking-widest">Team Primary Roster</p>
+                                                <p className="font-title italic text-white group-hover:text-strike transition-colors">{teammate.name}</p>
+                                                <p className="font-ui text-[10px] text-gray-mid uppercase tracking-widest">Team {profile?.team_name} // {teammate.role}</p>
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <p className="font-wordmark text-3xl text-white">{rival.score}</p>
-                                            <p className={`font-ui text-xs ${rival.trend.startsWith('+') ? 'text-emerald-400' : 'text-strike'} font-bold`}>{rival.trend} avg</p>
+                                            <p className="font-wordmark text-3xl text-white">188</p>
+                                            <p className={`font-ui text-xs text-emerald-400 font-bold`}>+2 avg</p>
                                         </div>
                                     </div>
-                                ))}
+                                )) : (
+                                    <p className="text-gray-dark font-ui uppercase tracking-widest text-center py-12 border-2 border-dashed border-white/5 rounded-xl">No team members found.</p>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -237,7 +297,7 @@ export default function PlayerDashboard() {
                         <div className="bg-navy border border-white/5 p-8 rounded-2xl flex flex-col gap-6">
                             <div>
                                 <h3 className="font-ui text-2xl uppercase tracking-widest text-ball-pink mb-2">Sync Scores</h3>
-                                <p className="text-sm font-sans text-gray-mid">Upload your CSV from Westgate sessions. Ingests data in <span className="text-white font-bold">{"<"}60s</span>.</p>
+                                <p className="text-sm font-sans text-gray-mid">Upload your CSV from Westgate sessions.</p>
                             </div>
 
                             <div
@@ -258,7 +318,7 @@ export default function PlayerDashboard() {
                             )}
                         </div>
 
-                        {/* Medal Wall / Achievements */}
+                        {/* Achievement Unit */}
                         <div className="bg-navy border border-white/5 p-8 rounded-2xl">
                             <h3 className="font-ui text-2xl uppercase tracking-widest text-bat-blue mb-6">Achievement Unit</h3>
                             <div className="grid grid-cols-2 gap-4 text-center">
@@ -277,11 +337,6 @@ export default function PlayerDashboard() {
 
                     </div>
                 </div>
-
-                {/* Footer Disclaimer */}
-                <footer className="mt-16 text-center border-t border-white/5 pt-8">
-                    <p className="font-ui text-gray-dark text-[10px] tracking-[5px] uppercase">Official Playmasters Analytics Unit // Performance Gated</p>
-                </footer>
             </div>
         </div>
     );

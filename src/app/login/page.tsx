@@ -20,15 +20,26 @@ function LoginForm() {
         setLoading(true);
         setAuthError(null);
 
-        const supabase = createClient();
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        try {
+            // Check for missing env variables which could cause silent failures in Vercel
+            if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+                throw new Error("System Error: Supabase keys missing. Check Vercel Environment Variables.");
+            }
 
-        if (error) {
-            setAuthError(error.message);
+            const supabase = createClient();
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                setAuthError(error.message);
+                setLoading(false);
+            } else {
+                // Hard redirect to ensure middleware picks up the new cookie correctly after login
+                window.location.href = redirectedFrom;
+            }
+        } catch (err: any) {
+            console.error("Login Exception:", err);
+            setAuthError(err.message || "An unexpected system error occurred.");
             setLoading(false);
-        } else {
-            router.push(redirectedFrom);
-            router.refresh();
         }
     };
 
