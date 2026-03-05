@@ -103,7 +103,7 @@ export default function PlayerDashboard() {
                 {/* Header Section */}
                 <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/10 pb-8">
                     <div className="flex items-center gap-6">
-                        <img src="/logo.jpg" alt="Playmasters" className="w-20 h-20 object-contain" />
+                        <img src="/logo.png" alt="Playmasters" className="w-20 h-20 object-contain" />
                         <div>
                             <h1 className="text-4xl sm:text-6xl font-wordmark tracking-tight text-white uppercase leading-none">PLAYER HQ</h1>
                             <p className="text-gray-mid mt-2 font-ui uppercase tracking-[4px] text-sm md:text-base">
