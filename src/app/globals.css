@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Teko:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Teko:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,44 +6,56 @@
 
 @layer base {
   :root {
-    /* Brand Kit Neutrals & Backgrounds */
-    --background: #080B3A;
-    /* Void Navy */
+    /* Brand Kit v2 Tokens */
+    --navy: #0E1260;
+    --navy-dark: #080B3A;
+    --navy-mid: #1A2280;
+    --red: #E82030;
+    --red-deep: #B81828;
+    --ball-pink: #D42080;
+    --ball-purple: #8B1FA2;
+    --bat-blue: #4A52B8;
+    --bat-light: #6870CC;
+    --off-white: #F4F5FA;
+    --gray-mid: #8A8EBB;
+    --gray-dark: #2E3160;
+
+    /* Semantic Mappings */
+    --background: var(--navy-dark);
     --foreground: #FFFFFF;
 
-    --card: #0E1260;
-    /* Deep Navy */
+    --card: var(--navy);
     --card-foreground: #FFFFFF;
 
-    --popover: #0E1260;
+    --popover: var(--navy);
     --popover-foreground: #FFFFFF;
 
-    /* Brand Kit Accents */
-    --primary: #E82030;
-    /* Strike Red */
+    --primary: var(--red);
     --primary-foreground: #FFFFFF;
 
-    --secondary: #1A2280;
-    /* Royal Navy */
+    --secondary: var(--navy-mid);
     --secondary-foreground: #FFFFFF;
 
-    --muted: #1A2280;
-    --muted-foreground: #8A8EBB;
-    /* Gray Mid */
+    --muted: var(--navy-mid);
+    --muted-foreground: var(--gray-mid);
 
-    --accent: #D42080;
-    /* Ball Pink */
+    --accent: var(--ball-pink);
     --accent-foreground: #FFFFFF;
 
-    --destructive: #E82030;
-    /* Strike Red */
+    --destructive: var(--red);
     --destructive-foreground: #FFFFFF;
 
     --border: rgba(255, 255, 255, 0.1);
-    --input: #1A2280;
-    --ring: #E82030;
+    --input: var(--navy-mid);
+    --ring: var(--red);
 
     --radius: 6px;
+
+    /* Fonts */
+    --font-wordmark: 'Anton', 'Impact', sans-serif;
+    --font-title: 'Libre Baskerville', Georgia, serif;
+    --font-ui: 'Teko', 'Arial Narrow', sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
   }
 }
 
@@ -55,22 +67,20 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
-    /* Set default to Inter from Brand Kit */
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: var(--font-body);
   }
 }
 
-/* Custom Typography Utilities from Brand Kit */
 @layer utilities {
   .font-wordmark {
-    font-family: 'Anton', impact, sans-serif;
+    font-family: var(--font-wordmark);
   }
 
   .font-title {
-    font-family: 'Libre Baskerville', Georgia, serif;
+    font-family: var(--font-title);
   }
 
   .font-ui {
-    font-family: 'Teko', sans-serif;
+    font-family: var(--font-ui);
   }
 }

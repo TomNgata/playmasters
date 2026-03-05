@@ -7,23 +7,1382 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Teko:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
 <style>
-/* Omitted implementation details for brevity in this tool call, but the actual file has complete styles */
+/*
+ ============================================================
+ PLAYMASTERS KE — OFFICIAL BRAND KIT v2
+ Source of truth: Logo image + Tournament results post ONLY
+ All colours hex-picked directly from the brand assets.
+ ============================================================
+*/
+
+/* ======================================================
+   COLOUR TOKENS — derived solely from the two brand images
+   ====================================================== */
 :root {
-  --navy:        #0E1260;
-  --red:         #E82030;
-  --ball-pink:   #D42080;
-  --bat-blue:    #4A52B8;
+  /* — from the logo shield background — */
+  --navy:        #0E1260;   /* deepest navy – shield fill */
+  --navy-dark:   #080B3A;   /* near-black navy – darkest shadow in shield */
+  --navy-mid:    #1A2280;   /* mid navy – logo body */
+
+  /* — from the logo red outline & cricket balls — */
+  --red:         #E82030;   /* primary red – logo outer stroke */
+  --red-deep:    #B81828;   /* darker red – stroke shadow edge */
+
+  /* — from the bowling ball gradient — */
+  --ball-pink:   #D42080;   /* hot pink – ball highlight */
+  --ball-purple: #8B1FA2;   /* deep purple – ball shadow */
+  --ball-mid:    #B0245C;   /* midpoint – ball body */
+
+  /* — from the bat panels — */
+  --bat-blue:    #4A52B8;   /* medium violet-blue – bat panels */
+  --bat-light:   #6870CC;   /* lighter bat highlight */
+
+  /* — neutrals — */
   --white:       #FFFFFF;
-  --font-wordmark:  'Anton', sans-serif;
-  --font-title:     'Libre Baskerville', serif;
-  --font-ui:        'Teko', sans-serif;
-  --font-body:      'Inter', sans-serif;
+  --off-white:   #F4F5FA;   /* from tournament post background */
+  --post-border: #3A3B8E;   /* ornamental border in tournament post */
+  --text-navy:   #1C1E6E;   /* body text colour in tournament post */
+  --gray-mid:    #8A8EBB;   /* secondary text */
+  --gray-dark:   #2E3160;   /* dark ui text */
+
+  /* ======================================================
+     TYPOGRAPHY — derived from both images
+     Logo wordmark → Anton (closest to the heavy athletic serif)
+     Tournament title → Libre Baskerville (matches the serif used
+                         in "August 2023 - Singles Tournament")
+     UI labels/brackets → Teko (matches bold condensed in post)
+     Body text → Inter (legible, neutral – matches post body)
+     ====================================================== */
+  --font-wordmark:  'Anton', 'Impact', sans-serif;
+  --font-title:     'Libre Baskerville', Georgia, serif;
+  --font-ui:        'Teko', 'Arial Narrow', sans-serif;
+  --font-body:      'Inter', system-ui, sans-serif;
+
+  /* layout */
+  --sp-section: 72px 48px;
+  --radius:     6px;
+  --radius-lg:  14px;
 }
-/* ... rest of the HTML ... */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--off-white);
+  color: var(--text-navy);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* ======================== COVER ======================== */
+.cover {
+  background: var(--navy-dark);
+  background-image:
+    radial-gradient(ellipse 70% 80% at 80% 40%, rgba(212,32,128,.15) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 60% at 15% 70%, rgba(74,82,184,.18) 0%, transparent 70%);
+  min-height: 460px;
+  display: flex;
+  align-items: center;
+  padding: 60px 48px;
+  position: relative;
+  overflow: hidden;
+}
+/* pin-stripe lane texture */
+.cover::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px, transparent 38px,
+    rgba(255,255,255,.025) 38px, rgba(255,255,255,.025) 40px
+  );
+  pointer-events: none;
+}
+/* red outline accent bar */
+.cover::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 6px;
+  background: var(--red);
+}
+.cover-inner { position: relative; z-index: 1; }
+.cover-eyebrow {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--ball-pink);
+  margin-bottom: 16px;
+}
+.cover h1 {
+  font-family: var(--font-wordmark);
+  font-size: clamp(52px, 9vw, 104px);
+  line-height: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--white);
+}
+.cover h1 .accent { color: var(--red); }
+.cover-sub {
+  margin-top: 20px;
+  font-family: var(--font-title);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--gray-mid);
+  max-width: 480px;
+}
+.cover-pills {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  margin-top: 32px;
+}
+.cover-pill {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,.15);
+  color: var(--gray-mid);
+}
+.cover-pill.live { background: var(--red); color: var(--white); border-color: var(--red); }
+
+/* ====================== SECTIONS ====================== */
+section { padding: var(--sp-section); }
+section:nth-child(even) { background: var(--white); }
+.s-label {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 6px;
+}
+.s-title {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: clamp(28px, 4vw, 44px);
+  color: var(--navy);
+  margin-bottom: 10px;
+}
+.s-rule {
+  width: 40px; height: 3px;
+  background: var(--red);
+  margin-bottom: 36px;
+}
+
+/* ====================== COLOURS ====================== */
+.colour-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  gap: 16px;
+}
+.swatch { border-radius: var(--radius); overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,.09); }
+.sw-block { height: 90px; display: flex; align-items: flex-end; padding: 8px 10px; }
+.sw-hex {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  opacity: .65;
+}
+.sw-info {
+  background: var(--white);
+  padding: 10px 12px;
+  border: 1px solid rgba(0,0,0,.07); border-top: none;
+}
+.sw-name { font-family: var(--font-ui); font-weight: 600; font-size: 14px; line-height: 1; }
+.sw-desc { font-size: 11px; color: var(--gray-mid); margin-top: 2px; }
+.sw-source {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 10px;
+  font-family: var(--font-ui);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 2px;
+  background: var(--off-white);
+  color: var(--gray-dark);
+}
+
+/* colour source legend */
+.source-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.sl-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray-dark); }
+.sl-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+/* ====================== TYPOGRAPHY ====================== */
+.type-rows { display: flex; flex-direction: column; gap: 0; }
+.type-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 32px;
+  align-items: start;
+  padding: 32px 0;
+  border-bottom: 1px solid rgba(0,0,0,.07);
+}
+.type-meta .tm-name { font-family: var(--font-ui); font-weight: 600; font-size: 15px; color: var(--navy); }
+.type-meta .tm-role { font-size: 11px; color: var(--gray-mid); margin-top: 2px; }
+.type-meta .tm-source {
+  margin-top: 10px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--red-deep);
+  font-style: italic;
+}
+.type-meta .tm-use {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--gray-dark);
+}
+/* The wordmark font - Anton */
+.ts-wordmark {
+  font-family: var(--font-wordmark);
+  font-size: 72px;
+  text-transform: uppercase;
+  color: var(--navy);
+  line-height: 0.9;
+}
+/* Serif from tournament post */
+.ts-title {
+  font-family: var(--font-title);
+  font-size: 42px;
+  color: var(--navy);
+  line-height: 1.1;
+}
+.ts-title-italic { font-style: italic; color: var(--text-navy); }
+/* Teko UI */
+.ts-ui {
+  font-family: var(--font-ui);
+  font-size: 36px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--navy);
+}
+/* Body */
+.ts-body { font-family: var(--font-body); font-size: 18px; color: var(--text-navy); line-height: 1.7; }
+.type-alpha {
+  margin-top: 12px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--gray-mid);
+  word-break: break-all;
+}
+
+/* ====================== LOGO ANATOMY ====================== */
+.logo-anatomy {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+.anatomy-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.anatomy-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px;
+  border-radius: var(--radius);
+  background: var(--off-white);
+  border-left: 4px solid;
+}
+.anatomy-item.navy-item { border-left-color: var(--navy); }
+.anatomy-item.red-item { border-left-color: var(--red); }
+.anatomy-item.ball-item { border-left-color: var(--ball-pink); }
+.anatomy-item.bat-item { border-left-color: var(--bat-blue); }
+.anatomy-item.white-item { border-left-color: var(--gray-mid); }
+.ai-swatch { width: 36px; height: 36px; border-radius: 4px; flex-shrink: 0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.1); }
+.ai-label { font-family: var(--font-ui); font-weight: 600; font-size: 14px; color: var(--navy); }
+.ai-hex { font-family: 'Courier New', monospace; font-size: 11px; color: var(--gray-mid); }
+.ai-role { font-size: 12px; color: var(--gray-dark); margin-top: 2px; }
+
+/* Logo mock rendered in CSS */
+.logo-mock {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid rgba(0,0,0,.08);
+  box-shadow: 0 4px 24px rgba(0,0,0,.08);
+}
+.logo-mock-dark {
+  background: var(--navy-dark);
+  border: 1px solid rgba(255,255,255,.06);
+}
+.logo-wordmark-render {
+  text-align: center;
+  position: relative;
+}
+.lwm-play {
+  font-family: var(--font-wordmark);
+  font-size: 18px;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  color: var(--white);
+  display: block;
+}
+.lwm-masters {
+  font-family: var(--font-wordmark);
+  font-size: 56px;
+  text-transform: uppercase;
+  line-height: 0.85;
+  /* simulate the white-fill + red-outline of the logo */
+  color: var(--white);
+  -webkit-text-stroke: 3px var(--red);
+  paint-order: stroke fill;
+  display: block;
+}
+.lwm-bowling {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: var(--ball-pink);
+  display: block;
+  margin-top: 6px;
+}
+.logo-mock-label { font-family: var(--font-ui); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-mid); }
+
+/* Logo variations grid */
+.logo-vars {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 32px;
+}
+.lv-card { border-radius: var(--radius-lg); overflow: hidden; }
+.lv-canvas {
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+}
+.lv-dark { background: var(--navy-dark); }
+.lv-navy { background: var(--navy); }
+.lv-red  { background: var(--red); }
+.lv-white {
+  background: var(--white);
+  border: 1px solid rgba(0,0,0,.08);
+  border-bottom: none;
+}
+.lv-meta {
+  background: var(--white);
+  padding: 10px 14px;
+  border: 1px solid rgba(0,0,0,.07);
+  border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+.lv-meta .lv-name { font-family: var(--font-ui); font-weight: 600; font-size: 13px; }
+.lv-meta .lv-use { font-size: 11px; color: var(--gray-mid); margin-top: 2px; }
+
+/* Monogram block */
+.mono-render {
+  font-family: var(--font-wordmark);
+  font-size: 52px;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+/* Tournament post recreation */
+.post-recreation {
+  max-width: 420px;
+  margin: 0 auto;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,.12);
+}
+.post-inner {
+  padding: 28px;
+  border: 2px solid var(--post-border);
+  margin: 12px;
+  border-radius: 8px;
+  text-align: center;
+}
+.post-title {
+  font-family: var(--font-title);
+  font-size: 22px;
+  color: var(--text-navy);
+  line-height: 1.3;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(58,59,142,.2);
+}
+.post-org {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--navy);
+}
+.post-event {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 18px;
+  text-transform: uppercase;
+  color: var(--navy);
+  margin-top: 8px;
+  line-height: 1.2;
+}
+.post-results { margin-top: 16px; }
+.post-bracket-label {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 15px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+.post-entry {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-navy);
+  padding: 2px 0;
+}
+.post-venue {
+  margin-top: 16px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--gray-mid);
+  font-style: italic;
+}
+
+/* ====================== COMPONENTS ====================== */
+/* Buttons */
+.btn-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.btn {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 12px 28px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  transition: all .18s;
+  display: inline-block;
+  text-decoration: none;
+  line-height: 1;
+}
+.btn-primary {
+  background: var(--red);
+  color: var(--white);
+  box-shadow: 0 4px 0 var(--red-deep);
+}
+.btn-primary:hover {
+  background: var(--red-deep);
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--red-deep);
+}
+.btn-secondary {
+  background: var(--navy);
+  color: var(--white);
+  box-shadow: 0 4px 0 var(--navy-dark);
+}
+.btn-secondary:hover { background: var(--navy-dark); transform: translateY(2px); box-shadow: 0 2px 0 var(--navy-dark); }
+.btn-outline { background: transparent; color: var(--navy); border: 2px solid var(--navy); }
+.btn-outline:hover { background: var(--navy); color: var(--white); }
+.btn-ghost { background: transparent; color: var(--white); border: 2px solid rgba(255,255,255,.3); }
+.btn-sm { padding: 8px 18px; font-size: 12px; }
+
+/* Player card */
+.component-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.player-card {
+  background: var(--navy-dark);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  color: var(--white);
+  border: 1px solid rgba(255,255,255,.06);
+}
+.pc-header {
+  height: 100px;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px;
+}
+.pc-header-gold  { background: linear-gradient(135deg, var(--navy), var(--navy-mid)); }
+.pc-header-silver{ background: linear-gradient(135deg, var(--navy-mid), var(--bat-blue)); }
+.pc-header-ball  { background: linear-gradient(135deg, var(--ball-purple), var(--ball-pink)); }
+.pc-bracket {
+  position: absolute; top: 8px; right: 8px;
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  background: rgba(0,0,0,.5);
+  padding: 3px 8px; border-radius: 3px;
+  color: var(--ball-pink);
+}
+.pc-body { padding: 14px; }
+.pc-name { font-family: var(--font-wordmark); font-size: 22px; text-transform: uppercase; letter-spacing: 1px; }
+.pc-role { font-family: var(--font-ui); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--bat-light); margin-top: 2px; }
+.pc-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 12px; }
+.pc-stat { background: rgba(255,255,255,.05); border-radius: 3px; padding: 7px 4px; text-align: center; }
+.pc-stat-val { font-family: var(--font-wordmark); font-size: 20px; color: var(--ball-pink); }
+.pc-stat-lbl { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--gray-mid); }
+
+/* Standings table */
+.standings-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.standings-table th {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gray-mid);
+  padding: 10px 14px;
+  text-align: left;
+  background: var(--navy-dark);
+  color: var(--gray-mid);
+  border-bottom: 2px solid var(--red);
+}
+.standings-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid rgba(0,0,0,.06);
+  background: var(--white);
+}
+.standings-table tr:hover td { background: var(--off-white); }
+.standings-table .pos {
+  font-family: var(--font-wordmark);
+  font-size: 20px;
+  color: var(--navy);
+  width: 40px;
+}
+.standings-table .rank-1 .pos { color: var(--red); }
+.standings-table .rank-2 .pos { color: var(--navy-mid); }
+.standings-table .player-name-cell { font-family: var(--font-ui); font-weight: 600; font-size: 15px; }
+.standings-table .score { font-family: var(--font-wordmark); font-size: 18px; color: var(--ball-pink); }
+
+/* Score badge */
+.score-badges { display: flex; flex-wrap: wrap; gap: 12px; }
+.score-badge {
+  background: var(--navy);
+  color: var(--white);
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  min-width: 130px;
+  border-top: 3px solid var(--red);
+}
+.sb-val { font-family: var(--font-wordmark); font-size: 38px; color: var(--ball-pink); line-height: 1; }
+.sb-lbl { font-family: var(--font-ui); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-mid); margin-top: 4px; }
+.score-badge.champion { border-top-color: var(--ball-pink); }
+.score-badge.danger { border-top-color: var(--red); }
+
+/* ===================== VOICE ===================== */
+.voice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.voice-card {
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  background: var(--navy);
+  color: var(--white);
+  border-left: 4px solid var(--red);
+}
+.vc-label { font-family: var(--font-wordmark); font-size: 26px; text-transform: uppercase; color: var(--ball-pink); margin-bottom: 6px; }
+.vc-desc { font-size: 13px; color: var(--gray-mid); line-height: 1.6; margin-bottom: 12px; }
+.vc-examples { list-style: none; }
+.vc-examples li {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  color: rgba(255,255,255,.8);
+}
+.vc-examples li::before { content: '› '; color: var(--red); }
+
+/* ===================== DO/DONT ===================== */
+.rules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.rule-card { border-radius: var(--radius); padding: 24px; }
+.rule-card.do-card {
+  background: rgba(14,18,96,.05);
+  border: 1px solid rgba(14,18,96,.2);
+}
+.rule-card.dont-card {
+  background: rgba(232,32,48,.05);
+  border: 1px solid rgba(232,32,48,.2);
+}
+.rule-tag {
+  display: inline-block;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 2px;
+  margin-bottom: 14px;
+}
+.do-card .rule-tag { background: var(--navy); color: var(--white); }
+.dont-card .rule-tag { background: var(--red); color: var(--white); }
+.rule-card ul { list-style: none; }
+.rule-card li { font-size: 13px; line-height: 1.9; }
+.do-card li::before { content: '✓  '; color: var(--navy); font-weight: 700; }
+.dont-card li::before { content: '✗  '; color: var(--red); font-weight: 700; }
+
+/* ===================== MOTION ===================== */
+.dark-section { background: var(--navy-dark); }
+.dark-section .s-title { color: var(--white); }
+.dark-section .s-label { color: var(--ball-pink); }
+.dark-section .s-rule { background: var(--ball-pink); }
+
+.motion-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+.motion-card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  color: var(--white);
+}
+.motion-demo { margin-bottom: 16px; }
+.md-circle {
+  width: 44px; height: 44px; border-radius: 50%;
+}
+.md-rect {
+  width: 64px; height: 32px; border-radius: 4px;
+}
+@keyframes pm-spin { to { transform: rotate(360deg); } }
+@keyframes pm-bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+@keyframes pm-glow {
+  0%,100% { box-shadow: 0 0 0 0 rgba(212,32,128,.7); }
+  50% { box-shadow: 0 0 0 10px rgba(212,32,128,0); }
+}
+@keyframes pm-slide { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.anim-spin { animation: pm-spin 2s linear infinite; background: linear-gradient(135deg, var(--ball-purple), var(--ball-pink)); }
+.anim-bounce { animation: pm-bounce 0.8s ease-in-out infinite; background: var(--red); }
+.anim-glow { animation: pm-glow 2s ease-in-out infinite; background: var(--bat-blue); }
+.anim-slide { animation: pm-slide 1.2s ease-out infinite alternate; background: var(--navy-mid); }
+.mn-name { font-family: var(--font-ui); font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--ball-pink); }
+.mn-desc { font-size: 12px; color: var(--gray-mid); margin-top: 4px; line-height: 1.5; }
+.mn-spec { margin-top: 8px; font-size: 11px; font-family: 'Courier New', monospace; color: rgba(255,255,255,.3); background: rgba(255,255,255,.04); padding: 5px 8px; border-radius: 3px; }
+
+/* ===================== FOOTER ===================== */
+footer {
+  background: var(--navy-dark);
+  color: var(--white);
+  padding: 36px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  border-top: 3px solid var(--red);
+}
+.footer-brand { font-family: var(--font-wordmark); font-size: 28px; text-transform: uppercase; color: var(--white); }
+.footer-brand small {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--gray-mid);
+  margin-top: 2px;
+}
+.footer-note { font-size: 12px; color: var(--gray-dark); }
+
+@media (max-width: 640px) {
+  :root { --sp-section: 48px 20px; }
+  .cover { padding: 48px 24px; }
+  .type-row { grid-template-columns: 1fr; }
+  .logo-anatomy { grid-template-columns: 1fr; }
+  .rules-grid { grid-template-columns: 1fr; }
+  footer { padding: 28px 24px; }
+}
 </style>
 </head>
 <body>
-<!-- Brand Kit Content -->
+
+<!-- ===== COVER ===== -->
+<div class="cover">
+  <div class="cover-inner">
+    <div class="cover-eyebrow">Official Brand Kit — v2.0</div>
+    <h1>Play<span class="accent">masters</span><br>Kenya</h1>
+    <p class="cover-sub">All colours, typefaces & components derived directly from the official logo and tournament post.</p>
+    <div class="cover-pills">
+      <div class="cover-pill live">Source-Accurate</div>
+      <div class="cover-pill">3D Ready</div>
+      <div class="cover-pill">Strikez · Westgate Mall</div>
+      <div class="cover-pill">@p_l_a_y_m_a_s_t_e_r_s</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== COLOUR PALETTE ===== -->
+<section>
+  <div class="s-label">Design Tokens</div>
+  <div class="s-title">Colour Palette</div>
+  <div class="s-rule"></div>
+
+  <div class="source-legend">
+    <div class="sl-item"><div class="sl-dot" style="background:var(--navy);"></div> From logo shield</div>
+    <div class="sl-item"><div class="sl-dot" style="background:var(--red);"></div> From logo red outline</div>
+    <div class="sl-item"><div class="sl-dot" style="background:var(--ball-pink);"></div> From bowling ball gradient</div>
+    <div class="sl-item"><div class="sl-dot" style="background:var(--bat-blue);"></div> From bat panels</div>
+    <div class="sl-item"><div class="sl-dot" style="background:var(--post-border);"></div> From tournament post</div>
+  </div>
+
+  <div class="colour-grid">
+
+    <!-- NAVY GROUP -->
+    <div class="swatch">
+      <div class="sw-block" style="background:#0E1260; color:#fff;"><span class="sw-hex">#0E1260</span></div>
+      <div class="sw-info">
+        <div class="sw-name">Deep Navy</div>
+        <div class="sw-desc">Primary brand / shield fill</div>
+        <div class="sw-source">Logo background</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="sw-block" style="background:#080B3A; color:#fff;"><span class="sw-hex">#080B3A</span></div>
+      <div class="sw-info">
+        <div class="sw-name">Void Navy</div>
+        <div class="sw-desc">Darkest shadows / 3D sections</div>
+        <div class="sw-source">Logo darkest shadow</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="sw-block" style="background:#1A2280; color:#fff;"><span class="sw-hex">#1A2280</span></div>
+      <div class="sw-info">
+        <div class="sw-name">Royal Navy</div>
+        <div class="sw-desc">Backgrounds, cards</div>
+        <div class="sw-source">Logo mid-shield</div>
+      </div>
+    </div>
+
+    <!-- RED GROUP -->
+    <div class="swatch">
+      <div class="sw-block" style="background:#E82030; color:#fff;"><span class="sw-hex">#E82030</span></div>
+      <div class="sw-info">
+        <div class="sw-name">Strike Red</div>
+        <div class="sw-desc">Primary action colour</div>
+        <div class="sw-source">Logo outer stroke</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="sw-block" style="background:#B81828; color:#fff;"><span class="sw-hex">#B81828</span></div>
+      <div class="sw-info">
+        <div class="sw-name">Deep Red</div>
+        <div class="sw-desc">Button shadow, hover states</div>
+        <div class="sw-source">Logo stroke shadow</div>
+      </div>
+    </div>
+
+    <!-- BALL GROUP -->
+    <div class="swatch">
+      <div class="sw-block" style="background:#D42080; color:#fff;"><span class="sw-hex">#D42080</span></div>
+      <div class="sw-info">
+        <div class="sw-name">Ball Pink</div>
+        <div class="sw-desc">Highlight accent, stats</div>
+        <div class="sw-source">Bowling ball – highlight</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="sw-block" style="background:#B0245C; color:#fff;"><span class="sw-hex">#B0245C</span></div>
+      <div class="sw-info">
+        <div class="sw-name">Ball Mid</div>
+        <div class="sw-desc">Gradient midpoint</div>
+        <div class="sw-source">Bowling ball – body</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="sw-block" style="background:#8B1FA2; color:#fff;"><span class="sw-hex">#8B1FA2</span></div>
+      <div class="sw-info">
+        <div class="sw-name">Ball Purple</div>
+        <div class="sw-desc">Gradient deep end</div>
+        <div class="sw-source">Bowling ball – shadow</div>
+      </div>
+    </div>
+
+    <!-- BAT GROUP -->
+    <div class="swatch">
+      <div class="sw-block" style="background:#4A52B8; color:#fff;"><span class="sw-hex">#4A52B8</span></div>
+      <div class="sw-info">
+        <div class="sw-name">Bat Blue</div>
+        <div class="sw-desc">Secondary accent, tags</div>
+        <div class="sw-source">Crossed bat panels</div>
+      </div>
+    </div>
+
+    <!-- POST / NEUTRALS -->
+    <div class="swatch">
+      <div class="sw-block" style="background:#3A3B8E; color:#fff;"><span class="sw-hex">#3A3B8E</span></div>
+      <div class="sw-info">
+        <div class="sw-name">Border Indigo</div>
+        <div class="sw-desc">Ornamental borders, dividers</div>
+        <div class="sw-source">Tournament post border</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="sw-block" style="background:#1C1E6E; color:#fff;"><span class="sw-hex">#1C1E6E</span></div>
+      <div class="sw-info">
+        <div class="sw-name">Text Navy</div>
+        <div class="sw-desc">Body text on white</div>
+        <div class="sw-source">Tournament post body</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="sw-block" style="background:#FFFFFF; color:#0E1260; border:1px solid #eee;"><span class="sw-hex">#FFFFFF</span></div>
+      <div class="sw-info">
+        <div class="sw-name">Pure White</div>
+        <div class="sw-desc">Logo text, dark-bg type</div>
+        <div class="sw-source">Logo wordmark fill</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gradient spec -->
+  <div style="margin-top: 32px;">
+    <div style="font-family:var(--font-ui); font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--gray-mid); margin-bottom:16px;">Official Gradients — from logo</div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:12px;">
+      <div style="height:70px; border-radius:var(--radius); background: linear-gradient(135deg, var(--ball-purple), var(--ball-pink)); display:flex; align-items:flex-end; padding:10px 14px;">
+        <span style="font-family:'Courier New',monospace; font-size:11px; color:rgba(255,255,255,.6);">#8B1FA2 → #D42080</span>
+      </div>
+      <div style="height:70px; border-radius:var(--radius); background: linear-gradient(135deg, var(--navy-dark), var(--navy-mid)); display:flex; align-items:flex-end; padding:10px 14px;">
+        <span style="font-family:'Courier New',monospace; font-size:11px; color:rgba(255,255,255,.4);">#080B3A → #1A2280</span>
+      </div>
+      <div style="height:70px; border-radius:var(--radius); background: linear-gradient(135deg, var(--navy-mid), var(--bat-blue)); display:flex; align-items:flex-end; padding:10px 14px;">
+        <span style="font-family:'Courier New',monospace; font-size:11px; color:rgba(255,255,255,.5);">#1A2280 → #4A52B8</span>
+      </div>
+      <div style="height:70px; border-radius:var(--radius); background: linear-gradient(180deg, var(--red) 0%, var(--red-deep) 100%); display:flex; align-items:flex-end; padding:10px 14px;">
+        <span style="font-family:'Courier New',monospace; font-size:11px; color:rgba(255,255,255,.6);">#E82030 → #B81828</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TYPOGRAPHY ===== -->
+<section>
+  <div class="s-label">Design Tokens</div>
+  <div class="s-title">Typography System</div>
+  <div class="s-rule"></div>
+  <div class="type-rows">
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="tm-name">Anton</div>
+        <div class="tm-role">Wordmark / Display</div>
+        <div class="tm-source">Derived from: Logo "MASTERS" wordmark — heavy, condensed, uppercase athletic style</div>
+        <div class="tm-use">Hero headings, player names, stat numbers, scoreboard, all primary display text</div>
+      </div>
+      <div>
+        <div class="ts-wordmark">STRIKE<br>PERFECT</div>
+        <div class="type-alpha" style="font-family:'Anton';">ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 !&</div>
+      </div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="tm-name">Libre Baskerville</div>
+        <div class="tm-role">Serif / Tournament Titles</div>
+        <div class="tm-source">Derived from: "August 2023 – Singles Tournament" heading font in the tournament results post</div>
+        <div class="tm-use">Tournament and event names, section headings in post/print context, quotes</div>
+      </div>
+      <div>
+        <div class="ts-title">August 2025 –<br><span class="ts-title-italic">Singles Tournament</span></div>
+        <div class="type-alpha" style="font-family:'Libre Baskerville';">ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789</div>
+      </div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="tm-name">Teko</div>
+        <div class="tm-role">UI / Labels / Buttons</div>
+        <div class="tm-source">Derived from: "PLAYMASTERS BOWLING" and bracket labels in the tournament post — bold condensed sans</div>
+        <div class="tm-use">Navigation, buttons, tags, section labels, standings headers, badge text</div>
+      </div>
+      <div>
+        <div class="ts-ui">PLAYMASTERS BOWLING<br>GOLD BRACKET</div>
+        <div class="type-alpha" style="font-family:'Teko'; font-weight:600;">ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789</div>
+      </div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="tm-name">Inter</div>
+        <div class="tm-role">Body / Legibility</div>
+        <div class="tm-source">Derived from: Body result entries in the tournament post — clean, neutral, readable at small sizes</div>
+        <div class="tm-use">Player bios, training logs, tournament descriptions, data tables, mobile readability</div>
+      </div>
+      <div>
+        <div class="ts-body">Dillan Mandalia — Runner Up. Viraj Mistry — Silver Bracket Winner. Sonika Patel — Best Woman. Frame by frame, the data tells the story.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== LOGO ANATOMY ===== -->
+<section>
+  <div class="s-label">Brand Identity</div>
+  <div class="s-title">Logo Anatomy</div>
+  <div class="s-rule"></div>
+
+  <div class="logo-anatomy">
+    <div>
+      <!-- CSS recreation of logo character -->
+      <div class="logo-mock logo-mock-dark" style="min-height:220px;">
+        <div style="font-family:var(--font-wordmark); font-size:14px; letter-spacing:10px; color:var(--white); text-transform:uppercase; margin-bottom:4px;">PLAY</div>
+        <div style="font-family:var(--font-wordmark); font-size:76px; text-transform:uppercase; line-height:0.85; color:var(--white); -webkit-text-stroke:4px var(--red); paint-order:stroke fill; letter-spacing:2px;">MASTERS</div>
+        <div style="font-family:var(--font-ui); font-size:11px; letter-spacing:6px; text-transform:uppercase; color:var(--ball-pink); margin-top:8px;">BOWLING · KE</div>
+        <!-- Decorative elements suggesting logo elements -->
+        <div style="display:flex; gap:24px; margin-top:16px; align-items:center;">
+          <div style="width:12px; height:12px; border-radius:50%; background:var(--red); box-shadow:0 0 8px var(--red);"></div>
+          <div style="width:8px; height:28px; background:linear-gradient(135deg,var(--bat-light),var(--bat-blue)); border-radius:2px; transform:rotate(-20deg);"></div>
+          <div style="width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg,var(--ball-purple),var(--ball-pink));"></div>
+          <div style="width:8px; height:28px; background:linear-gradient(135deg,var(--bat-blue),var(--bat-light)); border-radius:2px; transform:rotate(20deg);"></div>
+          <div style="width:12px; height:12px; border-radius:50%; background:var(--red); box-shadow:0 0 8px var(--red);"></div>
+        </div>
+      </div>
+      <div class="logo-mock-label" style="margin-top:10px; text-align:center; font-family:var(--font-ui); font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--gray-mid);">
+        CSS representation — use official PNG for production
+      </div>
+    </div>
+
+    <div class="anatomy-notes">
+      <div class="anatomy-item navy-item">
+        <div class="ai-swatch" style="background: linear-gradient(135deg,var(--navy),var(--navy-dark));"></div>
+        <div>
+          <div class="ai-label">Shield / Background</div>
+          <div class="ai-hex">#0E1260 → #080B3A</div>
+          <div class="ai-role">The primary form that holds all logo elements. Sets authority and depth.</div>
+        </div>
+      </div>
+      <div class="anatomy-item red-item">
+        <div class="ai-swatch" style="background: var(--red);"></div>
+        <div>
+          <div class="ai-label">Outer Stroke / Cricket Balls</div>
+          <div class="ai-hex">#E82030</div>
+          <div class="ai-role">The defining outline of the entire logo silhouette. Also used for the two flanking cricket balls — energy and urgency.</div>
+        </div>
+      </div>
+      <div class="anatomy-item ball-item">
+        <div class="ai-swatch" style="background: linear-gradient(135deg, var(--ball-purple), var(--ball-pink));"></div>
+        <div>
+          <div class="ai-label">Bowling Ball</div>
+          <div class="ai-hex">#8B1FA2 → #D42080</div>
+          <div class="ai-role">The centrepiece. The pink-to-purple gradient is the brand's most distinctive visual element — use for hero accents and stats highlights.</div>
+        </div>
+      </div>
+      <div class="anatomy-item bat-item">
+        <div class="ai-swatch" style="background: linear-gradient(135deg, var(--bat-blue), var(--bat-light));"></div>
+        <div>
+          <div class="ai-label">Crossed Bats</div>
+          <div class="ai-hex">#4A52B8 → #6870CC</div>
+          <div class="ai-role">Supporting structural elements. Use as secondary accent colour for tags, secondary buttons, chart fills.</div>
+        </div>
+      </div>
+      <div class="anatomy-item white-item">
+        <div class="ai-swatch" style="background: var(--white); border: 1px solid #ddd;"></div>
+        <div>
+          <div class="ai-label">Wordmark "MASTERS"</div>
+          <div class="ai-hex">#FFFFFF with #E82030 outline</div>
+          <div class="ai-role">White fill with red stroke — the logo typographic treatment. Replicate on any dark background using CSS text-stroke or SVG.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logo Variations -->
+  <div class="logo-vars">
+    <div class="lv-card">
+      <div class="lv-canvas lv-dark">
+        <div style="font-family:var(--font-wordmark); font-size:12px; letter-spacing:7px; color:rgba(255,255,255,.5); text-transform:uppercase;">PLAY</div>
+        <div style="font-family:var(--font-wordmark); font-size:48px; text-transform:uppercase; color:var(--white); -webkit-text-stroke:2px var(--red); paint-order:stroke fill; line-height:0.9;">MASTERS</div>
+        <div style="font-family:var(--font-ui); font-size:10px; letter-spacing:4px; color:var(--ball-pink); text-transform:uppercase; margin-top:6px;">BOWLING KE</div>
+      </div>
+      <div class="lv-meta">
+        <div class="lv-name">Primary — On Dark</div>
+        <div class="lv-use">Website hero, 3D sections, social headers</div>
+      </div>
+    </div>
+    <div class="lv-card">
+      <div class="lv-canvas lv-white">
+        <div style="font-family:var(--font-wordmark); font-size:12px; letter-spacing:7px; color:var(--gray-mid); text-transform:uppercase;">PLAY</div>
+        <div style="font-family:var(--font-wordmark); font-size:48px; text-transform:uppercase; color:var(--navy); -webkit-text-stroke:2px var(--red); paint-order:stroke fill; line-height:0.9;">MASTERS</div>
+        <div style="font-family:var(--font-ui); font-size:10px; letter-spacing:4px; color:var(--ball-mid); text-transform:uppercase; margin-top:6px;">BOWLING KE</div>
+      </div>
+      <div class="lv-meta">
+        <div class="lv-name">Primary — On White</div>
+        <div class="lv-use">Print, documents, email headers</div>
+      </div>
+    </div>
+    <div class="lv-card">
+      <div class="lv-canvas lv-red">
+        <div style="font-family:var(--font-wordmark); font-size:12px; letter-spacing:7px; color:rgba(255,255,255,.5); text-transform:uppercase;">PLAY</div>
+        <div style="font-family:var(--font-wordmark); font-size:48px; text-transform:uppercase; color:var(--white); line-height:0.9;">MASTERS</div>
+        <div style="font-family:var(--font-ui); font-size:10px; letter-spacing:4px; color:rgba(255,255,255,.6); text-transform:uppercase; margin-top:6px;">BOWLING KE</div>
+      </div>
+      <div class="lv-meta">
+        <div class="lv-name">Reversed — On Red</div>
+        <div class="lv-use">Tournament posters, merch, urgent banners</div>
+      </div>
+    </div>
+    <div class="lv-card">
+      <div class="lv-canvas lv-dark">
+        <div style="font-family:var(--font-wordmark); font-size:64px; text-transform:uppercase; color:var(--white); -webkit-text-stroke:2px var(--red); paint-order:stroke fill; line-height:0.85; letter-spacing:4px;">PM</div>
+        <div style="font-family:var(--font-ui); font-size:9px; letter-spacing:4px; color:var(--ball-pink); text-transform:uppercase; margin-top:6px;">PLAYMASTERS KE</div>
+      </div>
+      <div class="lv-meta">
+        <div class="lv-name">Monogram — PM</div>
+        <div class="lv-use">App icon, favicon, profile avatar, kit badges</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TOURNAMENT POST RE-CREATION ===== -->
+<section>
+  <div class="s-label">Brand in Action</div>
+  <div class="s-title">Tournament Post — Anatomy</div>
+  <div class="s-rule"></div>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items:start; flex-wrap:wrap;">
+    <div class="post-recreation">
+      <div style="padding:16px 16px 0; text-align:center;">
+        <div style="font-family:var(--font-title); font-size:20px; color:var(--text-navy);">August 2023 – Singles Tournament</div>
+      </div>
+      <div class="post-inner">
+        <div class="post-org">Playmasters Bowling</div>
+        <div class="post-event">Me I Love Bowling<br>Singles Tournament 5</div>
+        <div class="post-results">
+          <div class="post-bracket-label">Gold Bracket</div>
+          <div class="post-entry">Dillan Mandalia — Runner Up</div>
+          <div class="post-entry">Paras Chandaria — 2nd Runner Up</div>
+          <div class="post-bracket-label">Silver Bracket</div>
+          <div class="post-entry">Viraj Mistry — Winner</div>
+          <div class="post-entry">Nitin Bhuro Pindoria — Runner Up</div>
+          <div class="post-bracket-label">Bronze Bracket</div>
+          <div class="post-entry">Sonika Patel — Winner</div>
+          <div class="post-entry">Sonika Patel — Best Woman</div>
+          <div class="post-entry">Dhilan Chandaria — Best Junior</div>
+        </div>
+        <div class="post-venue">Strikez @ Westgate Mall · 13/08/2023</div>
+      </div>
+    </div>
+    <div>
+      <div style="font-family:var(--font-ui); font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--gray-mid); margin-bottom:16px;">Typography Decisions — sourced from this post</div>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="background:var(--off-white); border-radius:var(--radius); padding:14px; border-left:3px solid var(--red);">
+          <div style="font-family:var(--font-ui); font-weight:600; font-size:13px; color:var(--navy);">Main Title → Libre Baskerville</div>
+          <div style="font-size:12px; color:var(--gray-mid); margin-top:4px;">"August 2023 – Singles Tournament" uses a serif book-style font. Elegance for official event naming.</div>
+        </div>
+        <div style="background:var(--off-white); border-radius:var(--radius); padding:14px; border-left:3px solid var(--navy);">
+          <div style="font-family:var(--font-ui); font-weight:600; font-size:13px; color:var(--navy);">Org/Event Name → Teko Bold Condensed</div>
+          <div style="font-size:12px; color:var(--gray-mid); margin-top:4px;">"PLAYMASTERS BOWLING" and bracket labels use bold condensed all-caps. Authority and legibility.</div>
+        </div>
+        <div style="background:var(--off-white); border-radius:var(--radius); padding:14px; border-left:3px solid var(--post-border);">
+          <div style="font-family:var(--font-ui); font-weight:600; font-size:13px; color:var(--navy);">Border Treatment → Ornamental Indigo #3A3B8E</div>
+          <div style="font-size:12px; color:var(--gray-mid); margin-top:4px;">The decorative navy-indigo border frames the content. Use for certificates, formal tournament result cards.</div>
+        </div>
+        <div style="background:var(--off-white); border-radius:var(--radius); padding:14px; border-left:3px solid var(--ball-pink);">
+          <div style="font-family:var(--font-ui); font-weight:600; font-size:13px; color:var(--navy);">Background → Pure White</div>
+          <div style="font-size:12px; color:var(--gray-mid); margin-top:4px;">Official comms posts use white background — high contrast, print-safe, social-media legible.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== UI COMPONENTS ===== -->
+<section>
+  <div class="s-label">Design System</div>
+  <div class="s-title">UI Components</div>
+  <div class="s-rule"></div>
+
+  <!-- Buttons -->
+  <div style="margin-bottom:40px;">
+    <div style="font-family:var(--font-ui); font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--gray-mid); margin-bottom:14px;">Buttons</div>
+    <div class="btn-row">
+      <a class="btn btn-primary">Register Now</a>
+      <a class="btn btn-secondary">View Standings</a>
+      <a class="btn btn-outline">Tournament Entry</a>
+      <a class="btn btn-primary btn-sm">Strike!</a>
+      <a class="btn btn-secondary btn-sm">Results</a>
+    </div>
+    <div style="margin-top:12px; font-size:12px; color:var(--gray-mid);">Note: No orange/gold buttons. Primary action = Strike Red #E82030. Secondary = Deep Navy #0E1260.</div>
+  </div>
+
+  <!-- Score Badges -->
+  <div style="margin-bottom:40px;">
+    <div style="font-family:var(--font-ui); font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--gray-mid); margin-bottom:14px;">Performance Badges</div>
+    <div class="score-badges">
+      <div class="score-badge champion"><div class="sb-val">287</div><div class="sb-lbl">Avg Score</div></div>
+      <div class="score-badge"><div class="sb-val">73%</div><div class="sb-lbl">Strike Rate</div></div>
+      <div class="score-badge danger"><div class="sb-val">5</div><div class="sb-lbl">Season Wins</div></div>
+      <div class="score-badge"><div class="sb-val">0</div><div class="sb-lbl">Losses</div></div>
+    </div>
+  </div>
+
+  <!-- Player Cards -->
+  <div style="margin-bottom:40px;">
+    <div style="font-family:var(--font-ui); font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--gray-mid); margin-bottom:14px;">Player Cards</div>
+    <div class="component-grid">
+      <div class="player-card">
+        <div class="pc-header pc-header-gold">
+          🎳
+          <div class="pc-bracket">Gold Bracket</div>
+        </div>
+        <div class="pc-body">
+          <div class="pc-name">Dillan M.</div>
+          <div class="pc-role">Runner Up · Gold</div>
+          <div class="pc-stats">
+            <div class="pc-stat"><div class="pc-stat-val">289</div><div class="pc-stat-lbl">Avg</div></div>
+            <div class="pc-stat"><div class="pc-stat-val">78%</div><div class="pc-stat-lbl">Strike</div></div>
+            <div class="pc-stat"><div class="pc-stat-val">12</div><div class="pc-stat-lbl">Games</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="player-card">
+        <div class="pc-header pc-header-ball">
+          👑
+          <div class="pc-bracket" style="color:var(--white);">Bronze · Best Woman</div>
+        </div>
+        <div class="pc-body">
+          <div class="pc-name">Sonika P.</div>
+          <div class="pc-role" style="color:var(--ball-pink);">Winner · Best Woman</div>
+          <div class="pc-stats">
+            <div class="pc-stat"><div class="pc-stat-val">265</div><div class="pc-stat-lbl">Avg</div></div>
+            <div class="pc-stat"><div class="pc-stat-val">65%</div><div class="pc-stat-lbl">Strike</div></div>
+            <div class="pc-stat"><div class="pc-stat-val">9</div><div class="pc-stat-lbl">Games</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="player-card">
+        <div class="pc-header pc-header-silver">
+          🥈
+          <div class="pc-bracket" style="color:var(--bat-light);">Silver Bracket</div>
+        </div>
+        <div class="pc-body">
+          <div class="pc-name">Viraj M.</div>
+          <div class="pc-role" style="color:var(--bat-light);">Winner · Silver</div>
+          <div class="pc-stats">
+            <div class="pc-stat"><div class="pc-stat-val">271</div><div class="pc-stat-lbl">Avg</div></div>
+            <div class="pc-stat"><div class="pc-stat-val">70%</div><div class="pc-stat-lbl">Strike</div></div>
+            <div class="pc-stat"><div class="pc-stat-val">10</div><div class="pc-stat-lbl">Games</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Standings -->
+  <div>
+    <div style="font-family:var(--font-ui); font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--gray-mid); margin-bottom:14px;">Standings Table</div>
+    <table class="standings-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Player</th>
+          <th>Bracket</th>
+          <th>Avg</th>
+          <th>Strike %</th>
+          <th>Games</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="rank-1">
+          <td class="pos">1</td>
+          <td class="player-name-cell">Sonika Patel</td>
+          <td><span style="font-family:var(--font-ui); font-size:12px; background:var(--ball-purple); color:var(--white); padding:2px 8px; border-radius:3px;">Bronze</span></td>
+          <td class="score">265</td>
+          <td>65%</td>
+          <td>9</td>
+        </tr>
+        <tr class="rank-2">
+          <td class="pos">2</td>
+          <td class="player-name-cell">Viraj Mistry</td>
+          <td><span style="font-family:var(--font-ui); font-size:12px; background:var(--bat-blue); color:var(--white); padding:2px 8px; border-radius:3px;">Silver</span></td>
+          <td class="score">271</td>
+          <td>70%</td>
+          <td>10</td>
+        </tr>
+        <tr>
+          <td class="pos">3</td>
+          <td class="player-name-cell">Dillan Mandalia</td>
+          <td><span style="font-family:var(--font-ui); font-size:12px; background:var(--navy); color:var(--white); padding:2px 8px; border-radius:3px;">Gold</span></td>
+          <td class="score">289</td>
+          <td>78%</td>
+          <td>12</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== VOICE & TONE ===== -->
+<section>
+  <div class="s-label">Brand Strategy</div>
+  <div class="s-title">Voice & Tone</div>
+  <div class="s-rule"></div>
+  <div class="voice-grid">
+    <div class="voice-card">
+      <div class="vc-label">Fierce</div>
+      <div class="vc-desc">Competitive, direct. Every message is a challenge issued.</div>
+      <ul class="vc-examples">
+        <li>Strike fear into opponents</li>
+        <li>Undefeated. Unstoppable.</li>
+        <li>The lane is ours.</li>
+      </ul>
+    </div>
+    <div class="voice-card" style="border-left-color:var(--bat-blue);">
+      <div class="vc-label" style="color:var(--bat-light);">Data-Sharp</div>
+      <div class="vc-desc">Analytical confidence. Numbers are the proof. Let the stats speak.</div>
+      <ul class="vc-examples">
+        <li>Frame 7 is your focus drop</li>
+        <li>73% strike rate. Push to 80.</li>
+        <li>Training logs don't lie.</li>
+      </ul>
+    </div>
+    <div class="voice-card" style="border-left-color:var(--ball-pink);">
+      <div class="vc-label" style="color:var(--ball-pink);">Nairobi Proud</div>
+      <div class="vc-desc">Local identity, global hunger. Strikez is home, the world is the prize.</div>
+      <ul class="vc-examples">
+        <li>Born at Westgate. Built for the world.</li>
+        <li>Nairobi's finest.</li>
+        <li>From Strikez to the world stage.</li>
+      </ul>
+    </div>
+    <div class="voice-card" style="border-left-color:var(--navy-mid);">
+      <div class="vc-label" style="color:var(--bat-light);">Team First</div>
+      <div class="vc-desc">Individual excellence. Collective victory. No paywalls. No gatekeeping.</div>
+      <ul class="vc-examples">
+        <li>Every bowler's data is sacred</li>
+        <li>Free for players. Always.</li>
+        <li>We train together. We win together.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DO & DON'T ===== -->
+<section>
+  <div class="s-label">Brand Guidelines</div>
+  <div class="s-title">Usage Rules</div>
+  <div class="s-rule"></div>
+  <div class="rules-grid">
+    <div class="rule-card do-card">
+      <div class="rule-tag">✓ Do</div>
+      <ul>
+        <li>Use Anton for all hero/display headings</li>
+        <li>Use Libre Baskerville only for tournament/event titles</li>
+        <li>Use Strike Red (#E82030) as the primary action colour</li>
+        <li>Use the bowling ball gradient (#8B1FA2 → #D42080) for stat highlights</li>
+        <li>Keep tournament result posts on white background with indigo border</li>
+        <li>Use navy dark (#080B3A) for 3D canvas sections</li>
+        <li>Use "PLAYMASTERS BOWLING" in full on first reference in Teko</li>
+        <li>Mobile-first layout for Nairobi on-the-go access</li>
+      </ul>
+    </div>
+    <div class="rule-card dont-card">
+      <div class="rule-tag">✗ Don't</div>
+      <ul>
+        <li>Never use orange or gold — not in the brand assets</li>
+        <li>Never use Inter or Roboto for display/hero headings</li>
+        <li>Never place the logo on a busy photographic background without overlay</li>
+        <li>Never separate "PLAY" and "MASTERS" with different font weights</li>
+        <li>Don't use the ball-pink gradient as a background — only as accent</li>
+        <li>Never expose raw ETL/scraper endpoints publicly</li>
+        <li>Don't use the red outline stroke independently of navy fills</li>
+        <li>Don't paygate any player stats or training data</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MOTION SPEC ===== -->
+<section class="dark-section" style="padding:var(--sp-section);">
+  <div class="s-label">Design System</div>
+  <div class="s-title">Motion & Animation</div>
+  <div class="s-rule"></div>
+  <div class="motion-grid">
+    <div class="motion-card">
+      <div class="motion-demo"><div class="md-circle anim-spin"></div></div>
+      <div class="mn-name">Ball Roll</div>
+      <div class="mn-desc">Spinning ball gradient for loading states and logo reveals. Uses the ball gradient.</div>
+      <div class="mn-spec">spin 2s linear infinite</div>
+    </div>
+    <div class="motion-card">
+      <div class="motion-demo"><div class="md-circle anim-bounce" style="width:24px;height:32px;border-radius:3px;"></div></div>
+      <div class="mn-name">Pin Bounce</div>
+      <div class="mn-desc">Strike red bounce for score updates and match events. Fast, percussive.</div>
+      <div class="mn-spec">bounce 0.6s ease-in-out</div>
+    </div>
+    <div class="motion-card">
+      <div class="motion-demo"><div class="md-circle anim-glow"></div></div>
+      <div class="mn-name">Live Pulse</div>
+      <div class="mn-desc">Bat-blue glow pulse for live indicators, Slack bot events, real-time score updates.</div>
+      <div class="mn-spec">glow 2s ease-in-out infinite</div>
+    </div>
+    <div class="motion-card">
+      <div class="motion-demo"><div class="md-rect anim-slide"></div></div>
+      <div class="mn-name">Card Reveal</div>
+      <div class="mn-desc">Staggered slide-in for player cards and standings rows. Delay by index × 80ms.</div>
+      <div class="mn-spec">slide-in 0.4s ease-out, staggered</div>
+    </div>
+  </div>
+
+  <div style="margin-top:40px;">
+    <div style="font-family:var(--font-ui); font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--ball-pink); margin-bottom:16px;">3D Interaction Spec — Three.js / Spline</div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:14px;">
+      <div class="motion-card">
+        <div style="font-size:32px; margin-bottom:10px;">🎳</div>
+        <div class="mn-name">Pin Explosion Hero</div>
+        <div class="mn-desc">Full-screen scroll trigger: pins scatter with Cannon.js physics. Colors: white pins, red accents. Resets on scroll-up.</div>
+        <div class="mn-spec">Three.js + Cannon.js + ScrollTrigger</div>
+      </div>
+      <div class="motion-card">
+        <div style="font-size:32px; margin-bottom:10px;">🌀</div>
+        <div class="mn-name">Orbiting Avatars</div>
+        <div class="mn-desc">Player photos orbit a central 3D lane. Navy background, ball-pink orbital trail. Click to expand card.</div>
+        <div class="mn-spec">Spline / Three.js orbit controls</div>
+      </div>
+      <div class="motion-card">
+        <div style="font-size:32px; margin-bottom:10px;">🏆</div>
+        <div class="mn-name">Trophy Mouse Follow</div>
+        <div class="mn-desc">3D trophy follows cursor. Glow shifts from bat-blue → ball-pink as it enters interactive zones.</div>
+        <div class="mn-spec">Raycasting + lerp damping 0.08</div>
+      </div>
+      <div class="motion-card">
+        <div style="font-size:32px; margin-bottom:10px;">📊</div>
+        <div class="mn-name">Score Counter</div>
+        <div class="mn-desc">Live data → counter animates 0 → score in 800ms using GSAP. Numbers in Anton font, ball-pink colour.</div>
+        <div class="mn-spec">GSAP CountTo + Supabase Realtime</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-brand">
+    Playmasters KE
+    <small>Brand Kit v2.0 — Source-accurate · 2025</small>
+  </div>
+  <div class="footer-note">
+    Colours, typography & components derived from official logo + tournament post only.<br>
+    Strikez @ Westgate Mall · Nairobi, Kenya · @p_l_a_y_m_a_s_t_e_r_s
+  </div>
+</footer>
+
 </body>
 </html>

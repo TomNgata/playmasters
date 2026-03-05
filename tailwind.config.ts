@@ -7,22 +7,29 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        'strike': '#E82030',
+        // Updated from Brand Kit v2
+        'navy': '#0E1260',
+        'navy-dark': '#080B3A', // Void Navy
+        'navy-mid': '#1A2280',  // Royal Navy
+        'strike': '#E82030',    // Strike Red
         'strike-deep': '#B81828',
-        'navy-void': '#05070A',
-        'navy-dark': '#0A0E14',
-        'navy-deep': '#101620',
-        'playgray-mid': '#94A3B8',
-        'playgray-dark': '#475569',
-        'ball-pink': '#FF3366',
-        'bat-blue': '#3366FF',
+        'ball-pink': '#D42080',
+        'ball-purple': '#8B1FA2',
+        'bat-blue': '#4A52B8',
+        'bat-light': '#6870CC',
+        'off-white': '#F4F5FA',
+        'gray-mid': '#8A8EBB',
+        'gray-dark': '#2E3160',
+        // Legacy support if needed, but preferably migrated
+        'navy-void': '#080B3A',
+        'navy-deep': '#0E1260',
       },
       fontFamily: {
-        sans: ['var(--font-geist-sans)', 'sans-serif'],
-        mono: ['var(--font-geist-mono)', 'monospace'],
-        title: ['var(--font-title)', 'serif'],
-        wordmark: ['var(--font-wordmark)', 'impact', 'sans-serif'],
-        ui: ['var(--font-ui)', 'sans-serif'],
+        sans: ['var(--font-body)', 'Inter', 'system-ui', 'sans-serif'],
+        mono: ['monospace'],
+        title: ['var(--font-title)', 'Libre Baskerville', 'serif'],
+        wordmark: ['var(--font-wordmark)', 'Anton', 'Impact', 'sans-serif'],
+        ui: ['var(--font-ui)', 'Teko', 'Arial Narrow', 'sans-serif'],
       },
     },
   },
