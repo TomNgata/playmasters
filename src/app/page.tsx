@@ -103,7 +103,7 @@ export default function Home() {
             <img src="/5860677712748416291.jpg" className="w-full h-full object-cover" />
           </div>
           <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden">
-            <img src="/logo.png" className="w-1/2 object-contain" />
+            <img src="/logo-md.png" className="w-1/2 object-contain" />
           </div>
         </div>
       </section>
@@ -112,7 +112,7 @@ export default function Home() {
       <footer className="w-full bg-navy-dark border-t-8 border-strike py-16">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-12">
           <div className="flex flex-col sm:flex-row items-center gap-8">
-            <img src="/logo.png" alt="Playmasters Branding" className="w-24 h-24 object-contain" />
+            <img src="/logo-sm.png" alt="Playmasters Branding" className="w-24 h-24 object-contain" />
             <div className="flex flex-col gap-2 text-center sm:text-left">
               <div className="font-wordmark text-4xl tracking-tight text-white uppercase flex flex-col leading-none">
                 PLAYMASTERS
