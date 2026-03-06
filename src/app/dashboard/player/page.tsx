@@ -150,7 +150,7 @@ export default function PlayerDashboard() {
                                 )}
                             </div>
                             <p className="text-gray-mid mt-2 font-ui uppercase tracking-[4px] text-sm md:text-base">
-                                {profile?.team_name || 'Free Agent'} // <span className="text-white font-bold">{profile?.name}</span>
+                                {profile?.team_name || 'Free Agent'} {' // '} <span className="text-white font-bold">{profile?.name}</span>
                             </p>
                         </div>
                     </div>
@@ -169,7 +169,7 @@ export default function PlayerDashboard() {
                     <div className="mb-12 p-1 bg-gradient-to-r from-strike via-ball-pink to-bat-blue rounded-xl">
                         <div className="bg-navy-dark rounded-lg p-6 flex flex-col md:flex-row items-center justify-between gap-6">
                             <div>
-                                <h2 className="font-ui text-xl font-bold tracking-[3px] text-white uppercase">Captain's Console</h2>
+                                <h2 className="font-ui text-xl font-bold tracking-[3px] text-white uppercase">Captain&apos;s Console</h2>
                                 <p className="text-gray-mid text-sm font-sans">Manage your team roster and onboard new players.</p>
                             </div>
                             <Link
@@ -261,7 +261,7 @@ export default function PlayerDashboard() {
                                             </div>
                                             <div>
                                                 <p className="font-title italic text-white group-hover:text-strike transition-colors">{teammate.name}</p>
-                                                <p className="font-ui text-[10px] text-gray-mid uppercase tracking-widest">Team {profile?.team_name} // {teammate.role}</p>
+                                                <p className="font-ui text-[10px] text-gray-mid uppercase tracking-widest">Team {profile?.team_name} {' // '} {teammate.role}</p>
                                             </div>
                                         </div>
                                         <div className="text-right">
