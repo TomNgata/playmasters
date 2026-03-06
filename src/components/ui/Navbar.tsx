@@ -24,7 +24,8 @@ export default function Navbar() {
                 {/* Nav Links */}
                 <div className="hidden md:flex flex-1 h-full items-center justify-center font-ui text-lg tracking-[4px] uppercase text-gray-mid">
                     <Link href="/dashboard/player" className="px-8 hover:text-white transition-colors border-r border-white/5 h-full flex items-center hover:bg-white/[0.02]">Player Hub</Link>
-                    <Link href="/standings" className="px-8 hover:text-white transition-colors border-r border-white/5 h-full flex items-center hover:bg-white/[0.02]">Standings</Link>
+                    <Link href="/dashboard/competitive" className="px-8 hover:text-white transition-colors border-r border-white/5 h-full flex items-center hover:bg-white/[0.02]">Rivalry Matrix</Link>
+                    <Link href="/dashboard/player/log-game" className="px-8 hover:text-white transition-colors border-r border-white/5 h-full flex items-center hover:bg-white/[0.02]">Log Score</Link>
                     <Link href="/merch" className="px-8 hover:text-white transition-colors h-full flex items-center hover:bg-white/[0.02]">Merch Kit</Link>
                 </div>
             </div>

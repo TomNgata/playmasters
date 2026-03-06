@@ -1,0 +1,3188 @@
+
+
+
+
+
+
+UBL BOWLING LEAGUE
+
+Analytics Data Model & Framework
+
+Production-Ready Schema, Metrics & Implementation Guide
+
+
+
+Season 16 — UBL Monday & Tuesday Divisions  |  March 2026
+
+Data Engineering & Sports Analytics Framework
+
+
+
+
+
+
+
+1. Conceptual Data Model
+
+The conceptual model organizes the UBL analytics system around eight domains: league administration, competition structure, performance capture, physical environment, equipment, coaching, derived analytics, and system operations. Below are all core entities, cardinalities, and key constraints.
+
+
+
+1.1 Core Entities & Relationships
+
+Entity
+
+Description
+
+Key Relationships
+
+Cardinality Notes
+
+Organisation
+
+Top-level body (e.g., USBC-affiliated UBL)
+
+1:M → Seasons, Venues
+
+One org governs all leagues
+
+Season
+
+Named competitive period (e.g., Season 16)
+
+1:M → Leagues, Tournaments
+
+Season scopes all standings
+
+League
+
+Named division within a season (Mon/Tue)
+
+M:M → Teams via RosterSlot
+
+A team can enter multiple leagues per season
+
+Tournament
+
+Knockout/round-robin event within a season
+
+M:M → Teams via TournamentEntry
+
+Brackets nested per tournament
+
+Team
+
+Competitive unit; 4–6 bowlers per roster
+
+M:M → Players via TeamRoster
+
+Roster slots are season-scoped
+
+Player
+
+Individual bowler with lifetime profile
+
+M:M → Teams, M:1 → Coach
+
+PII entity — anonymisation required
+
+Coach
+
+Development coach linked to players/teams
+
+1:M → Players, M:M → Teams
+
+Role-gated access
+
+Match
+
+Scheduled head-to-head between two teams
+
+M:1 → League, 1:M → Games
+
+Each match produces 2–3 games (baker or standard)
+
+Game
+
+Single game (10 frames) for one bowler
+
+M:1 → Match, 1:M → Frames
+
+Baker games link to a team game record
+
+Frame
+
+One of 10 bowling frames per game
+
+M:1 → Game, 1:M → Rolls
+
+10th frame may have 3 rolls
+
+Roll
+
+Individual delivery with sensor data
+
+M:1 → Frame
+
+Most granular event; sensor fields nullable
+
+Lane
+
+Physical lane at a venue
+
+M:1 → Venue, 1:M → LaneSessions
+
+Lane number is venue-scoped
+
+LaneSession
+
+Oil pattern + condition window for a lane
+
+M:1 → Lane, 1:M → Matches
+
+Links environmental context to games
+
+Venue
+
+Physical bowling centre
+
+1:M → Lanes
+
+Address + facility metadata
+
+Equipment
+
+Ball/shoe/glove specs per player session
+
+M:1 → Player
+
+Nullable; captured on entry
+
+HandicapSchedule
+
+Lookup table for handicap rules per league
+
+M:1 → League
+
+Percentage + base score per schedule
+
+Scorecard
+
+Official verified record per match
+
+1:1 → Match
+
+Source-of-truth override flag
+
+PracticeSession
+
+Non-match bowling session for tracking
+
+M:1 → Player, Lane
+
+Excluded from official stats
+
+IngestionErrorLog
+
+Data quality audit trail
+
+M:1 → source tables
+
+Never deleted; append-only
+
+
+
+1.2 Critical Constraints
+
+A Game belongs to exactly one Match and one Player (or one BakerSlot in baker format).
+
+A Frame has exactly 2 rolls unless it is the 10th frame (up to 3 rolls) or the first ball is a strike (10th frame: 3 rolls).
+
+Pins knocked per frame cannot exceed 10 unless a foul is recorded on roll 1 (frame resets to 10).
+
+A Season must be closed (status = 'FINAL') before standings become immutable.
+
+LaneSession dates must not overlap for the same lane_id.
+
+Scorecard.verified_at locks that match against further sensor overwrites unless admin-flagged.
+
+
+
+
+
+2. Relational Schema
+
+All tables use UUID primary keys for portability across OLTP (PostgreSQL) and analytics (Snowflake/BigQuery). Timestamps are UTC ISO-8601. The schema below is normalised to 3NF for OLTP, with denormalised aggregate tables for analytics (Section 5).
+
+
+
+players
+
+Lifetime profile for every registered bowler. PII fields are flagged.
+
+Column
+
+Type
+
+Nullable
+
+Example / Notes
+
+player_id
+
+UUID PK
+
+N
+
+a3f2c1d4-...
+
+usbc_member_id
+
+VARCHAR(20) UNIQUE
+
+Y
+
+1234-56789 (nullable for guests)
+
+display_name
+
+VARCHAR(80)
+
+N
+
+HARSH (from scorecard)
+
+full_name
+
+VARCHAR(120)
+
+Y
+
+PII — encrypted at rest
+
+email
+
+VARCHAR(200)
+
+Y
+
+PII — hashed for deduplication
+
+phone
+
+VARCHAR(30)
+
+Y
+
+PII
+
+date_of_birth
+
+DATE
+
+Y
+
+PII — year only in public views
+
+gender
+
+VARCHAR(20)
+
+Y
+
+Male / Female / Non-binary
+
+handed
+
+VARCHAR(5)
+
+Y
+
+R / L
+
+home_venue_id
+
+UUID FK venues
+
+Y
+
+
+
+coach_id
+
+UUID FK coaches
+
+Y
+
+Nullable; assigned per season
+
+status
+
+VARCHAR(20)
+
+N
+
+ACTIVE / SUSPENDED / RETIRED
+
+created_at
+
+TIMESTAMPTZ
+
+N
+
+2024-01-15T10:00:00Z
+
+updated_at
+
+TIMESTAMPTZ
+
+N
+
+Auto-updated
+
+PK: player_id | FK: home_venue_id → venues, coach_id → coaches
+
+Indexes: usbc_member_id, display_name (trigram for search), status
+
+
+
+teams
+
+Represents a competing team within a league season.
+
+Column
+
+Type
+
+Nullable
+
+Example / Notes
+
+team_id
+
+UUID PK
+
+N
+
+
+
+team_name
+
+VARCHAR(100)
+
+N
+
+PLAYMASTERS
+
+league_id
+
+UUID FK leagues
+
+N
+
+
+
+season_id
+
+UUID FK seasons
+
+N
+
+
+
+captain_player_id
+
+UUID FK players
+
+Y
+
+
+
+home_lane_preference
+
+INT
+
+Y
+
+3
+
+status
+
+VARCHAR(20)
+
+N
+
+ACTIVE / WITHDRAWN
+
+created_at
+
+TIMESTAMPTZ
+
+N
+
+
+
+PK: team_id | Unique: (team_name, league_id, season_id)
+
+
+
+seasons
+
+Season-level configuration and state machine.
+
+Column
+
+Type
+
+Nullable
+
+Example / Notes
+
+season_id
+
+UUID PK
+
+N
+
+
+
+org_id
+
+UUID FK organisations
+
+N
+
+
+
+season_name
+
+VARCHAR(80)
+
+N
+
+UBL Season 16
+
+start_date
+
+DATE
+
+N
+
+2025-11-04
+
+end_date
+
+DATE
+
+N
+
+2026-04-28
+
+total_weeks
+
+INT
+
+N
+
+14
+
+status
+
+VARCHAR(20)
+
+N
+
+ACTIVE / FINAL / PENDING
+
+handicap_schedule_id
+
+UUID FK handicap_schedules
+
+Y
+
+
+
+
+
+matches
+
+A head-to-head fixture between two teams in a single league week.
+
+Column
+
+Type
+
+Nullable
+
+Example / Notes
+
+match_id
+
+UUID PK
+
+N
+
+
+
+league_id
+
+UUID FK leagues
+
+N
+
+
+
+season_id
+
+UUID FK seasons
+
+N
+
+
+
+week_number
+
+INT
+
+N
+
+10
+
+match_date
+
+DATE
+
+N
+
+2026-03-02
+
+home_team_id
+
+UUID FK teams
+
+N
+
+
+
+away_team_id
+
+UUID FK teams
+
+N
+
+
+
+lane_session_id
+
+UUID FK lane_sessions
+
+Y
+
+
+
+match_type
+
+VARCHAR(20)
+
+N
+
+STANDARD / BAKER
+
+home_points
+
+DECIMAL(5,1)
+
+Y
+
+3.0
+
+away_points
+
+DECIMAL(5,1)
+
+Y
+
+0.0
+
+status
+
+VARCHAR(20)
+
+N
+
+SCHEDULED / COMPLETE / FORFEIT / MAKEUP
+
+scorecard_id
+
+UUID FK scorecards
+
+Y
+
+Populated after verification
+
+makeup_for_week
+
+INT
+
+Y
+
+Week of original postponed match
+
+
+
+games
+
+A single 10-frame game bowled by one player in a match.
+
+Column
+
+Type
+
+Nullable
+
+Example / Notes
+
+game_id
+
+UUID PK
+
+N
+
+
+
+match_id
+
+UUID FK matches
+
+N
+
+
+
+player_id
+
+UUID FK players
+
+N
+
+
+
+team_id
+
+UUID FK teams
+
+N
+
+
+
+game_number
+
+INT
+
+N
+
+1 or 2 (within match)
+
+lane_id
+
+UUID FK lanes
+
+Y
+
+
+
+lane_session_id
+
+UUID FK lane_sessions
+
+Y
+
+
+
+scratch_score
+
+INT
+
+Y
+
+237
+
+handicap_applied
+
+INT
+
+Y
+
+0 (scratch leagues)
+
+final_score
+
+INT
+
+Y
+
+237
+
+is_complete
+
+BOOLEAN
+
+N
+
+TRUE
+
+start_ts
+
+TIMESTAMPTZ
+
+Y
+
+2026-03-02T18:45:00Z
+
+end_ts
+
+TIMESTAMPTZ
+
+Y
+
+
+
+avg_at_game_start
+
+DECIMAL(6,2)
+
+Y
+
+173.75 (snapshot for handicap calc)
+
+
+
+frames
+
+A single frame within a game; contains 2–3 rolls.
+
+Column
+
+Type
+
+Nullable
+
+Example / Notes
+
+frame_id
+
+UUID PK
+
+N
+
+
+
+game_id
+
+UUID FK games
+
+N
+
+
+
+frame_number
+
+INT
+
+N
+
+1–10
+
+frame_score
+
+INT
+
+Y
+
+Null until complete (pending strikes)
+
+running_total
+
+INT
+
+Y
+
+Cumulative score through this frame
+
+is_strike
+
+BOOLEAN
+
+N
+
+FALSE
+
+is_spare
+
+BOOLEAN
+
+N
+
+FALSE
+
+is_split
+
+BOOLEAN
+
+N
+
+FALSE
+
+split_converted
+
+BOOLEAN
+
+Y
+
+Null if not a split
+
+spare_type
+
+VARCHAR(20)
+
+Y
+
+SINGLE_PIN / MULTI_PIN / WASHOUT
+
+open_frame
+
+BOOLEAN
+
+N
+
+FALSE
+
+pins_remaining_after_r1
+
+INT
+
+Y
+
+0 for strike
+
+fill_balls
+
+INT
+
+Y
+
+0–2; only in 10th frame
+
+
+
+rolls
+
+Individual delivery — the atomic event unit. Sensor fields are nullable.
+
+Column
+
+Type
+
+Nullable
+
+Example / Notes
+
+roll_id
+
+UUID PK
+
+N
+
+
+
+frame_id
+
+UUID FK frames
+
+N
+
+
+
+game_id
+
+UUID FK games
+
+N
+
+Denormalised for query perf
+
+player_id
+
+UUID FK players
+
+N
+
+Denormalised
+
+roll_number
+
+INT
+
+N
+
+1, 2, or 3
+
+pins_before
+
+INT
+
+N
+
+10 (or remaining)
+
+pins_down
+
+INT
+
+N
+
+7
+
+pins_after
+
+INT
+
+N
+
+3
+
+foul_flag
+
+BOOLEAN
+
+N
+
+FALSE
+
+ball_speed_mph
+
+DECIMAL(5,2)
+
+Y
+
+17.40 (sensor)
+
+rev_rate_rpm
+
+DECIMAL(6,2)
+
+Y
+
+310.0 (sensor)
+
+launch_angle_deg
+
+DECIMAL(5,2)
+
+Y
+
+4.5 (sensor)
+
+axis_tilt_deg
+
+DECIMAL(5,2)
+
+Y
+
+18.0 (sensor)
+
+entry_angle_deg
+
+DECIMAL(5,2)
+
+Y
+
+6.1 (sensor)
+
+pocket_hit
+
+BOOLEAN
+
+Y
+
+TRUE (sensor)
+
+sensor_quality
+
+VARCHAR(20)
+
+Y
+
+GOOD / PARTIAL / MISSING
+
+recorded_at
+
+TIMESTAMPTZ
+
+N
+
+2026-03-02T18:47:23Z
+
+equipment_id
+
+UUID FK equipment
+
+Y
+
+Ball used this delivery
+
+
+
+
+
+lane_sessions
+
+Records the oil pattern and condition state for a lane during a time window.
+
+Column
+
+Type
+
+Nullable
+
+Example / Notes
+
+lane_session_id
+
+UUID PK
+
+N
+
+
+
+lane_id
+
+UUID FK lanes
+
+N
+
+
+
+oil_pattern_name
+
+VARCHAR(80)
+
+Y
+
+Sport Pattern 42ft
+
+oil_volume_ml
+
+DECIMAL(6,2)
+
+Y
+
+22.5
+
+pattern_length_ft
+
+DECIMAL(5,2)
+
+Y
+
+42.0
+
+surface_prep
+
+VARCHAR(80)
+
+Y
+
+Reactive Resin / Urethane
+
+applied_at
+
+TIMESTAMPTZ
+
+N
+
+2026-03-02T16:00:00Z
+
+expires_at
+
+TIMESTAMPTZ
+
+Y
+
+
+
+games_on_surface
+
+INT
+
+Y
+
+Auto-incremented by trigger
+
+condition_status
+
+VARCHAR(20)
+
+N
+
+FRESH / USED / BROKEN_DOWN
+
+
+
+scorecards
+
+Official verified recap sheet, maps 1:1 to a match. Source-of-truth when sensor conflicts exist.
+
+Column
+
+Type
+
+Nullable
+
+Example / Notes
+
+scorecard_id
+
+UUID PK
+
+N
+
+
+
+match_id
+
+UUID FK matches UNIQUE
+
+N
+
+
+
+entered_by_player_id
+
+UUID FK players
+
+Y
+
+Captain who submitted
+
+entered_at
+
+TIMESTAMPTZ
+
+N
+
+
+
+verified_by
+
+UUID FK users
+
+Y
+
+League secretary
+
+verified_at
+
+TIMESTAMPTZ
+
+Y
+
+NULL = pending
+
+source_type
+
+VARCHAR(20)
+
+N
+
+MANUAL / SYSTEM / IMPORT
+
+raw_image_url
+
+TEXT
+
+Y
+
+S3 URL of physical sheet scan
+
+is_disputed
+
+BOOLEAN
+
+N
+
+FALSE
+
+dispute_note
+
+TEXT
+
+Y
+
+
+
+override_active
+
+BOOLEAN
+
+N
+
+FALSE (if TRUE, beats sensor data)
+
+
+
+ratings & player_season_agg
+
+Column
+
+Type
+
+Nullable
+
+Notes
+
+rating_id
+
+UUID PK
+
+N
+
+
+
+player_id
+
+UUID FK players
+
+N
+
+
+
+season_id
+
+UUID FK seasons
+
+N
+
+
+
+elo_rating
+
+DECIMAL(8,2)
+
+Y
+
+Starts at 1500
+
+form_index_ewma
+
+DECIMAL(6,2)
+
+Y
+
+Exponentially weighted avg
+
+clutch_index
+
+DECIMAL(6,4)
+
+Y
+
+See Section 4
+
+lane_bias_index
+
+DECIMAL(6,4)
+
+Y
+
+
+
+calculated_at
+
+TIMESTAMPTZ
+
+N
+
+Batch update timestamp
+
+
+
+practice_sessions
+
+Non-match sessions for player development tracking.
+
+Column
+
+Type
+
+Nullable
+
+Notes
+
+practice_id
+
+UUID PK
+
+N
+
+
+
+player_id
+
+UUID FK players
+
+N
+
+
+
+coach_id
+
+UUID FK coaches
+
+Y
+
+
+
+lane_id
+
+UUID FK lanes
+
+Y
+
+
+
+session_date
+
+DATE
+
+N
+
+
+
+duration_minutes
+
+INT
+
+Y
+
+
+
+games_bowled
+
+INT
+
+Y
+
+
+
+focus_area
+
+VARCHAR(100)
+
+Y
+
+Spare shooting / Release
+
+notes
+
+TEXT
+
+Y
+
+Coach notes
+
+created_at
+
+TIMESTAMPTZ
+
+N
+
+
+
+
+
+match_events
+
+Append-only event log for significant in-match milestones (e.g., turkey, 300 game, perfect series, dispute raised).
+
+Column
+
+Type
+
+Nullable
+
+Notes
+
+event_id
+
+UUID PK
+
+N
+
+
+
+match_id
+
+UUID FK matches
+
+N
+
+
+
+player_id
+
+UUID FK players
+
+Y
+
+Null for team events
+
+event_type
+
+VARCHAR(50)
+
+N
+
+TURKEY / PERFECT_GAME / DISPUTE / FORFEIT
+
+frame_id
+
+UUID FK frames
+
+Y
+
+Pinpoints the frame
+
+event_ts
+
+TIMESTAMPTZ
+
+N
+
+
+
+metadata
+
+JSONB
+
+Y
+
+Flexible: {"streak": 3}
+
+
+
+
+
+3. Event-Level Schema Detail
+
+3.1 Roll-Level Fields
+
+The roll is the most granular event. Manual scorecard data provides pins_down only; lane sensor enrichment adds the remaining fields asynchronously and is marked with sensor_quality.
+
+
+
+Field
+
+Source
+
+Required
+
+Validation Rule
+
+roll_id
+
+System
+
+Y
+
+UUID auto-generated
+
+frame_id / game_id / player_id
+
+System
+
+Y
+
+FK must resolve
+
+roll_number
+
+Manual/Sensor
+
+Y
+
+1–3; >2 only if frame 10
+
+pins_before
+
+System (derived)
+
+Y
+
+10 on roll 1; remaining otherwise
+
+pins_down
+
+Manual/Sensor
+
+Y
+
+0 ≤ pins_down ≤ pins_before
+
+pins_after
+
+System (derived)
+
+Y
+
+pins_before − pins_down
+
+foul_flag
+
+Manual/Sensor
+
+N
+
+If TRUE, reset pins_before to 10 for next roll
+
+ball_speed_mph
+
+Sensor
+
+N
+
+Typical range 10–25 mph; reject outliers
+
+rev_rate_rpm
+
+Sensor
+
+N
+
+Typical range 150–500 rpm
+
+launch_angle_deg
+
+Sensor
+
+N
+
+−10 to +10 from board 20
+
+entry_angle_deg
+
+Sensor
+
+N
+
+0–10 degrees
+
+pocket_hit
+
+Sensor (derived)
+
+N
+
+TRUE if entry angle ≥ 3 and pins_down ≥ 9
+
+sensor_quality
+
+Sensor meta
+
+N
+
+GOOD / PARTIAL / MISSING
+
+recorded_at
+
+System
+
+Y
+
+Must be > previous roll in same game
+
+
+
+3.2 Frame-Level Aggregates
+
+Field
+
+Derivation Logic
+
+is_strike
+
+roll_number=1 AND pins_down=10 (frame ≤ 9) OR 10th frame fill evaluation
+
+is_spare
+
+roll_number=2 AND pins_after=0 AND NOT is_strike (frames 1–9)
+
+open_frame
+
+NOT is_strike AND NOT is_spare
+
+is_split
+
+roll_number=1 AND pins_down < 10 AND specific pin cluster pattern detected
+
+split_converted
+
+is_split=TRUE AND roll2 pins_down = pins_before (cleared all remaining)
+
+spare_type
+
+SINGLE_PIN: 1 pin remaining; MULTI_PIN: 2–5; WASHOUT: headpin down + gap
+
+frame_score
+
+For strike/spare: deferred until bonus rolls complete; else sum of roll pins
+
+running_total
+
+Cumulative sum of frame_score through current frame (null while pending)
+
+fill_balls
+
+Count of bonus rolls in 10th frame (0, 1, or 2)
+
+pins_remaining_after_r1
+
+pins_after from roll 1 of this frame
+
+
+
+3.3 Game / Series Level Fields
+
+Field
+
+Notes
+
+scratch_score
+
+Sum of all frame_scores (integer 0–300)
+
+handicap_applied
+
+Calculated from HandicapSchedule: usually (220 − avg) × 0.80
+
+final_score
+
+scratch_score + handicap_applied
+
+is_complete
+
+TRUE when frame 10 fill balls resolved
+
+lane_condition_id
+
+FK to lane_sessions at time of game start
+
+series_score
+
+Sum of scratch_scores across games in same match for this player
+
+games_in_series
+
+Typically 2 for UBL standard format
+
+high_game_in_series
+
+MAX(scratch_score) across series games
+
+
+
+3.4 Match-Level Fields
+
+Field
+
+Notes
+
+match_type
+
+STANDARD (individual head-to-head totals) / BAKER (team rotates frames)
+
+points_system
+
+3 pts for series win + 1pt per game win (UBL format observed in data)
+
+home_points / away_points
+
+Accumulated from game wins; must sum to total points available
+
+match_result
+
+HOME_WIN / AWAY_WIN / DRAW / FORFEIT / MAKEUP_PENDING
+
+deciding_game
+
+Boolean flag on the game that determined match outcome
+
+pins_over_avg_home / away
+
+Total of individual pins-over-average for awards tracking
+
+verified
+
+Scorecard.verified_at IS NOT NULL
+
+
+
+
+
+4. Derived Metrics & Analytics Features
+
+All metrics are defined with their formula, aggregation level, and recommended computation window. SQL examples use PostgreSQL syntax.
+
+
+
+4.1 Core Performance Metrics
+
+
+
+Metric
+
+Formula / SQL Snippet
+
+Level
+
+Window
+
+Season Average
+
+SUM(scratch_score) / COUNT(game_id)
+
+Player × Season
+
+Full season
+
+Rolling Average
+
+AVG(scratch_score) OVER (PARTITION BY player_id ORDER BY match_date ROWS 9 PRECEDING)
+
+Player
+
+Last 10 games
+
+Strike Rate
+
+COUNT(*) FILTER (WHERE is_strike) * 1.0 / (COUNT(*) FILTER (WHERE frame_number <= 9))
+
+Player × Period
+
+Season or rolling
+
+Spare Rate
+
+COUNT(*) FILTER (WHERE is_spare) * 1.0 / NULLIF(COUNT(*) FILTER (WHERE NOT is_strike AND frame_number <= 9), 0)
+
+Player × Period
+
+Season
+
+Split Conversion
+
+COUNT(*) FILTER (WHERE is_split AND split_converted) * 1.0 / NULLIF(COUNT(*) FILTER (WHERE is_split), 0)
+
+Player × Season
+
+Season
+
+10-Pin Conversion
+
+COUNT(*) FILTER (WHERE spare_type='SINGLE_PIN' AND split_converted) * 1.0 / NULLIF(COUNT(*) FILTER (WHERE spare_type='SINGLE_PIN'), 0)
+
+Player × Season
+
+Season
+
+Turkey Count
+
+COUNT DISTINCT consecutive strike frames ≥ 3 per game
+
+Player × Season
+
+Season
+
+First-Ball Strike Rate
+
+COUNT(*) FILTER (WHERE is_strike AND roll_number=1) / games_played
+
+Player × Season
+
+Season
+
+Frame Consistency
+
+STDDEV(frame_score) — lower = more consistent
+
+Player × Season
+
+Season
+
+Pocket Accuracy
+
+COUNT(*) FILTER (WHERE pocket_hit=TRUE) * 1.0 / total_rolls (requires sensor)
+
+Player × Session
+
+Rolling 10 games
+
+
+
+4.2 Advanced / Coachable Features
+
+Feature
+
+Formula / Pseudocode
+
+Window
+
+Form Index (EWMA)
+
+ewma_n = α × score_n + (1−α) × ewma_{n-1}; α = 0.3 default
+
+Rolling; α tunable
+
+Moving Avg (n=5)
+
+AVG(scratch_score) OVER (ORDER BY game_seq ROWS 4 PRECEDING)
+
+Last 5 games
+
+Clutch Index
+
+AVG(scratch_score WHERE deciding_game=TRUE) / AVG(scratch_score) — ratio >1.0 = clutch
+
+Season, min 5 deciding games
+
+Opponent-Adjusted (Elo)
+
+Δ_elo = K × (result − expected); expected = 1/(1+10^((opp_elo−own_elo)/400))
+
+Per match; K=20
+
+Variance Score
+
+VARIANCE(scratch_score) — feeds ML consistency features
+
+Season rolling 20
+
+Lane Bias Index
+
+AVG(scratch WHERE lane_id=X) − overall_avg; normalised by games count
+
+Per lane, min 6 games
+
+Fatigue Effect
+
+Linear regression coefficient: score ~ rest_days_since_last_game
+
+Season (≥10 games)
+
+Pressure Conversion
+
+spare_rate WHERE match_points_differential ≤ 1 vs overall spare_rate
+
+Season
+
+Home/Away Adjustment
+
+avg_scratch WHERE home=TRUE − avg_scratch WHERE home=FALSE
+
+Season
+
+Ball Speed Trend
+
+Slope of ball_speed_mph over last N games (sensor only)
+
+Rolling 10 games
+
+
+
+Example SQL: Player EWMA Form Index (last 10 games)
+
+WITH ranked_games AS (
+
+  SELECT player_id, scratch_score,
+
+         ROW_NUMBER() OVER (PARTITION BY player_id
+
+                             ORDER BY match_date DESC) AS rn
+
+  FROM games g JOIN matches m USING (match_id)
+
+  WHERE g.is_complete = TRUE
+
+),
+
+ewma_calc AS (
+
+  SELECT player_id, scratch_score, rn,
+
+         EXP(SUM(LN(0.7)) OVER (PARTITION BY player_id
+
+             ORDER BY rn ROWS BETWEEN UNBOUNDED PRECEDING
+
+             AND CURRENT ROW)) AS decay
+
+  FROM ranked_games WHERE rn <= 10
+
+)
+
+SELECT player_id,
+
+       SUM(scratch_score * decay) / SUM(decay) AS form_index_ewma
+
+FROM ewma_calc
+
+GROUP BY player_id;
+
+
+
+
+
+5. Aggregation Levels, Partitioning & Storage
+
+5.1 Aggregate Tables
+
+
+
+Aggregate Table
+
+Grain
+
+Key Columns
+
+Refresh Strategy
+
+player_game_agg
+
+Player × Game
+
+player_id, game_id, scratch_score, strike_count, spare_count, open_count
+
+Real-time trigger / CDC
+
+player_daily
+
+Player × Date
+
+player_id, match_date, games, avg_scratch, strike_rate, spare_rate
+
+Nightly batch
+
+player_season_agg
+
+Player × Season
+
+player_id, season_id, games, avg, median, stddev, best_game, elo_rating, form_index
+
+After each match week
+
+team_match_agg
+
+Team × Match
+
+team_id, match_id, team_series, game_wins, match_points, opponent_id
+
+Post-match trigger
+
+team_season_agg
+
+Team × Season
+
+team_id, season_id, wins, losses, total_pins, HGS, HSS, current_rank
+
+After each week
+
+match_rolls_fact
+
+Roll (denormalised)
+
+roll_id, player_id, team_id, match_id, game_id, frame_no + all roll fields
+
+Streaming / mini-batch
+
+tournament_summary
+
+Tournament × Team/Player
+
+tournament_id, bracket_stage, wins, losses, best_series, final_position
+
+Post-round
+
+lane_performance_agg
+
+Player × Lane
+
+player_id, lane_id, games_on_lane, avg_scratch, stddev, avg_speed
+
+Nightly
+
+
+
+5.2 Partitioning & Indexing
+
+Partition match_rolls_fact and player_daily by season_id (range partition); sub-partition by month for large seasons.
+
+Cluster/sort key order: player_id → team_id → match_date for player dashboards; reverse for team views.
+
+Composite index on (player_id, season_id, match_date DESC) for trend queries.
+
+GIN/JSONB index on match_events.metadata for event-type filtering.
+
+Partial index: WHERE is_complete = TRUE on games table (excludes in-progress rows from stats queries).
+
+
+
+5.3 Storage Architecture
+
+
+
+Layer
+
+Technology
+
+Format
+
+Retention
+
+Raw sensor ingest
+
+Kafka / Kinesis + S3 landing zone
+
+JSON / Avro
+
+90 days hot; 7 years cold Glacier
+
+OLTP (transactional)
+
+PostgreSQL 15+ (or Aurora PG)
+
+Row store
+
+Full lifetime — never delete verified data
+
+Analytics warehouse
+
+Snowflake / BigQuery / Redshift
+
+Parquet / ORC columnar
+
+Full season + 5yr archive
+
+Aggregates / feature store
+
+Materialized views (PG) or dbt models
+
+Parquet on S3
+
+Refresh nightly + on-demand
+
+Real-time dashboards
+
+ClickHouse or TimescaleDB
+
+Column-store
+
+90 days rolling for live metrics
+
+ML feature store
+
+Feast / Tecton or custom Redis+S3
+
+Feature vectors
+
+Tied to model lifecycle
+
+
+
+
+
+6. Data Quality & Ingestion Rules
+
+6.1 Validation Rules
+
+
+
+Rule ID
+
+Rule Description
+
+Severity
+
+Action on Fail
+
+DQ-001
+
+pins_down ≤ pins_before for every roll
+
+CRITICAL
+
+Reject row; raise INGESTION_ERROR
+
+DQ-002
+
+sum(pins_down) per frame ≤ 10 unless foul or 10th frame
+
+CRITICAL
+
+Reject; flag for manual review
+
+DQ-003
+
+recorded_at strictly increases within same game
+
+HIGH
+
+Reject; log timestamp inversion
+
+DQ-004
+
+frame_number between 1 and 10 inclusive
+
+CRITICAL
+
+Reject
+
+DQ-005
+
+roll_number ≤ 2 for frames 1–9 (unless strike on r1)
+
+CRITICAL
+
+Reject
+
+DQ-006
+
+game scratch_score consistent with frame_score sum
+
+HIGH
+
+Flag discrepancy; hold as PENDING
+
+DQ-007
+
+Duplicate detection: same (player_id, match_id, game_number) combo
+
+CRITICAL
+
+Reject duplicate; keep earliest
+
+DQ-008
+
+match_date within season start/end bounds
+
+MEDIUM
+
+Warn; allow if makeup match flagged
+
+DQ-009
+
+ball_speed_mph between 8 and 30 (sensor only)
+
+LOW
+
+Set sensor_quality=PARTIAL; keep
+
+DQ-010
+
+player_id must exist in players table
+
+CRITICAL
+
+Reject; create temp guest record if unknown
+
+
+
+6.2 Missing Data Handling
+
+Missing frames: mark game is_complete=FALSE; exclude from averages until complete; flag in match_events as INCOMPLETE_GAME.
+
+Sensor data absent: store manual pins_down only; sensor_quality=MISSING; all sensor-derived metrics become NULL — do not impute.
+
+Makeup matches: status='MAKEUP_PENDING'; excluded from standings until verified_at is set.
+
+Absent player/team (forfeit): insert game with scratch_score=0, add match_event FORFEIT; flag in scorecard.
+
+
+
+6.3 Source-of-Truth Rules
+
+PRIORITY ORDER: Verified Scorecard > Sensor Data > Manual Entry > Estimated/Imputed.
+
+If scorecard.override_active=TRUE, ALL sensor data for that match is superseded.
+
+Sensor overwrites manual only when sensor_quality=GOOD AND scorecard not yet verified.
+
+Any conflict between sensor and manual that exceeds 5-pin tolerance triggers a CONFLICT event in ingestion_error_log and halts score finalisation.
+
+
+
+6.4 Ingestion Error Log Schema
+
+Column
+
+Type
+
+Notes
+
+error_id
+
+UUID PK
+
+Auto-generated
+
+source_table
+
+VARCHAR(80)
+
+e.g. 'rolls', 'games'
+
+source_record_id
+
+UUID
+
+The offending record ID
+
+error_code
+
+VARCHAR(20)
+
+DQ-001 through DQ-010 + custom
+
+error_severity
+
+VARCHAR(10)
+
+CRITICAL / HIGH / MEDIUM / LOW
+
+error_message
+
+TEXT
+
+Human-readable description
+
+raw_payload
+
+JSONB
+
+Original inbound data snapshot
+
+ingested_at
+
+TIMESTAMPTZ
+
+When the record arrived
+
+resolved_at
+
+TIMESTAMPTZ
+
+NULL until resolved
+
+resolved_by
+
+UUID FK users
+
+NULL until resolved
+
+resolution_note
+
+TEXT
+
+How it was fixed
+
+
+
+
+
+7. Privacy, Permissioning & PII
+
+7.1 PII Fields
+
+
+
+Field
+
+Table
+
+PII Class
+
+Handling
+
+full_name
+
+players
+
+HIGH
+
+Encrypt at rest (AES-256); decrypt only for COACH / ADMIN roles
+
+email
+
+players
+
+HIGH
+
+SHA-256 hash stored; plaintext in vault only
+
+phone
+
+players
+
+HIGH
+
+Encrypted; masked as ***-***-1234 in all app layers
+
+date_of_birth
+
+players
+
+MEDIUM
+
+Store full DOB in encrypted column; expose year only in public API
+
+usbc_member_id
+
+players
+
+MEDIUM
+
+Internal use; never in public leaderboards
+
+raw_image_url
+
+scorecards
+
+LOW
+
+Presigned S3 URLs with 1hr expiry; accessible to ADMIN only
+
+coach notes
+
+practice_sessions
+
+MEDIUM
+
+Visible to COACH role + player themselves only
+
+
+
+7.2 Role-Based Access Control
+
+
+
+Role
+
+Access Level
+
+Restricted From
+
+PUBLIC / Leaderboard
+
+Aggregated stats, display_name, team, season rank
+
+All PII, raw rolls, sensor data, coach notes
+
+PLAYER (self)
+
+Own full profile, own raw game/roll data, own practice notes
+
+Other players' PII, coach notes for others
+
+COACH
+
+Assigned players' full stats including practice sessions and coach notes, roll-level sensor data
+
+Players not on their roster, other coaches' notes
+
+TEAM_CAPTAIN
+
+Team roster, team match history, team aggregate stats
+
+Individual player PII, sensor details
+
+LEAGUE_SECRETARY
+
+All match and scorecard data for their league; ingestion errors for their league
+
+Cross-league data, PII fields beyond display_name
+
+ADMIN
+
+Full access to all tables including PII (logged)
+
+Nothing — all access is audit-logged
+
+DATA_ENGINEER
+
+Schema management, ingestion pipeline, error logs
+
+PII in plaintext (view encrypted columns only)
+
+
+
+
+
+8. Example SQL DDL — Core Tables
+
+The following CREATE TABLE statements target PostgreSQL 15. Adapt UUID generation and JSONB to your target platform (Snowflake: VARIANT; BigQuery: JSON STRING).
+
+
+
+players
+
+CREATE TABLE players (
+
+  player_id        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+  usbc_member_id   VARCHAR(20) UNIQUE,
+
+  display_name     VARCHAR(80) NOT NULL,
+
+  full_name        BYTEA,            -- AES-256 encrypted
+
+  email_hash       CHAR(64),         -- SHA-256
+
+  date_of_birth    DATE,
+
+  gender           VARCHAR(20),
+
+  handed           CHAR(1) CHECK (handed IN ('R','L')),
+
+  home_venue_id    UUID REFERENCES venues(venue_id),
+
+  coach_id         UUID REFERENCES coaches(coach_id),
+
+  status           VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+
+  created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+  updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+
+);
+
+CREATE INDEX idx_players_display ON players(display_name);
+
+CREATE INDEX idx_players_status   ON players(status);
+
+
+
+teams
+
+CREATE TABLE teams (
+
+  team_id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+  team_name       VARCHAR(100) NOT NULL,
+
+  league_id       UUID NOT NULL REFERENCES leagues(league_id),
+
+  season_id       UUID NOT NULL REFERENCES seasons(season_id),
+
+  captain_player_id UUID REFERENCES players(player_id),
+
+  status          VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+  UNIQUE (team_name, league_id, season_id)
+
+);
+
+CREATE INDEX idx_teams_season ON teams(season_id, league_id);
+
+
+
+games
+
+CREATE TABLE games (
+
+  game_id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+  match_id         UUID NOT NULL REFERENCES matches(match_id),
+
+  player_id        UUID NOT NULL REFERENCES players(player_id),
+
+  team_id          UUID NOT NULL REFERENCES teams(team_id),
+
+  game_number      INT NOT NULL CHECK (game_number > 0),
+
+  lane_id          UUID REFERENCES lanes(lane_id),
+
+  lane_session_id  UUID REFERENCES lane_sessions(lane_session_id),
+
+  scratch_score    INT CHECK (scratch_score BETWEEN 0 AND 300),
+
+  handicap_applied INT NOT NULL DEFAULT 0,
+
+  final_score      INT GENERATED ALWAYS AS (scratch_score + handicap_applied) STORED,
+
+  is_complete      BOOLEAN NOT NULL DEFAULT FALSE,
+
+  avg_at_game_start DECIMAL(6,2),
+
+  start_ts         TIMESTAMPTZ,
+
+  end_ts           TIMESTAMPTZ,
+
+  UNIQUE (match_id, player_id, game_number)
+
+);
+
+CREATE INDEX idx_games_player_date ON games(player_id, start_ts DESC);
+
+CREATE INDEX idx_games_match       ON games(match_id);
+
+CREATE INDEX idx_games_complete    ON games(player_id) WHERE is_complete = TRUE;
+
+
+
+frames
+
+CREATE TABLE frames (
+
+  frame_id        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+  game_id         UUID NOT NULL REFERENCES games(game_id),
+
+  frame_number    INT NOT NULL CHECK (frame_number BETWEEN 1 AND 10),
+
+  frame_score     INT,
+
+  running_total   INT,
+
+  is_strike       BOOLEAN NOT NULL DEFAULT FALSE,
+
+  is_spare        BOOLEAN NOT NULL DEFAULT FALSE,
+
+  is_split        BOOLEAN NOT NULL DEFAULT FALSE,
+
+  split_converted BOOLEAN,
+
+  open_frame      BOOLEAN NOT NULL DEFAULT FALSE,
+
+  spare_type      VARCHAR(20),
+
+  fill_balls      INT DEFAULT 0,
+
+  UNIQUE (game_id, frame_number),
+
+  CONSTRAINT chk_spare_xor_strike CHECK (NOT (is_strike AND is_spare))
+
+);
+
+CREATE INDEX idx_frames_game ON frames(game_id, frame_number);
+
+
+
+rolls
+
+CREATE TABLE rolls (
+
+  roll_id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+  frame_id        UUID NOT NULL REFERENCES frames(frame_id),
+
+  game_id         UUID NOT NULL REFERENCES games(game_id),
+
+  player_id       UUID NOT NULL REFERENCES players(player_id),
+
+  roll_number     INT NOT NULL CHECK (roll_number BETWEEN 1 AND 3),
+
+  pins_before     INT NOT NULL CHECK (pins_before BETWEEN 0 AND 10),
+
+  pins_down       INT NOT NULL CHECK (pins_down BETWEEN 0 AND 10),
+
+  pins_after      INT NOT NULL GENERATED ALWAYS AS (pins_before - pins_down) STORED,
+
+  foul_flag       BOOLEAN NOT NULL DEFAULT FALSE,
+
+  ball_speed_mph  DECIMAL(5,2),
+
+  rev_rate_rpm    DECIMAL(6,2),
+
+  entry_angle_deg DECIMAL(5,2),
+
+  pocket_hit      BOOLEAN,
+
+  sensor_quality  VARCHAR(20) DEFAULT 'MISSING',
+
+  equipment_id    UUID REFERENCES equipment(equipment_id),
+
+  recorded_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+  CONSTRAINT chk_pins_valid CHECK (pins_down <= pins_before)
+
+);
+
+CREATE INDEX idx_rolls_game    ON rolls(game_id, frame_id, roll_number);
+
+CREATE INDEX idx_rolls_player  ON rolls(player_id, recorded_at DESC);
+
+CREATE INDEX idx_rolls_sensor  ON rolls(sensor_quality) WHERE sensor_quality != 'MISSING';
+
+
+
+player_season_agg
+
+CREATE TABLE player_season_agg (
+
+  agg_id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+  player_id         UUID NOT NULL REFERENCES players(player_id),
+
+  season_id         UUID NOT NULL REFERENCES seasons(season_id),
+
+  games_played      INT NOT NULL DEFAULT 0,
+
+  total_pins        BIGINT NOT NULL DEFAULT 0,
+
+  avg_scratch       DECIMAL(6,2),
+
+  median_scratch    DECIMAL(6,2),
+
+  stddev_scratch    DECIMAL(6,2),
+
+  best_game         INT,
+
+  best_series       INT,
+
+  strike_rate       DECIMAL(5,4),
+
+  spare_rate        DECIMAL(5,4),
+
+  split_conv_rate   DECIMAL(5,4),
+
+  elo_rating        DECIMAL(8,2) DEFAULT 1500,
+
+  form_index_ewma   DECIMAL(6,2),
+
+  clutch_index      DECIMAL(6,4),
+
+  lane_bias_index   DECIMAL(6,4),
+
+  last_refreshed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+  UNIQUE (player_id, season_id)
+
+);
+
+
+
+
+
+9. Five Example Analytical SQL Queries
+
+
+
+Query 1: Per-Player Recent Trend — Last 10 Games EWMA
+
+-- EWMA form index for all active players, last 10 completed games
+
+WITH game_ranked AS (
+
+  SELECT g.player_id,
+
+         g.scratch_score,
+
+         m.match_date,
+
+         ROW_NUMBER() OVER (PARTITION BY g.player_id
+
+                             ORDER BY m.match_date DESC, g.game_number DESC) AS rn
+
+  FROM games g
+
+  JOIN matches m USING (match_id)
+
+  WHERE g.is_complete = TRUE
+
+),
+
+weighted AS (
+
+  SELECT player_id,
+
+         scratch_score,
+
+         rn,
+
+         0.3 * POWER(0.7, rn - 1) AS weight   -- α=0.3
+
+  FROM game_ranked WHERE rn <= 10
+
+)
+
+SELECT p.display_name,
+
+       ROUND(SUM(w.scratch_score * w.weight) /
+
+             SUM(w.weight), 2)       AS form_index_ewma,
+
+       COUNT(*)                       AS games_in_window
+
+FROM weighted w
+
+JOIN players p USING (player_id)
+
+GROUP BY p.display_name
+
+ORDER BY form_index_ewma DESC;
+
+
+
+Query 2: Team Standings — League Points + Tiebreakers
+
+-- UBL standings: primary = total match points, then total pins
+
+SELECT
+
+  t.team_name,
+
+  SUM(CASE WHEN m.home_team_id = t.team_id THEN m.home_points
+
+           ELSE m.away_points END)           AS total_points,
+
+  COUNT(CASE WHEN (m.home_team_id = t.team_id AND m.home_points >
+
+                   m.away_points) OR
+
+                  (m.away_team_id = t.team_id AND m.away_points >
+
+                   m.home_points) THEN 1 END) AS wins,
+
+  COUNT(CASE WHEN (m.home_team_id = t.team_id AND m.home_points <
+
+                   m.away_points) OR
+
+                  (m.away_team_id = t.team_id AND m.away_points <
+
+                   m.home_points) THEN 1 END) AS losses,
+
+  SUM(g.scratch_score)                        AS total_pins  -- tiebreaker
+
+FROM teams t
+
+JOIN matches m ON m.home_team_id = t.team_id
+
+              OR m.away_team_id  = t.team_id
+
+JOIN games g ON g.match_id = m.match_id AND g.team_id = t.team_id
+
+WHERE m.status = 'COMPLETE'
+
+  AND t.season_id = :season_id
+
+GROUP BY t.team_id, t.team_name
+
+ORDER BY total_points DESC, total_pins DESC;
+
+
+
+Query 3: Clutch Performance — Last-Frame & Match-Deciding Games
+
+-- Clutch index: avg score in match-deciding games vs overall avg
+
+WITH player_overall AS (
+
+  SELECT player_id,
+
+         AVG(scratch_score) AS overall_avg
+
+  FROM games WHERE is_complete = TRUE
+
+  GROUP BY player_id
+
+),
+
+clutch_games AS (
+
+  SELECT g.player_id,
+
+         AVG(g.scratch_score) AS clutch_avg
+
+  FROM games g
+
+  JOIN matches m USING (match_id)
+
+  WHERE g.is_complete = TRUE
+
+  -- Deciding game = match won/lost by ≤ 1 point and this game was last
+
+    AND g.game_number = (SELECT MAX(game_number) FROM games g2
+
+                          WHERE g2.match_id = g.match_id
+
+                            AND g2.player_id = g.player_id)
+
+    AND ABS(m.home_points - m.away_points) <= 1
+
+  GROUP BY g.player_id
+
+)
+
+SELECT p.display_name,
+
+       ROUND(c.clutch_avg, 2)               AS clutch_avg,
+
+       ROUND(o.overall_avg, 2)              AS overall_avg,
+
+       ROUND(c.clutch_avg / o.overall_avg, 4) AS clutch_index
+
+FROM clutch_games c
+
+JOIN player_overall o USING (player_id)
+
+JOIN players p USING (player_id)
+
+ORDER BY clutch_index DESC;
+
+
+
+Query 4: Split Conversion Leaders — Season
+
+SELECT p.display_name,
+
+       COUNT(*) FILTER (WHERE f.is_split)            AS splits_faced,
+
+       COUNT(*) FILTER (WHERE f.split_converted)     AS splits_converted,
+
+       ROUND(
+
+         COUNT(*) FILTER (WHERE f.split_converted) * 100.0 /
+
+         NULLIF(COUNT(*) FILTER (WHERE f.is_split), 0),
+
+       1) AS split_pct
+
+FROM frames f
+
+JOIN games g USING (game_id)
+
+JOIN matches m USING (match_id)
+
+JOIN players p ON g.player_id = p.player_id
+
+WHERE m.season_id = :season_id
+
+  AND g.is_complete = TRUE
+
+GROUP BY p.player_id, p.display_name
+
+HAVING COUNT(*) FILTER (WHERE f.is_split) >= 5   -- min 5 splits for ranking
+
+ORDER BY split_pct DESC, splits_converted DESC;
+
+
+
+Query 5: Lane Bias Detection — Controlling for Player Ability
+
+-- Identify lanes where players consistently over/underperform vs their average
+
+WITH player_lane_avg AS (
+
+  SELECT g.player_id,
+
+         g.lane_id,
+
+         AVG(g.scratch_score)   AS lane_avg,
+
+         COUNT(*)                AS games_on_lane
+
+  FROM games g
+
+  WHERE g.is_complete = TRUE AND g.lane_id IS NOT NULL
+
+  GROUP BY g.player_id, g.lane_id
+
+  HAVING COUNT(*) >= 4
+
+),
+
+player_overall AS (
+
+  SELECT player_id, AVG(scratch_score) AS overall_avg
+
+  FROM games WHERE is_complete = TRUE
+
+  GROUP BY player_id
+
+)
+
+SELECT
+
+  l.lane_number,
+
+  v.venue_name,
+
+  ROUND(AVG(pla.lane_avg - po.overall_avg), 2) AS avg_lane_bias,
+
+  COUNT(DISTINCT pla.player_id)                 AS distinct_players,
+
+  SUM(pla.games_on_lane)                        AS total_games
+
+FROM player_lane_avg pla
+
+JOIN player_overall po USING (player_id)
+
+JOIN lanes l ON pla.lane_id = l.lane_id
+
+JOIN venues v ON l.venue_id = v.venue_id
+
+GROUP BY l.lane_id, l.lane_number, v.venue_name
+
+HAVING COUNT(DISTINCT pla.player_id) >= 3
+
+ORDER BY ABS(AVG(pla.lane_avg - po.overall_avg)) DESC;
+
+
+
+
+
+10. Dashboard & Visualization Recommendations
+
+
+
+Dashboard 1: Player Profile Dashboard
+
+Central view for individual player performance, trends and development.
+
+
+
+Rolling Average Line Chart: last 20 games scratch score + 5-game EWMA overlay. X=game date, Y=score. Highlights slumps and peaks at a glance.
+
+Strike / Spare / Open Breakdown Donut: season-level frame outcome distribution in three segments. Colour-coded green/amber/red. Drills to frame-level detail.
+
+Per-Frame Score Heatmap: 10 columns (frames) × N rows (games). Cell colour = frame score percentile. Instantly reveals consistent weak frames (e.g., frame 9 spare shooting).
+
+
+
+Dashboard 2: Team Standings Dashboard
+
+League-wide competitive overview with rankings and head-to-head records.
+
+
+
+Standings Table Widget: rank, team name, W-L, points, total pins, +/- vs prior week. Sortable. Click row to drill to team profile.
+
+Team Trend Lines: multi-line chart — one line per team, weekly cumulative points. Reveals momentum shifts mid-season.
+
+Head-to-Head Matrix: N×N heatmap grid of teams; cell = points won in head-to-head. Identifies persistent rivalries or mismatches.
+
+
+
+Dashboard 3: Match Live Scorecard
+
+Real-time match view during bowling sessions.
+
+
+
+Live Rolling Scoresheet: per-player frame-by-frame grid updating via WebSocket. Strikes/spares shown as X/_ symbols.
+
+Momentum Bar Chart: running pin differential between home and away team per game. Shifts from blue to red as lead changes.
+
+Player vs Season Average Bar: for each active bowler, current game score vs their season average. Instantly shows who is bowling above/below form.
+
+
+
+Dashboard 4: Coach Development Dashboard
+
+Coachable insights for player development — requires sensor data and practice session access.
+
+
+
+Ball Speed & Rev Rate Scatter: one dot per game; colour = scratch score decile. Reveals optimal release window and where deviations correlate with poor scoring.
+
+Spare Type Conversion Funnel: by spare type (single pin, multi-pin, washout) — attempts vs conversions. Prioritises which spare drills are needed.
+
+Frame Consistency Band Chart: mean ± 1 StdDev frame score per frame number. Wide bands flag inconsistency. Overlays practice vs match data.
+
+
+
+Dashboard 5: Season Analytics Summary
+
+End-of-season or mid-season executive overview for league administration.
+
+
+
+Top 10 Averages Leaderboard: horizontal bar chart, men and women separate. Colour = most-improved indicator.
+
+Strike Rate Distribution Histogram: all bowlers on x-axis buckets (0–10%, 10–20%, …, 60%+). Shows league talent distribution.
+
+High Game & High Series Scatter: each bowler as a dot, HGS on x, HGS on y, dot size = games played. Outliers are peak performers.
+
+
+
+Dashboard 6: Lane Intelligence Dashboard
+
+Venue and lane-condition analytics for league managers and coaches.
+
+
+
+Lane Bias Heatmap: lanes on X, player clusters on Y, cell colour = avg deviation from player baseline. Blue=lane plays easy, red=plays hard.
+
+Oil Condition Degradation Line: average scratch score across games ordered by games_on_surface for the same pattern. Visualises carry-down effect.
+
+Home vs Away Split Bar Chart: for each team, home and away average score side by side. Quantifies home advantage.
+
+
+
+10.1 UX Notes
+
+Global filters on every dashboard: Player (multi-select), Team (multi-select), Season (single-select), League/Division, Date Range, Lane.
+
+Drilldown chain: Roll → Frame → Game → Match → Week → Season (breadcrumb trail).
+
+Mobile-first layout: scorecard and live views collapse to vertical card stacks on screens < 768px.
+
+Public leaderboard view excludes all PII; display_name + team only. Toggle between scratch and handicap modes.
+
+
+
+10.2 Alert Rules
+
+
+
+Alert Name
+
+Trigger Condition
+
+Recipient
+
+Channel
+
+EWMA Drop
+
+Player form_index_ewma falls > 15 pins below season average for 3 consecutive games
+
+Player + Coach
+
+Email + in-app
+
+Strike Rate Spike Down
+
+Player strike rate drops > 10pp below their rolling-12-game baseline
+
+Coach
+
+In-app
+
+Split Rate Surge
+
+Split rate > 2× season average in last 5 games
+
+Coach + Player
+
+Email
+
+New High Game / Series
+
+Player sets personal best scratch game or series
+
+Player + League Secretary
+
+Push notification
+
+Data Quality Alert
+
+More than 3 CRITICAL ingestion errors in one match
+
+Data Engineer
+
+Slack / PagerDuty
+
+Match Result Not Verified
+
+scorecard.verified_at still NULL > 48h after match_date
+
+League Secretary
+
+Email
+
+Standings Change
+
+Team rank changes by 2+ positions after a match week
+
+Team Captain
+
+Email + in-app
+
+
+
+
+
+Appendix: Implementation Notes
+
+Real-Time vs Batch Ingestion
+
+
+
+Pipeline
+
+Technology
+
+Latency Target
+
+Use Case
+
+Lane sensor stream
+
+Kafka → Flink / Spark Streaming → ClickHouse
+
+< 2 sec
+
+Live scorecard, ball speed display
+
+Manual scorecard entry
+
+REST API → PostgreSQL → CDC (Debezium)
+
+< 5 sec
+
+Official score entry, error validation
+
+Batch standings update
+
+dbt + Airflow, post-match nightly
+
+< 30 min after last game
+
+Standings, aggregates, EWMA
+
+ML feature refresh
+
+dbt feature models → Feast
+
+Nightly
+
+Form index, lane bias, Elo updates
+
+Historical backfill
+
+Python Spark job, one-time + weekly
+
+Hours
+
+Importing season history from PDFs
+
+
+
+LLM Query Interface Guidance
+
+When using this framework to guide an LLM for analysis, structure prompts as:
+
+Always specify season_id and player_id or team_id to scope queries.
+
+Reference metric definitions from Section 4 by name (e.g., 'calculate clutch_index as defined').
+
+Specify the aggregation level required (per game / per season / per frame).
+
+For dashboard generation, reference the dashboard name from Section 10 to get consistent chart specifications.
+
+For data quality checks, reference the DQ-XXX rule codes from Section 6.
+
+
+
+Document Version 1.0  |  Generated for UBL Season 16  |  March 2026
+
