@@ -33,9 +33,9 @@ export default function PlayerDashboard() {
         totalMatches: 0,
         seasonAvg: 0,
         totalPins: 0,
-        f1to6Avg: 0,
-        f7to10Avg: 0,
-        fatigueLevel: 0
+        historicalFrameAvgs: Array(10).fill(0),
+        recentGameFrames: Array(10).fill(0),
+        fatigueFrames: [] as number[]
     });
 
     useEffect(() => {
@@ -87,42 +87,44 @@ export default function PlayerDashboard() {
                     // 3. Fetch Match Stats
                     const { data: scoresData } = await supabase
                         .from('scores')
-                        .select('total_score, frame_scores')
+                        .select('total_score, frame_scores, updated_at')
                         .eq('player_id', user.id);
 
                     if (scoresData && scoresData.length > 0 && isMounted) {
                         const totalPins = scoresData.reduce((sum, s) => sum + (s.total_score || 0), 0);
                         const seasonAvg = Math.round(totalPins / scoresData.length);
 
-                        let f1to6Total = 0;
-                        let f1to6Count = 0;
-                        let f7to10Total = 0;
-                        let f7to10Count = 0;
+                        const totalFrameScores = new Array(10).fill(0);
+                        const frameCounts = new Array(10).fill(0);
+
+                        const sortedScores = [...scoresData].sort((a, b) => new Date(b.updated_at || 0).getTime() - new Date(a.updated_at || 0).getTime());
 
                         scoresData.forEach(s => {
-                            const frames = s.frame_scores as Array<{ frame: number, score: number }>;
-                            frames.forEach(f => {
-                                if (f.frame <= 6) {
-                                    f1to6Total += f.score;
-                                    f1to6Count++;
-                                } else {
-                                    f7to10Total += f.score;
-                                    f7to10Count++;
-                                }
-                            });
+                            const frames = (s.frame_scores as any[] || []).map(f => typeof f === 'object' && f !== null ? (f.score || 0) : Number(f));
+                            for (let i = 0; i < Math.min(10, frames.length); i++) {
+                                totalFrameScores[i] += frames[i];
+                                frameCounts[i]++;
+                            }
                         });
 
-                        const f1to6Avg = f1to6Count > 0 ? Math.round(f1to6Total / (f1to6Count / 6)) : 0;
-                        const f7to10Avg = f7to10Count > 0 ? Math.round(f7to10Total / (f7to10Count / 4)) : 0;
-                        const fatigueLevel = f1to6Avg > 0 ? Math.round(((f1to6Avg - f7to10Avg) / f1to6Avg) * 100) : 0;
+                        const historicalFrameAvgs = totalFrameScores.map((t, i) => frameCounts[i] > 0 ? Math.round(t / frameCounts[i]) : 0);
+                        
+                        const mostRecentScores = sortedScores[0];
+                        const recentGameFrames = (mostRecentScores?.frame_scores as any[] || []).map(f => typeof f === 'object' && f !== null ? (f.score || 0) : Number(f));
+                        while (recentGameFrames.length < 10) recentGameFrames.push(0);
+
+                        const fatigueFrames = recentGameFrames.map((score, i) => {
+                            if (frameCounts[i] > 0 && score < historicalFrameAvgs[i] - 1) return i;
+                            return -1;
+                        }).filter(i => i !== -1);
 
                         setStats({
                             totalMatches: scoresData.length,
                             seasonAvg,
                             totalPins,
-                            f1to6Avg,
-                            f7to10Avg,
-                            fatigueLevel: Math.max(0, fatigueLevel)
+                            historicalFrameAvgs,
+                            recentGameFrames,
+                            fatigueFrames
                         });
                     }
                 }
@@ -237,61 +239,63 @@ export default function PlayerDashboard() {
                     {/* LEFT COLUMN: Analytics */}
                     <div className="lg:col-span-2 space-y-8">
 
-                        {/* Frame 7 Fatigue Gauge */}
+                        {/* Focus Fatigue Engine */}
                         <section className="bg-navy border border-white/5 rounded-2xl p-8 relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 p-8 opacity-[0.05] pointer-events-none">
-                                <svg className="w-64 h-64 -rotate-90" viewBox="0 0 100 100">
-                                    <circle cx="50" cy="50" r="45" fill="none" stroke="white" strokeWidth="2" strokeDasharray="282.7" strokeDashoffset={282.7 * (1 - stats.fatigueLevel / 100)} />
-                                </svg>
-                            </div>
-
                             <div className="relative z-10">
                                 <h2 className="font-ui text-2xl font-bold tracking-[4px] text-white mb-6 uppercase flex items-center gap-3">
                                     <span className="w-2 h-2 rounded-full bg-strike shadow-[0_0_8px_#E82030]" />
-                                    Focus Fatigue Analysis
+                                    Focus Engine
                                 </h2>
+                                
+                                <p className="text-gray-mid text-sm leading-relaxed mb-6 font-medium">
+                                    Compare your latest game against your personal baseline. Frames dipping below your historical average are flagged to highlight potential pressure gaps or focus loss.
+                                </p>
 
-                                <div className="flex flex-col md:flex-row items-center gap-12">
-                                    <div className="relative w-48 h-48 flex items-center justify-center">
-                                        <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                                            <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-                                            <circle
-                                                cx="50" cy="50" r="40" fill="none"
-                                                stroke="url(#strikeGradient)" strokeWidth="8" strokeLinecap="round"
-                                                strokeDasharray="251.2"
-                                                strokeDashoffset={251.2 * (1 - stats.fatigueLevel / 100)}
-                                                className="transition-all duration-1000 ease-out"
-                                            />
-                                            <defs>
-                                                <linearGradient id="strikeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                                    <stop offset="0%" stopColor="#E82030" />
-                                                    <stop offset="100%" stopColor="#D42080" />
-                                                </linearGradient>
-                                            </defs>
-                                        </svg>
-                                        <div className="absolute flex flex-col items-center bg-navy-dark w-32 h-32 rounded-full border border-white/5 shadow-inner justify-center">
-                                            <span className="font-wordmark text-5xl leading-none text-white">{stats.fatigueLevel}%</span>
-                                            <span className="font-ui text-[10px] uppercase tracking-widest text-strike mt-1">Dip Level</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex-1 space-y-4">
-                                        <p className="text-gray-mid text-lg leading-relaxed">
-                                            Your <span className="text-white font-bold uppercase underline decoration-strike/50 underline-offset-4 tracking-tighter">Frame 7 Crisis</span> is detected.
-                                            Strike probability drops significantly as physical fatigue sets in.
-                                        </p>
-                                        <div className="grid grid-cols-2 gap-4 pt-4">
-                                            <div className="bg-navy-dark p-4 rounded-lg border border-white/5">
-                                                <span className="block font-ui text-[10px] text-gray-mid uppercase mb-1">Avg Score F1-6</span>
-                                                <span className="font-wordmark text-2xl text-emerald-400">{stats.f1to6Avg || '---'}</span>
+                                <div className="grid grid-cols-5 md:grid-cols-10 gap-3">
+                                    {stats.historicalFrameAvgs.map((avg, i) => {
+                                        const recent = stats.recentGameFrames[i] || 0;
+                                        const isDip = stats.fatigueFrames.includes(i);
+                                        
+                                        return (
+                                            <div key={i} className={`flex flex-col items-center bg-navy-dark border ${isDip ? 'border-strike border-b-2 shadow-[0_4px_15px_rgba(224,31,61,0.15)]' : 'border-white/5'} rounded-lg p-3 overflow-hidden relative transition-all`}>
+                                                <span className="font-ui text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold flex items-center gap-1">
+                                                    {isDip && <span className="w-1.5 h-1.5 rounded-full bg-strike animate-pulse"></span>}
+                                                    F{i+1}
+                                                </span>
+                                                <div className="text-center w-full">
+                                                    <div className={`font-wordmark text-2xl mb-1 ${isDip ? 'text-strike' : 'text-white'}`}>{recent}</div>
+                                                    <div className="w-full h-px bg-white/10 my-2"></div>
+                                                    <div className="font-sans text-[11px] text-gray-400 font-bold" title="Historical Average">
+                                                        AVG {avg}
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className="bg-navy-dark p-4 rounded-lg border border-white/5">
-                                                <span className="block font-ui text-[10px] text-gray-mid uppercase mb-1">Avg Score F7-10</span>
-                                                <span className="font-wordmark text-2xl text-strike">{stats.f7to10Avg || '---'}</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        );
+                                    })}
                                 </div>
+                                
+                                {stats.fatigueFrames.length > 0 && (
+                                    <div className="mt-8 p-5 bg-gradient-to-r from-strike/10 to-transparent border-l-4 border-strike rounded-r-xl flex items-start gap-4">
+                                        <div className="text-strike mt-0.5 text-xl">⚠️</div>
+                                        <div>
+                                            <h4 className="font-bold text-white uppercase text-sm mb-1 tracking-wider">Pressure Deviation Detected</h4>
+                                            <p className="text-sm text-gray-300 font-medium">
+                                                In your last match, performance dropped below your established average in <span className="text-white font-bold">Frames {stats.fatigueFrames.map(f => f + 1).join(', ')}</span>. Re-center your focus during these specific intervals!
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+                                {stats.fatigueFrames.length === 0 && stats.totalMatches > 0 && (
+                                    <div className="mt-8 p-5 bg-gradient-to-r from-emerald-500/10 to-transparent border-l-4 border-emerald-500 rounded-r-xl flex items-start gap-4">
+                                        <div className="text-emerald-400 mt-0.5 text-xl">🎯</div>
+                                        <div>
+                                            <h4 className="font-bold text-white uppercase text-sm mb-1 tracking-wider">Focus Locked In</h4>
+                                            <p className="text-sm text-gray-300 font-medium">
+                                                In your last match, your frame performances stayed at or above your personal historical averages. Excellent consistency!
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </section>
 
