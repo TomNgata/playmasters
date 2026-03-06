@@ -123,7 +123,7 @@ export default function CompetitiveDashboard() {
                                             return (
                                                 <tr 
                                                     key={t.id} 
-                                                    className={`hover:bg-gray-800/30 transition-colors ${isPlaymasters ? 'bg-playmasters-red/10 group' : ''}`}
+                                                    className={`transition-all ${isPlaymasters ? 'bg-gradient-to-r from-playmasters-red/30 to-playmasters-red/5 shadow-[0_0_20px_rgba(224,31,61,0.4)] relative z-10 ring-1 ring-playmasters-red/50 group block sm:table-row my-2 sm:my-0 rounded-lg sm:rounded-none overflow-hidden' : 'hover:bg-gray-800/30 border-b border-gray-800/50'}`}
                                                 >
                                                     <td className={`py-4 pr-4 font-black ${index < 3 ? 'text-playmasters-red' : 'text-gray-500'}`}>
                                                         {index + 1}
@@ -156,7 +156,7 @@ export default function CompetitiveDashboard() {
                                 {bowlers.map((b, i) => {
                                     const isPlaymasters = b.team_name.includes('PLAYMASTERS');
                                     return (
-                                        <li key={b.id} className="flex items-center justify-between group">
+                                        <li key={b.id} className={`flex items-center justify-between group p-2 rounded-lg transition-all ${isPlaymasters ? 'bg-playmasters-red/20 ring-1 ring-playmasters-red/50 shadow-[0_0_15px_rgba(224,31,61,0.3)] transform scale-[1.02] z-10 relative' : 'hover:bg-gray-800/30'}`}>
                                             <div className="flex items-center gap-3">
                                                 <span className={`text-xs font-bold w-4 text-right ${i < 3 ? 'text-orange-500' : 'text-gray-600'}`}>
                                                     {i + 1}
