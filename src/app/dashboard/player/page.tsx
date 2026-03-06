@@ -37,10 +37,11 @@ export default function PlayerDashboard() {
         async function fetchUserData() {
             try {
                 const supabase = createClient();
+                // 1. Fetch Profile (use a default or try to get session if it exists)
                 const { data: { user } } = await supabase.auth.getUser();
 
                 if (!user) {
-                    if (isMounted) router.push('/login');
+                    if (isMounted) setLoading(false);
                     return;
                 }
 
@@ -88,11 +89,7 @@ export default function PlayerDashboard() {
         return () => { isMounted = false; };
     }, [router]);
 
-    const handleLogout = async () => {
-        const supabase = createClient();
-        await supabase.auth.signOut();
-        window.location.href = '/login';
-    };
+
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -164,17 +161,6 @@ export default function PlayerDashboard() {
                             <p className="font-wordmark text-5xl text-strike leading-none">184</p>
                         </div>
                         <div className="h-12 w-px bg-white/10" />
-                        <button
-                            onClick={handleLogout}
-                            className="group flex flex-col items-center gap-1"
-                        >
-                            <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:border-strike/50 group-hover:bg-strike/10 transition-all">
-                                <svg className="w-5 h-5 text-gray-mid group-hover:text-strike transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                </svg>
-                            </div>
-                            <span className="font-ui text-[10px] uppercase tracking-widest text-gray-mid group-hover:text-strike">Sign Out</span>
-                        </button>
                     </div>
                 </header>
 

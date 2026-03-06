@@ -27,17 +27,6 @@ export default function Navbar() {
                     <Link href="/standings" className="px-8 hover:text-white transition-colors border-r border-white/5 h-full flex items-center hover:bg-white/[0.02]">Standings</Link>
                     <Link href="/merch" className="px-8 hover:text-white transition-colors h-full flex items-center hover:bg-white/[0.02]">Merch Kit</Link>
                 </div>
-
-                {/* Status & CTA */}
-                <div className="px-8 flex items-center gap-6 h-full border-l border-white/5 bg-navy-dark/40">
-                    <div className="flex flex-col items-end leading-none font-ui uppercase">
-                        <span className="text-strike text-[10px] font-extrabold tracking-widest">Live Status</span>
-                        <span className="text-white text-xs tracking-widest">Westgate Active</span>
-                    </div>
-                    <Link href="/dashboard/player" className="px-6 py-2 bg-strike hover:bg-strike-deep text-white font-ui text-lg tracking-widest uppercase transition-all shadow-[0_4px_0_theme(colors.strike-deep)] active:translate-y-[2px] active:shadow-none">
-                        Log Score
-                    </Link>
-                </div>
             </div>
         </nav>
     );
