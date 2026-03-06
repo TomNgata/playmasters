@@ -35,7 +35,10 @@ export default function PlayerDashboard() {
         totalPins: 0,
         historicalFrameAvgs: Array(10).fill(0),
         recentGameFrames: Array(10).fill(0),
-        fatigueFrames: [] as number[]
+        fatigueFrames: [] as number[],
+        recentGameScores: [] as number[],
+        recentGameDates: [] as string[],
+        heatmapData: [] as number[][]
     });
 
     useEffect(() => {
@@ -118,13 +121,29 @@ export default function PlayerDashboard() {
                             return -1;
                         }).filter(i => i !== -1);
 
+                        // Form Trend Data (Last 10 Games)
+                        const recent10 = sortedScores.slice(0, 10).reverse();
+                        const recentGameScores = recent10.map(s => s.total_score || 0);
+                        const recentGameDates = recent10.map(s => new Date(s.updated_at || Date.now()).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }));
+
+                        // Heatmap Data (Last 5 Games, 10 Frames)
+                        const recent5 = sortedScores.slice(0, 5);
+                        const heatmapData = recent5.map(s => {
+                            const f = (s.frame_scores as any[] || []).map(frame => typeof frame === 'object' && frame !== null ? (frame.score || 0) : Number(frame));
+                            while (f.length < 10) f.push(0);
+                            return f;
+                        });
+
                         setStats({
                             totalMatches: scoresData.length,
                             seasonAvg,
                             totalPins,
                             historicalFrameAvgs,
                             recentGameFrames,
-                            fatigueFrames
+                            fatigueFrames,
+                            recentGameScores,
+                            recentGameDates,
+                            heatmapData
                         });
                     }
                 }
@@ -297,6 +316,108 @@ export default function PlayerDashboard() {
                                     </div>
                                 )}
                             </div>
+                        </section>
+
+                        {/* NEW: Form Trend (Rolling Average) */}
+                        <section className="bg-navy border border-white/5 rounded-2xl p-8 relative overflow-hidden group">
+                            <h2 className="font-ui text-2xl font-bold tracking-[4px] text-white mb-6 uppercase flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <span className="w-2 h-2 rounded-full bg-bat-blue shadow-[0_0_8px_#3B82F6]" />
+                                    Form Trend (Last 10)
+                                </div>
+                            </h2>
+                            <p className="text-gray-mid text-sm leading-relaxed mb-6 font-medium">
+                                Visualizing your pacing and momentum over the last 10 games recorded on the platform.
+                            </p>
+                            
+                            {stats.recentGameScores.length > 0 ? (
+                                <div className="flex items-end gap-2 h-40 mt-8 pb-4 border-b border-white/10 relative">
+                                    {/* Average Line */}
+                                    <div className="absolute top-0 bottom-0 left-0 right-0 flex items-center pointer-events-none">
+                                        <div className="w-full border-t border-dashed border-strike/50 absolute" style={{ bottom: `${(stats.seasonAvg / 300) * 100}%` }}></div>
+                                        <span className="absolute right-0 text-[10px] font-ui text-strike bg-navy px-2" style={{ bottom: `calc(${(stats.seasonAvg / 300) * 100}% - 6px)` }}>AVG {stats.seasonAvg}</span>
+                                    </div>
+
+                                    {stats.recentGameScores.map((score, i) => {
+                                        const heightPct = (score / 300) * 100;
+                                        const isAboveAvg = score >= stats.seasonAvg;
+                                        return (
+                                            <div key={i} className="flex-1 flex flex-col items-center justify-end group">
+                                                <div className="text-[10px] font-wordmark text-white mb-2 opacity-0 group-hover:opacity-100 transition-opacity absolute -top-6 bg-navy-dark px-2 py-1 rounded border border-white/10 z-10">{score}</div>
+                                                <div 
+                                                    className={`w-full rounded-t-sm transition-all duration-500 ease-out group-hover:opacity-80 ${isAboveAvg ? 'bg-bat-blue' : 'bg-white/20'}`}
+                                                    style={{ height: `${heightPct}%` }}
+                                                ></div>
+                                                <div className="mt-2 text-[9px] font-ui text-gray-500 uppercase rotate-45 origin-left whitespace-nowrap">{stats.recentGameDates[i]}</div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <div className="h-40 flex items-center justify-center border-2 border-dashed border-white/5 rounded-xl">
+                                    <p className="text-gray-dark font-ui uppercase text-sm tracking-widest">No recent games logged</p>
+                                </div>
+                            )}
+                        </section>
+
+                        {/* NEW: Per-Frame Performance Heatmap */}
+                        <section className="bg-navy border border-white/5 rounded-2xl p-8 relative overflow-hidden group">
+                            <h2 className="font-ui text-2xl font-bold tracking-[4px] text-white mb-6 uppercase flex items-center gap-3">
+                                <span className="w-2 h-2 rounded-full bg-ball-pink shadow-[0_0_8px_#EC4899]" />
+                                Performance Heatmap
+                            </h2>
+                            <p className="text-gray-mid text-sm leading-relaxed mb-6 font-medium">
+                                A 10-frame grid mapping your last 5 matches. Locate consistent weak spots or pressure points across sessions.
+                            </p>
+
+                            {stats.heatmapData.length > 0 ? (
+                                <div className="overflow-x-auto pb-4">
+                                    <div className="min-w-[600px]">
+                                        {/* Header Row */}
+                                        <div className="grid grid-cols-11 gap-1 mb-2">
+                                            <div className="col-span-1"></div>
+                                            {[1,2,3,4,5,6,7,8,9,10].map(f => (
+                                                <div key={f} className="col-span-1 text-center font-ui text-[10px] text-gray-500 uppercase tracking-widest font-bold">F{f}</div>
+                                            ))}
+                                        </div>
+                                        
+                                        {/* Heatmap Rows */}
+                                        <div className="space-y-1 relative">
+                                            {stats.heatmapData.map((frames, rowIdx) => (
+                                                <div key={rowIdx} className="grid grid-cols-11 gap-1 items-center">
+                                                    <div className="col-span-1 font-ui text-[9px] text-gray-400 uppercase tracking-widest text-right pr-2">
+                                                        Match {stats.totalMatches - rowIdx}
+                                                    </div>
+                                                    {frames.map((score, colIdx) => {
+                                                        // Heatmap Color Logic
+                                                        let bgColor = 'bg-white/5'; // <10 points
+                                                        let textColor = 'text-gray-400';
+                                                        if (score >= 20) { bgColor = 'bg-strike/80'; textColor = 'text-white font-bold shadow-sm'; } // Strike/Double territory
+                                                        else if (score >= 10) { bgColor = 'bg-bat-blue/60'; textColor = 'text-white'; } // Spare/Closed frame territory
+                                                        
+                                                        return (
+                                                            <div key={colIdx} className={`col-span-1 h-10 ${bgColor} rounded-sm flex items-center justify-center font-wordmark text-sm ${textColor} transition-colors hover:brightness-125`} title={`Frame ${colIdx+1}: ${score} pins`}>
+                                                                {score}
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            ))}
+
+                                            {/* Legend */}
+                                            <div className="absolute -bottom-8 right-0 flex items-center gap-4">
+                                                <div className="flex items-center gap-1.5 font-ui text-[9px] text-gray-400 uppercase tracking-widest"><div className="w-3 h-3 rounded-sm bg-strike/80"></div> Closed (20+)</div>
+                                                <div className="flex items-center gap-1.5 font-ui text-[9px] text-gray-400 uppercase tracking-widest"><div className="w-3 h-3 rounded-sm bg-bat-blue/60"></div> Mark (10-19)</div>
+                                                <div className="flex items-center gap-1.5 font-ui text-[9px] text-gray-400 uppercase tracking-widest"><div className="w-3 h-3 rounded-sm bg-white/5 border border-white/10"></div> Open (&lt;10)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="h-40 flex items-center justify-center border-2 border-dashed border-white/5 rounded-xl">
+                                    <p className="text-gray-dark font-ui uppercase text-sm tracking-widest">Insufficient data for heatmap</p>
+                                </div>
+                            )}
                         </section>
 
                         {/* Recent Matches Visual List */}
