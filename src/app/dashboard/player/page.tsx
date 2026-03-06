@@ -29,7 +29,14 @@ export default function PlayerDashboard() {
     const [loading, setLoading] = useState(true);
     const [uploadStatus, setUploadStatus] = useState<UploadStatus>('idle');
     const [uploadMessage, setUploadMessage] = useState('');
-    const [fatigueLevel, setFatigueLevel] = useState(34);
+    const [stats, setStats] = useState({
+        totalMatches: 0,
+        seasonAvg: 0,
+        totalPins: 0,
+        f1to6Avg: 0,
+        f7to10Avg: 0,
+        fatigueLevel: 0
+    });
 
     useEffect(() => {
         let isMounted = true;
@@ -75,6 +82,48 @@ export default function PlayerDashboard() {
                             .neq('id', user.id);
 
                         if (teammatesData && isMounted) setTeammates(teammatesData);
+                    }
+
+                    // 3. Fetch Match Stats
+                    const { data: scoresData } = await supabase
+                        .from('scores')
+                        .select('total_score, frame_scores')
+                        .eq('player_id', user.id);
+
+                    if (scoresData && scoresData.length > 0 && isMounted) {
+                        const totalPins = scoresData.reduce((sum, s) => sum + (s.total_score || 0), 0);
+                        const seasonAvg = Math.round(totalPins / scoresData.length);
+
+                        let f1to6Total = 0;
+                        let f1to6Count = 0;
+                        let f7to10Total = 0;
+                        let f7to10Count = 0;
+
+                        scoresData.forEach(s => {
+                            const frames = s.frame_scores as Array<{ frame: number, score: number }>;
+                            frames.forEach(f => {
+                                if (f.frame <= 6) {
+                                    f1to6Total += f.score;
+                                    f1to6Count++;
+                                } else {
+                                    f7to10Total += f.score;
+                                    f7to10Count++;
+                                }
+                            });
+                        });
+
+                        const f1to6Avg = f1to6Count > 0 ? Math.round(f1to6Total / (f1to6Count / 6)) : 0;
+                        const f7to10Avg = f7to10Count > 0 ? Math.round(f7to10Total / (f7to10Count / 4)) : 0;
+                        const fatigueLevel = f1to6Avg > 0 ? Math.round(((f1to6Avg - f7to10Avg) / f1to6Avg) * 100) : 0;
+
+                        setStats({
+                            totalMatches: scoresData.length,
+                            seasonAvg,
+                            totalPins,
+                            f1to6Avg,
+                            f7to10Avg,
+                            fatigueLevel: Math.max(0, fatigueLevel)
+                        });
                     }
                 }
             } catch (err) {
@@ -158,7 +207,7 @@ export default function PlayerDashboard() {
                     <div className="flex items-center gap-8 bg-navy/30 p-4 rounded-xl border border-white/5 backdrop-blur-sm self-start md:self-auto">
                         <div className="text-right">
                             <p className="font-ui text-[10px] text-gray-mid uppercase tracking-[3px] mb-1">Season Avg</p>
-                            <p className="font-wordmark text-5xl text-strike leading-none">184</p>
+                            <p className="font-wordmark text-5xl text-strike leading-none">{stats.seasonAvg || '---'}</p>
                         </div>
                         <div className="h-12 w-px bg-white/10" />
                     </div>
@@ -192,7 +241,7 @@ export default function PlayerDashboard() {
                         <section className="bg-navy border border-white/5 rounded-2xl p-8 relative overflow-hidden group">
                             <div className="absolute top-0 right-0 p-8 opacity-[0.05] pointer-events-none">
                                 <svg className="w-64 h-64 -rotate-90" viewBox="0 0 100 100">
-                                    <circle cx="50" cy="50" r="45" fill="none" stroke="white" strokeWidth="2" strokeDasharray="282.7" strokeDashoffset={282.7 * (1 - fatigueLevel / 100)} />
+                                    <circle cx="50" cy="50" r="45" fill="none" stroke="white" strokeWidth="2" strokeDasharray="282.7" strokeDashoffset={282.7 * (1 - stats.fatigueLevel / 100)} />
                                 </svg>
                             </div>
 
@@ -210,7 +259,7 @@ export default function PlayerDashboard() {
                                                 cx="50" cy="50" r="40" fill="none"
                                                 stroke="url(#strikeGradient)" strokeWidth="8" strokeLinecap="round"
                                                 strokeDasharray="251.2"
-                                                strokeDashoffset={251.2 * (1 - fatigueLevel / 100)}
+                                                strokeDashoffset={251.2 * (1 - stats.fatigueLevel / 100)}
                                                 className="transition-all duration-1000 ease-out"
                                             />
                                             <defs>
@@ -221,7 +270,7 @@ export default function PlayerDashboard() {
                                             </defs>
                                         </svg>
                                         <div className="absolute flex flex-col items-center bg-navy-dark w-32 h-32 rounded-full border border-white/5 shadow-inner justify-center">
-                                            <span className="font-wordmark text-5xl leading-none text-white">{fatigueLevel}%</span>
+                                            <span className="font-wordmark text-5xl leading-none text-white">{stats.fatigueLevel}%</span>
                                             <span className="font-ui text-[10px] uppercase tracking-widest text-strike mt-1">Dip Level</span>
                                         </div>
                                     </div>
@@ -234,11 +283,11 @@ export default function PlayerDashboard() {
                                         <div className="grid grid-cols-2 gap-4 pt-4">
                                             <div className="bg-navy-dark p-4 rounded-lg border border-white/5">
                                                 <span className="block font-ui text-[10px] text-gray-mid uppercase mb-1">Avg Score F1-6</span>
-                                                <span className="font-wordmark text-2xl text-emerald-400">192</span>
+                                                <span className="font-wordmark text-2xl text-emerald-400">{stats.f1to6Avg || '---'}</span>
                                             </div>
                                             <div className="bg-navy-dark p-4 rounded-lg border border-white/5">
                                                 <span className="block font-ui text-[10px] text-gray-mid uppercase mb-1">Avg Score F7-10</span>
-                                                <span className="font-wordmark text-2xl text-strike">164</span>
+                                                <span className="font-wordmark text-2xl text-strike">{stats.f7to10Avg || '---'}</span>
                                             </div>
                                         </div>
                                     </div>
