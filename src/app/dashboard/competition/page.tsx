@@ -34,10 +34,34 @@ const T = {
   offWhite:   "#F4F5FA",
 };
 
+// Fallback data for when Supabase table isn't populated yet
+const FALLBACK_MON = [
+  { rank:1, name:"PLAYMASTERS", w:26, l:4, pins:13700, hgs:806, hss:1498, pts:52 },
+  { rank:2, name:"AMIGOS SEGUNDO", w:24, l:6, pins:13649, hgs:750, hss:1486, pts:48 },
+  { rank:3, name:"4BAGGERZ NATION", w:20, l:10, pins:13814, hgs:804, hss:1522, pts:40 },
+  { rank:4, name:"PLAYMASTERS MAVERICK", w:19, l:11, pins:13190, hgs:739, hss:1383, pts:38 },
+  { rank:5, name:"PLAYMASTERS RISING", w:12, l:18, pins:12512, hgs:739, hss:1361, pts:24 },
+  { rank:6, name:"BALLBARIANS STRIKERS", w:8, l:22, pins:12211, hgs:758, hss:1431, pts:16 },
+  { rank:7, name:"MAHADEV STRIKERS", w:8, l:22, pins:11825, hgs:661, hss:1254, pts:16 },
+  { rank:8, name:"NDOVU STRIKERS", w:3, l:27, pins:11056, hgs:645, hss:1181, pts:6 },
+];
+
+const FALLBACK_TUE = [
+  { rank:1, name:"EASTLINE STARS", w:22, l:8, pins:13608, hgs:840, hss:1532, pts:44 },
+  { rank:2, name:"AMIGOS ESTRELLA", w:22, l:5, pins:12265, hgs:774, hss:1437, pts:44 },
+  { rank:3, name:"THE UNBOWLIVABLES", w:20, l:10, pins:13416, hgs:778, hss:1487, pts:40 },
+  { rank:4, name:"254 BOWLERS", w:19, l:11, pins:13447, hgs:772, hss:1486, pts:38 },
+  { rank:5, name:"NOISY KINGS", w:16, l:14, pins:13259, hgs:786, hss:1521, pts:32 },
+  { rank:6, name:"UNBOWLIVABLE STRIK", w:8, l:19, pins:10912, hgs:731, hss:1325, pts:16 },
+  { rank:7, name:"TEAM 55", w:4, l:20, pins:9165, hgs:687, hss:1244, pts:8 },
+  { rank:8, name:"AMIGOS SENORAS", w:3, l:27, pins:11381, hgs:684, hss:1278, pts:6 },
+];
+
 export default function CompetitionHQ() {
   const [division, setDivision] = useState("monday");
   const [standings, setStandings] = useState<Standing[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isFallback, setIsFallback] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -51,10 +75,18 @@ export default function CompetitionHQ() {
           .eq('division', division)
           .order('rank', { ascending: true });
 
-        if (error) throw error;
-        if (data) setStandings(data);
+        if (error || !data || data.length === 0) {
+          console.warn("Using fallback standings data");
+          setStandings(division === "monday" ? FALLBACK_MON as Standing[] : FALLBACK_TUE as Standing[]);
+          setIsFallback(true);
+        } else {
+          setStandings(data);
+          setIsFallback(false);
+        }
       } catch (err) {
-        console.error("Error fetching standings:", err);
+        console.error("Error fetching standings, using fallback:", err);
+        setStandings(division === "monday" ? FALLBACK_MON as Standing[] : FALLBACK_TUE as Standing[]);
+        setIsFallback(true);
       } finally {
         setLoading(false);
         setMounted(true);
@@ -98,18 +130,23 @@ export default function CompetitionHQ() {
               League-Wide Analytics {'//'} Real-Time Threat Analysis
             </p>
           </div>
-          <div className="flex gap-2 bg-white/5 p-1 rounded-xl border border-white/10">
-            {["monday", "tuesday"].map(d => (
-              <button
-                key={d}
-                onClick={() => { setMounted(false); setDivision(d); setTimeout(() => setMounted(true), 50); }}
-                className={`px-6 py-2 rounded-lg font-ui font-black uppercase tracking-[2px] transition-all ${
-                  division === d ? 'bg-strike text-white shadow-[0_0_15px_rgba(232,32,48,0.4)]' : 'text-gray-mid hover:text-white'
-                }`}
-              >
-                {d}
-              </button>
-            ))}
+          <div className="flex flex-col items-end gap-2">
+            <div className="flex gap-2 bg-white/5 p-1 rounded-xl border border-white/10">
+              {["monday", "tuesday"].map(d => (
+                <button
+                  key={d}
+                  onClick={() => { setMounted(false); setDivision(d); setTimeout(() => setMounted(true), 50); }}
+                  className={`px-6 py-2 rounded-lg font-ui font-black uppercase tracking-[2px] transition-all ${
+                    division === d ? 'bg-strike text-white shadow-[0_0_15px_rgba(232,32,48,0.4)]' : 'text-gray-mid hover:text-white'
+                  }`}
+                >
+                  {d}
+                </button>
+              ))}
+            </div>
+            <div className={`text-[10px] font-ui font-black uppercase tracking-widest px-3 py-1 rounded-full border ${isFallback ? 'text-bat-light border-bat-light/30' : 'text-emerald-500 border-emerald-500/30'}`}>
+              {isFallback ? '⚠ LEAGUE FALLBACK ACTIVE' : '● LIVE SUPABASE STREAM'}
+            </div>
           </div>
         </header>
 
