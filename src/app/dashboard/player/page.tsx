@@ -280,9 +280,121 @@ export default function PlayerDashboard() {
                                 <div className="p-12 text-center text-gray-dark italic text-sm font-ui uppercase tracking-widest">Select a player to view their performance data</div>
                             )}
                         </section>
+
+                        {/* Squad Prowess: Team Achievements (hardcoded from PDF results) */}
+                        <section className="bg-navy border border-strike/20 rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(232,32,48,0.1)] relative">
+                            <div className="absolute top-0 right-0 p-4">
+                                <span className="bg-strike text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full text-white animate-pulse">#1 Rank</span>
+                            </div>
+                            <div className="p-8 border-b border-white/5 bg-gradient-to-br from-navy via-navy to-strike/10">
+                                <h3 className="text-3xl font-wordmark uppercase text-white flex items-center gap-4">
+                                    Squad Prowess
+                                </h3>
+                                <p className="text-strike text-[10px] mt-1 font-black uppercase tracking-widest italic">UBL Monday Division Dominance {'//'} Week 11 Snapshot</p>
+                            </div>
+
+                            <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-white/5">
+                                <div className="bg-navy-dark/50 p-6 rounded-2xl border border-white/5 flex flex-col items-center text-center hover:border-strike/30 transition-all group">
+                                    <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-4 group-hover:text-strike transition-colors">League Record</p>
+                                    <div className="text-5xl font-wordmark text-white mb-2">26 - 4</div>
+                                    <p className="text-[10px] text-emerald-500 font-black uppercase tracking-widest">Team Standing: 1st</p>
+                                </div>
+
+                                <div className="bg-navy-dark/50 p-6 rounded-2xl border border-white/5 flex flex-col items-center text-center hover:border-strike/30 transition-all group">
+                                    <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-4 group-hover:text-strike transition-colors">Season High Game</p>
+                                    <div className="text-5xl font-wordmark text-strike mb-2">806</div>
+                                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest italic tracking-[2px]">League Leader</p>
+                                </div>
+
+                                <div className="bg-navy-dark/50 p-6 rounded-2xl border border-white/5 flex flex-col items-center text-center hover:border-strike/30 transition-all group">
+                                    <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-4 group-hover:text-strike transition-colors">Season High Series</p>
+                                    <div className="text-5xl font-wordmark text-strike mb-2">1498</div>
+                                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest italic tracking-[2px]">League Leader</p>
+                                </div>
+                            </div>
+
+                            <div className="px-8 py-8">
+                                <div className="bg-strike/5 border border-strike/20 p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+                                    <div className="flex items-center gap-6">
+                                        <div className="w-16 h-16 rounded-full bg-strike/20 flex items-center justify-center text-2xl drop-shadow-[0_0_10px_rgba(232,32,48,0.5)]">🔥</div>
+                                        <div>
+                                            <h4 className="text-xl font-wordmark uppercase text-white">Clean Sweep (Last Week)</h4>
+                                            <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-1">Playmasters took 1st in Game, Series, and Standing this week.</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-4">
+                                        <div className="px-4 py-2 bg-navy rounded-lg border border-white/5 text-center">
+                                            <p className="text-[9px] text-gray-600 font-black uppercase mb-1">Game High</p>
+                                            <p className="text-lg font-wordmark text-strike">806</p>
+                                        </div>
+                                        <div className="px-4 py-2 bg-navy rounded-lg border border-white/5 text-center">
+                                            <p className="text-[9px] text-gray-600 font-black uppercase mb-1">Series High</p>
+                                            <p className="text-lg font-wordmark text-strike">1498</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
                     </div>
 
                     <div className="space-y-8">
+                        {/* Hall of Fame: Individual PDF Highlights */}
+                        <section className="bg-navy border border-white/5 p-8 rounded-2xl relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/5 -mr-16 -mt-16 rounded-full blur-3xl" />
+                            <h3 className="text-xl font-black uppercase text-white mb-8 flex items-center gap-3">
+                                <span className="text-yellow-500 animate-bounce">🏆</span>
+                                Hall of Fame
+                            </h3>
+                            <div className="space-y-6">
+                                <div className="group">
+                                    <div className="p-4 bg-white/[0.02] border-l-4 border-strike rounded-r-xl group-hover:bg-white/[0.04] transition-all">
+                                        <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">High Series (Season)</p>
+                                        <div className="flex justify-between items-end">
+                                            <p className="text-xl font-wordmark text-white">DEEPEN</p>
+                                            <p className="text-3xl font-wordmark text-strike">444</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-[9px] text-gray-600 font-bold uppercase mt-2 px-1 tracking-wider opacity-60">Avg: 180.25 {'//'} Form: Apex</p>
+                                </div>
+
+                                <div className="group">
+                                    <div className="p-4 bg-white/[0.02] border-l-4 border-bat-blue rounded-r-xl group-hover:bg-white/[0.04] transition-all">
+                                        <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Season Average Leader</p>
+                                        <div className="flex justify-between items-end">
+                                            <p className="text-xl font-wordmark text-white">HARSH</p>
+                                            <p className="text-3xl font-wordmark text-bat-blue">180.25</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-[9px] text-gray-600 font-bold uppercase mt-2 px-1 tracking-wider opacity-60">Consistency Matrix: Diamond</p>
+                                </div>
+
+                                <div className="group">
+                                    <div className="p-4 bg-white/[0.02] border-l-4 border-emerald-500 rounded-r-xl group-hover:bg-white/[0.04] transition-all">
+                                        <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Individual Scratch High</p>
+                                        <div className="flex justify-between items-end">
+                                            <p className="text-xl font-wordmark text-white">PARTH</p>
+                                            <p className="text-3xl font-wordmark text-emerald-500">429</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-[9px] text-gray-600 font-bold uppercase mt-2 px-1 tracking-wider opacity-60">High Game: 237 {'//'} Power Strike</p>
+                                </div>
+
+                                <div className="group">
+                                    <div className="p-4 bg-white/[0.02] border-l-4 border-yellow-500 rounded-r-xl group-hover:bg-white/[0.04] transition-all">
+                                        <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Weekly Highs (Wk 11)</p>
+                                        <div className="flex justify-between items-end">
+                                            <p className="text-xl font-wordmark text-white">BISMARK</p>
+                                            <p className="text-3xl font-wordmark text-white">235</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-[9px] text-gray-600 font-bold uppercase mt-2 px-1 tracking-wider opacity-60">Rank: 1st (Scratch High Game)</p>
+                                </div>
+                            </div>
+                            <div className="mt-8 pt-6 border-t border-white/5 text-center">
+                                <p className="text-[9px] text-gray-600 font-black uppercase tracking-[4px] italic opacity-50 underline decoration-strike/20">Authorized Squad Records</p>
+                            </div>
+                        </section>
+
                         <a href="/dashboard/player/log-game" className="block bg-navy border border-white/5 p-8 rounded-2xl group hover:border-strike/30 transition-all">
                             <h3 className="font-ui text-2xl uppercase tracking-widest text-ball-pink mb-2">Log Score</h3>
                             <p className="text-sm font-sans text-gray-mid mb-6">Record your latest game results after any session.</p>
