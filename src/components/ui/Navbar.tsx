@@ -13,7 +13,7 @@ export default function Navbar() {
         { name: 'Player Hub', href: '/dashboard/player' },
         { name: 'Competition Analysis', href: '/dashboard/competition' },
         { name: 'Rivalry Engine', href: '/dashboard/comparison' },
-        { name: 'Log Score', href: '/dashboard/player#sync-scores' }
+        { name: 'Log Score', href: '/dashboard/player/log-game' }
     ];
 
     return (

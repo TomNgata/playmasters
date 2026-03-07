@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
 import { createClient } from '@/lib/supabase/client';
 
 type UBLBowler = {
@@ -500,23 +501,14 @@ export default function PlayerDashboard() {
                             </div>
                         </section>
 
-                        <section id="sync-scores" className="bg-navy border border-white/5 p-8 rounded-2xl shadow-2xl transition-all scroll-mt-24">
-                            <h3 className="text-gray-mid font-ui uppercase tracking-[4px] text-[10px] mb-6">Sync Scores</h3>
-                            <div className="border-2 border-dashed border-white/10 rounded-2xl p-8 text-center bg-navy-dark/40 hover:bg-navy-dark/60 hover:border-strike/30 transition-all group cursor-pointer">
-                                <span className="text-4xl block mb-4 group-hover:scale-110 transition-transform">⬆️</span>
-                                <p className="font-ui font-black uppercase text-sm tracking-[3px] text-bat-light">Select CSV Data</p>
-                                <p className="text-[10px] text-gray-dark font-ui uppercase tracking-widest mt-2">Upload your session scores</p>
-                            </div>
-                        </section>
-
-                        <a href="#sync-scores" className="block bg-navy border border-white/5 p-8 rounded-2xl group hover:border-strike/30 transition-all">
+                        <Link href="/dashboard/player/log-game" className="block bg-navy border border-white/5 p-8 rounded-2xl group hover:border-strike/30 transition-all">
                             <h3 className="font-ui text-2xl uppercase tracking-widest text-ball-pink mb-2">Log Score</h3>
                             <p className="text-sm font-sans text-gray-mid mb-6">Record your latest game results after any session.</p>
                             <div className="w-full h-32 bg-navy-dark/50 border-2 border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center group-hover:border-strike/30 group-hover:bg-white/[0.02] transition-all text-center">
                                 <span className="text-4xl mb-2 group-hover:scale-110 transition-transform">🎳</span>
                                 <span className="font-ui text-xs uppercase tracking-[3px] text-gray-mid group-hover:text-white transition-colors">Enter Game Data</span>
                             </div>
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>
