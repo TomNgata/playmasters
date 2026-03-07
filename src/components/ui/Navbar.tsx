@@ -11,7 +11,7 @@ export default function Navbar() {
 
     const navLinks = [
         { name: 'Player Hub', href: '/dashboard/player' },
-        { name: 'Competition Analysis', href: '/dashboard/player#competition' },
+        { name: 'Competition Analysis', href: '/dashboard/competition' },
         { name: 'Log Score', href: '/dashboard/player/log-game' }
     ];
 
