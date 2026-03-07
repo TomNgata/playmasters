@@ -14,37 +14,17 @@ type UBLBowler = {
     handicap: number;
     high_game_hdcp: number;
     high_series_hdcp: number;
+    total_pins: number;
     division: string;
-};
-
-type GameRecord = {
-    total_score: number;
-    player_name: string | null;
-    match_type: string | null;
-    updated_at: string;
-};
-
-const MATCH_TYPE_LABELS: Record<string, { label: string; color: string; icon: string }> = {
-    practice: { label: 'Practice', color: 'bg-gray-500/20 text-gray-400', icon: '🎯' },
-    league: { label: 'League', color: 'bg-bat-blue/20 text-bat-blue', icon: '🏆' },
-    tournament_singles: { label: 'Tournament', color: 'bg-strike/20 text-strike', icon: '⚡' },
-    tournament_team: { label: 'Team Event', color: 'bg-emerald-500/20 text-emerald-400', icon: '🤝' },
+    game1: number | null;
+    game2: number | null;
+    series: number | null;
 };
 
 export default function PlayerDashboard() {
-    const [ublProfile, setUblProfile] = useState<UBLBowler | null>(null);
     const [allPlaymasters, setAllPlaymasters] = useState<UBLBowler[]>([]);
     const [selectedBowlerName, setSelectedBowlerName] = useState<string>('');
     const [loading, setLoading] = useState(true);
-
-    const [gameHistory, setGameHistory] = useState<GameRecord[]>([]);
-    const [seasonStats, setSeasonStats] = useState({
-        totalGames: 0,
-        seasonAvg: 0,
-        totalPins: 0,
-        highGame: 0,
-        trend: 0 // positive = improving, negative = declining
-    });
 
     useEffect(() => {
         let isMounted = true;
@@ -53,7 +33,6 @@ export default function PlayerDashboard() {
             try {
                 const supabase = createClient();
 
-                // Fetch UBL stats
                 const { data: allBowlerData } = await supabase
                     .from('ubl_bowler_stats')
                     .select('*')
@@ -64,33 +43,8 @@ export default function PlayerDashboard() {
                     setAllPlaymasters(playmasters);
 
                     if (playmasters.length > 0) {
-                        setUblProfile(playmasters[0]);
                         setSelectedBowlerName(playmasters[0].bowler_name);
                     }
-                }
-
-                // Fetch game history
-                const { data: scoresData } = await supabase
-                    .from('scores')
-                    .select('total_score, player_name, match_type, updated_at')
-                    .order('updated_at', { ascending: false })
-                    .limit(20);
-
-                if (scoresData && scoresData.length > 0 && isMounted) {
-                    setGameHistory(scoresData);
-
-                    const totalPins = scoresData.reduce((sum, s) => sum + (s.total_score || 0), 0);
-                    const highGame = Math.max(...scoresData.map(s => s.total_score || 0));
-                    const seasonAvg = Math.round(totalPins / scoresData.length);
-
-                    // Calculate trend: compare last 5 avg vs previous 5 avg
-                    const recent5 = scoresData.slice(0, 5);
-                    const prev5 = scoresData.slice(5, 10);
-                    const recentAvg = recent5.reduce((s, g) => s + (g.total_score || 0), 0) / (recent5.length || 1);
-                    const prevAvg = prev5.length > 0 ? prev5.reduce((s, g) => s + (g.total_score || 0), 0) / prev5.length : recentAvg;
-                    const trend = Math.round(recentAvg - prevAvg);
-
-                    setSeasonStats({ totalGames: scoresData.length, seasonAvg, totalPins, highGame, trend });
                 }
             } catch (err) {
                 console.error("Dashboard Fetch Exception:", err);
@@ -103,15 +57,11 @@ export default function PlayerDashboard() {
         return () => { isMounted = false; };
     }, []);
 
+    const selectedPlayer = allPlaymasters.find(b => b.bowler_name === selectedBowlerName) || null;
+
     const handleBowlerChange = (name: string) => {
-        const found = allPlaymasters.find(b => b.bowler_name === name);
-        if (found) {
-            setUblProfile(found);
-            setSelectedBowlerName(name);
-        }
+        setSelectedBowlerName(name);
     };
-
-
 
     if (loading) return (
         <div className="min-h-screen bg-navy-dark flex items-center justify-center">
@@ -119,10 +69,15 @@ export default function PlayerDashboard() {
         </div>
     );
 
-    const displayName = ublProfile?.bowler_name || 'PLAYMASTER';
+    // Build performance data for the selected player
+    const playerGameData: { label: string; score: number }[] = [];
+    if (selectedPlayer) {
+        if (selectedPlayer.game1 && selectedPlayer.game1 > 0) playerGameData.push({ label: 'Game 1', score: selectedPlayer.game1 });
+        if (selectedPlayer.game2 && selectedPlayer.game2 > 0) playerGameData.push({ label: 'Game 2', score: selectedPlayer.game2 });
+        if (selectedPlayer.high_game > 0) playerGameData.push({ label: 'High Game', score: selectedPlayer.high_game });
+    }
 
-    // For the visual bar chart, normalize scores
-    const maxScore = gameHistory.length > 0 ? Math.max(...gameHistory.map(g => g.total_score || 0)) : 300;
+    const maxScoreForBars = selectedPlayer ? Math.max(selectedPlayer.high_game || 0, 300) : 300;
 
     return (
         <div className="min-h-screen bg-navy-dark text-white font-sans pb-24">
@@ -150,7 +105,7 @@ export default function PlayerDashboard() {
                                         <div className="w-full h-full bg-navy rounded-[14px] flex items-center justify-center text-3xl">🎳</div>
                                     </div>
                                     <div>
-                                        <h2 className="text-3xl font-wordmark uppercase tracking-tight">{displayName}</h2>
+                                        <h2 className="text-3xl font-wordmark uppercase tracking-tight">{selectedPlayer?.bowler_name || 'PLAYMASTER'}</h2>
                                         <p className="text-strike font-ui font-black uppercase text-[10px] tracking-[2px]">Playmasters Kenya</p>
                                     </div>
                                 </div>
@@ -174,7 +129,7 @@ export default function PlayerDashboard() {
                             </div>
                         </section>
 
-                        {/* Focus Engine: UBL Data */}
+                        {/* Focus Engine: UBL Data — linked to selected player */}
                         <section className="bg-navy border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
                             <div className="p-8 border-b border-white/5 bg-gradient-to-r from-navy to-navy-dark flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                                 <div>
@@ -190,146 +145,140 @@ export default function PlayerDashboard() {
                                     onChange={(e) => handleBowlerChange(e.target.value)}
                                 >
                                     {allPlaymasters.map(b => (
-                                        <option key={b.bowler_name} value={b.bowler_name} className="bg-navy text-white">{b.bowler_name}</option>
+                                        <option key={b.bowler_name + b.division} value={b.bowler_name} className="bg-navy text-white">{b.bowler_name}</option>
                                     ))}
                                 </select>
                             </div>
                             
-                            {ublProfile ? (
+                            {selectedPlayer ? (
                                 <div className="p-8 grid grid-cols-2 md:grid-cols-4 gap-8">
                                     <div className="space-y-1">
                                         <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-tight">Average</p>
-                                        <p className="text-4xl font-wordmark text-white">{ublProfile.average}</p>
+                                        <p className="text-4xl font-wordmark text-white">{selectedPlayer.average}</p>
                                     </div>
                                     <div className="space-y-1">
                                         <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-tight">High Series</p>
-                                        <p className="text-4xl font-wordmark text-strike">{ublProfile.high_series}</p>
+                                        <p className="text-4xl font-wordmark text-strike">{selectedPlayer.high_series}</p>
                                     </div>
                                     <div className="space-y-1">
                                         <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-tight">Handicap</p>
-                                        <p className="text-4xl font-wordmark text-bat-blue">{ublProfile.handicap}</p>
+                                        <p className="text-4xl font-wordmark text-bat-blue">{selectedPlayer.handicap}</p>
                                     </div>
                                     <div className="space-y-1">
                                         <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-tight">Last Week</p>
-                                        <p className="text-4xl font-wordmark text-white">{ublProfile.last_week_score}</p>
+                                        <p className="text-4xl font-wordmark text-white">{selectedPlayer.last_week_score}</p>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="p-12 text-center text-gray-dark italic text-sm font-ui uppercase tracking-widest">Initialising roster data...</div>
+                                <div className="p-12 text-center text-gray-dark italic text-sm font-ui uppercase tracking-widest">Select a player above</div>
                             )}
                         </section>
 
-                        {/* Performance Tracker — Game History */}
+                        {/* Performance Tracker — sourced from UBL per-player data */}
                         <section className="bg-navy border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
-                            <div className="p-8 border-b border-white/5 bg-gradient-to-r from-navy to-navy-dark flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                <div>
-                                    <h3 className="text-2xl font-black uppercase text-white flex items-center gap-3">
-                                        <span className="text-strike text-3xl">📈</span>
-                                        Performance Tracker
-                                    </h3>
-                                    <p className="text-gray-400 text-[10px] mt-1 font-bold uppercase tracking-widest italic">Recent Game Results {'//'} Season Trend</p>
-                                </div>
-                                {seasonStats.totalGames > 0 && (
-                                    <div className="flex items-center gap-2">
-                                        <div className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest ${
-                                            seasonStats.trend > 0 ? 'bg-emerald-500/20 text-emerald-400' : 
-                                            seasonStats.trend < 0 ? 'bg-strike/20 text-strike' : 
-                                            'bg-white/5 text-gray-400'
-                                        }`}>
-                                            {seasonStats.trend > 0 ? `▲ +${seasonStats.trend}` : seasonStats.trend < 0 ? `▼ ${seasonStats.trend}` : '— Steady'} trend
+                            <div className="p-8 border-b border-white/5 bg-gradient-to-r from-navy to-navy-dark">
+                                <h3 className="text-2xl font-black uppercase text-white flex items-center gap-3">
+                                    <span className="text-strike text-3xl">📈</span>
+                                    Performance Tracker
+                                </h3>
+                                <p className="text-gray-400 text-[10px] mt-1 font-bold uppercase tracking-widest italic">
+                                    {selectedPlayer?.bowler_name || 'Select a player'} {'//'} UBL Season Data
+                                </p>
+                            </div>
+
+                            {selectedPlayer ? (
+                                <>
+                                    {/* Season Summary Strip */}
+                                    <div className="grid grid-cols-2 md:grid-cols-4 border-b border-white/5">
+                                        <div className="p-5 text-center border-r border-white/5">
+                                            <p className="text-[9px] text-gray-600 font-black uppercase tracking-widest mb-1">Games</p>
+                                            <p className="text-2xl font-wordmark text-white">{selectedPlayer.games}</p>
+                                        </div>
+                                        <div className="p-5 text-center border-r border-white/5">
+                                            <p className="text-[9px] text-gray-600 font-black uppercase tracking-widest mb-1">Average</p>
+                                            <p className="text-2xl font-wordmark text-bat-blue">{selectedPlayer.average}</p>
+                                        </div>
+                                        <div className="p-5 text-center border-r border-white/5">
+                                            <p className="text-[9px] text-gray-600 font-black uppercase tracking-widest mb-1">High Game</p>
+                                            <p className="text-2xl font-wordmark text-strike">{selectedPlayer.high_game}</p>
+                                        </div>
+                                        <div className="p-5 text-center">
+                                            <p className="text-[9px] text-gray-600 font-black uppercase tracking-widest mb-1">Total Pins</p>
+                                            <p className="text-2xl font-wordmark text-white">{selectedPlayer.total_pins.toLocaleString()}</p>
                                         </div>
                                     </div>
-                                )}
-                            </div>
 
-                            {/* Season Summary Strip */}
-                            {seasonStats.totalGames > 0 && (
-                                <div className="grid grid-cols-4 border-b border-white/5">
-                                    <div className="p-5 text-center border-r border-white/5">
-                                        <p className="text-[9px] text-gray-600 font-black uppercase tracking-widest mb-1">Games</p>
-                                        <p className="text-2xl font-wordmark text-white">{seasonStats.totalGames}</p>
-                                    </div>
-                                    <div className="p-5 text-center border-r border-white/5">
-                                        <p className="text-[9px] text-gray-600 font-black uppercase tracking-widest mb-1">Season Avg</p>
-                                        <p className="text-2xl font-wordmark text-bat-blue">{seasonStats.seasonAvg}</p>
-                                    </div>
-                                    <div className="p-5 text-center border-r border-white/5">
-                                        <p className="text-[9px] text-gray-600 font-black uppercase tracking-widest mb-1">High Game</p>
-                                        <p className="text-2xl font-wordmark text-strike">{seasonStats.highGame}</p>
-                                    </div>
-                                    <div className="p-5 text-center">
-                                        <p className="text-[9px] text-gray-600 font-black uppercase tracking-widest mb-1">Total Pins</p>
-                                        <p className="text-2xl font-wordmark text-white">{seasonStats.totalPins.toLocaleString()}</p>
-                                    </div>
-                                </div>
-                            )}
+                                    {/* Game Results — only real data */}
+                                    <div className="p-6 space-y-4">
+                                        {playerGameData.length > 0 ? (
+                                            <>
+                                                {playerGameData.map((game, idx) => {
+                                                    const barWidth = maxScoreForBars > 0 ? Math.max(8, (game.score / maxScoreForBars) * 100) : 0;
+                                                    const isHighGame = game.label === 'High Game';
+                                                    return (
+                                                        <div key={idx} className={`flex items-center gap-4 p-4 rounded-xl ${isHighGame ? 'bg-strike/5 border border-strike/20' : 'border border-white/5'}`}>
+                                                            <div className="w-24 flex-shrink-0">
+                                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{game.label}</span>
+                                                            </div>
 
-                            {/* Game Log with Visual Bars */}
-                            <div className="p-6">
-                                {gameHistory.length > 0 ? (
-                                    <div className="space-y-3">
-                                        {gameHistory.slice(0, 10).map((game, idx) => {
-                                            const mt = MATCH_TYPE_LABELS[game.match_type || 'practice'] || MATCH_TYPE_LABELS.practice;
-                                            const barWidth = maxScore > 0 ? Math.max(8, (game.total_score / maxScore) * 100) : 0;
-                                            const isHighGame = game.total_score === seasonStats.highGame;
-                                            const dateStr = new Date(game.updated_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                                                            <div className="flex-1">
+                                                                <div className="relative h-6 bg-navy-dark rounded-full overflow-hidden border border-white/5">
+                                                                    <div 
+                                                                        className={`absolute inset-y-0 left-0 rounded-full transition-all duration-700 ${
+                                                                            isHighGame ? 'bg-gradient-to-r from-strike to-strike/60' : 
+                                                                            game.score >= selectedPlayer.average ? 'bg-gradient-to-r from-bat-blue to-bat-blue/40' : 
+                                                                            'bg-gradient-to-r from-gray-600 to-gray-700/40'
+                                                                        }`}
+                                                                        style={{ width: `${barWidth}%` }}
+                                                                    />
+                                                                    <div className="absolute inset-0 flex items-center px-3">
+                                                                        <span className="text-[9px] font-black text-white/80 drop-shadow-lg">{game.score} pins</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
 
-                                            return (
-                                                <div key={idx} className={`group flex items-center gap-4 p-3 rounded-xl transition-all hover:bg-white/[0.02] ${isHighGame ? 'bg-strike/5 border border-strike/20' : 'border border-transparent'}`}>
-                                                    {/* Rank */}
-                                                    <div className="w-8 text-center">
-                                                        <span className="text-[10px] font-black text-gray-600">{(idx + 1).toString().padStart(2, '0')}</span>
-                                                    </div>
-
-                                                    {/* Main content */}
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex items-center gap-2 mb-2">
-                                                            {game.player_name && (
-                                                                <span className="text-[10px] font-black text-white uppercase tracking-tight truncate">{game.player_name}</span>
-                                                            )}
-                                                            <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wide ${mt.color}`}>
-                                                                {mt.icon} {mt.label}
-                                                            </span>
-                                                            {isHighGame && (
-                                                                <span className="px-2 py-0.5 bg-strike/30 text-strike rounded text-[8px] font-black uppercase animate-pulse">
-                                                                    🔥 Season Best
-                                                                </span>
-                                                            )}
-                                                        </div>
-
-                                                        {/* Score Bar */}
-                                                        <div className="relative h-5 bg-navy-dark rounded-full overflow-hidden border border-white/5">
-                                                            <div 
-                                                                className={`absolute inset-y-0 left-0 rounded-full transition-all duration-700 ${
-                                                                    isHighGame ? 'bg-gradient-to-r from-strike to-strike/60' : 
-                                                                    game.total_score >= seasonStats.seasonAvg ? 'bg-gradient-to-r from-bat-blue to-bat-blue/40' : 
-                                                                    'bg-gradient-to-r from-gray-600 to-gray-700/40'
-                                                                }`}
-                                                                style={{ width: `${barWidth}%` }}
-                                                            />
-                                                            <div className="absolute inset-0 flex items-center px-3">
-                                                                <span className="text-[9px] font-black text-white/80 drop-shadow-lg">{game.total_score} pins</span>
+                                                            <div className="text-right flex-shrink-0 w-16">
+                                                                <p className={`text-xl font-wordmark ${isHighGame ? 'text-strike' : 'text-white'}`}>{game.score}</p>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    );
+                                                })}
 
-                                                    {/* Score + Date */}
-                                                    <div className="text-right flex-shrink-0">
-                                                        <p className={`text-xl font-wordmark ${isHighGame ? 'text-strike' : 'text-white'}`}>{game.total_score}</p>
-                                                        <p className="text-[8px] text-gray-600 font-black uppercase tracking-widest">{dateStr}</p>
+                                                {/* Series breakdown if available */}
+                                                {selectedPlayer.series && selectedPlayer.series > 0 && (
+                                                    <div className="mt-6 p-4 bg-white/[0.02] border border-white/5 rounded-xl flex items-center justify-between">
+                                                        <div>
+                                                            <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest">Latest Series Total</p>
+                                                            <p className="text-[9px] text-gray-600 font-bold uppercase tracking-widest mt-1">
+                                                                {selectedPlayer.game1 && selectedPlayer.game1 > 0 ? `${selectedPlayer.game1}` : '—'} + {selectedPlayer.game2 && selectedPlayer.game2 > 0 ? `${selectedPlayer.game2}` : '—'} = {selectedPlayer.series}
+                                                            </p>
+                                                        </div>
+                                                        <p className="text-3xl font-wordmark text-white">{selectedPlayer.series}</p>
                                                     </div>
-                                                </div>
-                                            );
-                                        })}
+                                                )}
+
+                                                {/* High Series */}
+                                                {selectedPlayer.high_series > 0 && selectedPlayer.high_series !== selectedPlayer.series && (
+                                                    <div className="p-4 bg-strike/5 border border-strike/10 rounded-xl flex items-center justify-between">
+                                                        <div>
+                                                            <p className="text-[10px] text-strike font-black uppercase tracking-widest">Season Best Series</p>
+                                                            <p className="text-[9px] text-gray-600 font-bold uppercase tracking-widest mt-1">🔥 Career highlight this season</p>
+                                                        </div>
+                                                        <p className="text-3xl font-wordmark text-strike">{selectedPlayer.high_series}</p>
+                                                    </div>
+                                                )}
+                                            </>
+                                        ) : (
+                                            <div className="h-32 flex flex-col items-center justify-center border-2 border-dashed border-white/5 rounded-xl text-center">
+                                                <span className="text-3xl mb-2 opacity-50">🎳</span>
+                                                <p className="text-gray-dark font-ui uppercase text-sm tracking-widest">No game data recorded yet</p>
+                                            </div>
+                                        )}
                                     </div>
-                                ) : (
-                                    <div className="h-48 flex flex-col items-center justify-center border-2 border-dashed border-white/5 rounded-xl text-center">
-                                        <span className="text-4xl mb-3 opacity-50">🎳</span>
-                                        <p className="text-gray-dark font-ui uppercase text-sm tracking-widest mb-1">No game history yet</p>
-                                        <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">Log your first score to see your performance tracker</p>
-                                    </div>
-                                )}
-                            </div>
+                                </>
+                            ) : (
+                                <div className="p-12 text-center text-gray-dark italic text-sm font-ui uppercase tracking-widest">Select a player to view their performance data</div>
+                            )}
                         </section>
                     </div>
 
