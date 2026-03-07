@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
 type UBLBowler = {
@@ -33,14 +32,11 @@ const MATCH_TYPE_LABELS: Record<string, { label: string; color: string; icon: st
 };
 
 export default function PlayerDashboard() {
-    const router = useRouter();
-    const fileInputRef = useRef<HTMLInputElement>(null);
     const [ublProfile, setUblProfile] = useState<UBLBowler | null>(null);
     const [allPlaymasters, setAllPlaymasters] = useState<UBLBowler[]>([]);
     const [selectedBowlerName, setSelectedBowlerName] = useState<string>('');
     const [loading, setLoading] = useState(true);
-    const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
-    const [uploadMessage, setUploadMessage] = useState('');
+
     const [gameHistory, setGameHistory] = useState<GameRecord[]>([]);
     const [seasonStats, setSeasonStats] = useState({
         totalGames: 0,
@@ -115,48 +111,13 @@ export default function PlayerDashboard() {
         }
     };
 
-    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
 
-        setUploadStatus('uploading');
-        setUploadMessage('');
-
-        const formData = new FormData();
-        formData.append('file', file);
-
-        try {
-            const res = await fetch('/api/upload-csv', { method: 'POST', body: formData });
-            const data = await res.json();
-
-            if (!res.ok) {
-                setUploadStatus('error');
-                setUploadMessage(data.error || 'Upload failed. Please try again.');
-            } else {
-                setUploadStatus('success');
-                setUploadMessage(data.message);
-                router.refresh();
-            }
-        } catch {
-            setUploadStatus('error');
-            setUploadMessage('Network error. Please check your connection.');
-        }
-
-        if (fileInputRef.current) fileInputRef.current.value = '';
-    };
 
     if (loading) return (
         <div className="min-h-screen bg-navy-dark flex items-center justify-center">
             <div className="w-12 h-12 border-4 border-strike border-t-transparent rounded-full animate-spin" />
         </div>
     );
-
-    const uploadStatusColors = {
-        idle: 'border-white/20',
-        uploading: 'border-bat-blue/60 animate-pulse',
-        success: 'border-emerald-500/60',
-        error: 'border-strike/60',
-    };
 
     const displayName = ublProfile?.bowler_name || 'PLAYMASTER';
 
@@ -373,27 +334,14 @@ export default function PlayerDashboard() {
                     </div>
 
                     <div className="space-y-8">
-                        <div className="bg-navy border border-white/5 p-8 rounded-2xl flex flex-col gap-6">
-                            <div>
-                                <h3 className="font-ui text-2xl uppercase tracking-widest text-ball-pink mb-2">Sync Scores</h3>
-                                <p className="text-sm font-sans text-gray-mid">Upload your CSV from Westgate sessions.</p>
+                        <a href="/dashboard/player/log-game" className="block bg-navy border border-white/5 p-8 rounded-2xl group hover:border-strike/30 transition-all">
+                            <h3 className="font-ui text-2xl uppercase tracking-widest text-ball-pink mb-2">Log Score</h3>
+                            <p className="text-sm font-sans text-gray-mid mb-6">Record your latest game results after any session.</p>
+                            <div className="w-full h-32 bg-navy-dark/50 border-2 border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center group-hover:border-strike/30 group-hover:bg-white/[0.02] transition-all">
+                                <span className="text-4xl mb-2 group-hover:scale-110 transition-transform">🎳</span>
+                                <span className="font-ui text-xs uppercase tracking-[3px] text-gray-mid group-hover:text-white transition-colors">Enter Game Data</span>
                             </div>
-                            <div
-                                onClick={() => fileInputRef.current?.click()}
-                                className={`w-full h-40 border-2 border-dashed rounded-xl flex flex-col items-center justify-center hover:bg-white/[0.02] hover:border-strike/40 transition-all cursor-pointer group bg-navy-dark/50 ${uploadStatusColors[uploadStatus]}`}
-                            >
-                                <svg className="w-10 h-10 text-gray-mid mb-3 group-hover:text-strike group-hover:-translate-y-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                </svg>
-                                <span className="font-ui text-xs uppercase tracking-[3px] text-gray-mid group-hover:text-white transition-colors">Select CSV Data</span>
-                                <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleFileChange} />
-                            </div>
-                            {uploadMessage && (
-                                <div className={`text-xs font-ui uppercase tracking-widest p-4 rounded-lg border text-center ${uploadStatus === 'success' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-strike/10 border-strike/30 text-strike'}`}>
-                                    {uploadMessage}
-                                </div>
-                            )}
-                        </div>
+                        </a>
 
                         <div className="bg-navy border border-white/5 p-8 rounded-2xl">
                             <h3 className="font-ui text-2xl uppercase tracking-widest text-bat-blue mb-6">Achievement Unit</h3>
