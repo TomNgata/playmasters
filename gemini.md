@@ -30,7 +30,6 @@
   - Auto-updates standings/notifications, prevents data overwrites (versioned scores).
   - **Modern Functional Layout:** Replaces 3D elements with a high-contrast, structured grid system inspired by professional kits (Reference: Westlands Election Flyers). Emphasis on data panels, "Glass Morphism" overlays, and refined typography (Barlow Condensed).
   - Generates shareable PNG tournament bracket results automatically for Instagram.
-  - "Frame 7 Focus Drop" analytics must be front-and-center for the player, not buried.
   - Provide player-vs-player comparison tools to build rivalry and engagement.
 - **Audience:** Split UX cleanly between Public outward-facing PR (Scrollable Landing Page) and Private inward-facing value (Authenticated Team Hub for analytics/uploading).
 - **Access:** Free for players, but analytics and score uploading must be gated behind Supabase Authentication. Mobile-first design inspired by "Nairobi" on-the-go functional aesthetics.

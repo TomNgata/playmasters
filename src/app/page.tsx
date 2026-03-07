@@ -18,7 +18,7 @@ export default function Home() {
           </h2>
           <div className="w-12 h-1 bg-strike mb-4" />
           <p className="font-sans text-gray-mid leading-relaxed text-lg mb-8">
-            Playmasters is more than a team. We are a family of competitors bound by the lanes at Strikez, Westgate. From casual Thursday nights to high-stakes tournaments, we bowl to win, and we bowl together.
+            Playmasters is more than a team. We are a family of competitors bound by the lanes. From casual bowling nights to high-stakes tournaments, we bowl to win, and we bowl together.
           </p>
           <div className="flex flex-wrap items-center gap-8 pt-6 border-t border-white/10 mt-4">
             <div className="flex flex-col">
@@ -61,19 +61,19 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 w-full border border-white/10 bg-navy-dark/80 mb-12">
             <div className="p-8 lg:p-12 border-b md:border-b-0 md:border-r border-white/10 flex flex-col items-start text-left group hover:bg-white/[0.02] transition-colors">
-              <span className="font-ui text-ball-pink text-xs font-bold tracking-[3px] uppercase mb-4 opacity-70">Metric 01</span>
-              <h3 className="font-ui text-3xl uppercase tracking-tighter text-white mb-4 group-hover:text-ball-pink transition-colors">Frame 7 Focus</h3>
-              <p className="text-sm font-sans text-gray-mid leading-relaxed">Pinpoint exactly where your focus drops in the final stretch.</p>
+              <span className="font-ui text-ball-pink text-xs font-bold tracking-[3px] uppercase mb-4 opacity-70">Focus Engine</span>
+              <h3 className="font-ui text-3xl uppercase tracking-tighter text-white mb-4 group-hover:text-ball-pink transition-colors">Focus Fatigue</h3>
+              <p className="text-sm font-sans text-gray-mid leading-relaxed">Pinpoint exactly where your mental game dips across 10 frames vs historical baselines.</p>
             </div>
             <div className="p-8 lg:p-12 border-b md:border-b-0 md:border-r border-white/10 flex flex-col items-start text-left group hover:bg-white/[0.02] transition-colors">
               <span className="font-ui text-bat-blue text-xs font-bold tracking-[3px] uppercase mb-4 opacity-70">Metric 02</span>
-              <h3 className="font-ui text-3xl uppercase tracking-tighter text-white mb-4 group-hover:text-bat-blue transition-colors">PvP Engine</h3>
-              <p className="text-sm font-sans text-gray-mid leading-relaxed">Direct strike-rate comparisons. Build rivalries.</p>
+              <h3 className="font-ui text-3xl uppercase tracking-tighter text-white mb-4 group-hover:text-bat-blue transition-colors">Competition Analysis</h3>
+              <p className="text-sm font-sans text-gray-mid leading-relaxed">Real-time UBL Division benchmarks, median tracking, and peak score volatility.</p>
             </div>
             <div className="p-8 lg:p-12 flex flex-col items-start text-left group hover:bg-white/[0.02] transition-colors">
               <span className="font-ui text-strike text-xs font-bold tracking-[3px] uppercase mb-4 opacity-70">Metric 03</span>
-              <h3 className="font-ui text-3xl uppercase tracking-tighter text-white mb-4 group-hover:text-strike transition-colors">Auto-Result</h3>
-              <p className="text-sm font-sans text-gray-mid leading-relaxed">One-click PNG generation for tournament brackets.</p>
+              <h3 className="font-ui text-3xl uppercase tracking-tighter text-white mb-4 group-hover:text-strike transition-colors">Social Performance</h3>
+              <p className="text-sm font-sans text-gray-mid leading-relaxed">PvP comparisons, Women's Elite tracking, and automated tournament bracket generation.</p>
             </div>
           </div>
 
@@ -118,7 +118,7 @@ export default function Home() {
                 PLAYMASTERS
                 <span className="font-ui text-strike text-lg tracking-[8px] mt-1">KENYA UNIT</span>
               </div>
-              <p className="font-ui text-gray-dark tracking-[3px] uppercase text-[10px] mt-4">Nairobi Central Center // Westgate Mall</p>
+              <p className="font-ui text-gray-dark tracking-[3px] uppercase text-[10px] mt-4">Nairobi Official HQ</p>
             </div>
           </div>
 

@@ -15,7 +15,7 @@ This SOP defines the structure and rules for the Next.js frontend application.
 2. **Audience Split (Public vs. Private Hub)**:
    - **Public Landing (`/`)**: A long-scrolling PR outward-facing page (About, Gallery, Sponsors).
    - **Private Team Hub (`/dashboard`)**: Hidden behind Supabase Authentication. Visceral, competitive, focused on personal stats. 
-   - **"Frame 7 Headline"**: Inside the private hub, the foremost visible analytic MUST highlight focus drop-offs or clutch performances starting at Frame 7 to create a compelling narrative.
+   - **Performance Insights**: Inside the private hub, the foremost visible analytic MUST highlight focus drop-offs or clutch performances across all frames to create a compelling narrative.
    - **Admin Tools**: Integrated securely alongside player stats for frictionless CSV uploads.
 3. **No Paywalls**: All functions are free for team members, but authentication is required to access the hub.
 
@@ -29,5 +29,5 @@ This SOP defines the structure and rules for the Next.js frontend application.
 **Modular Data Panels**: The UI adopts the "Regal Meridian" registry from the Westlands kit.
 - **Grids**: Strict 2-column or 4-column grids with 1px contrast borders (#FFFFFF/5).
 - **Hero**: A typography-heavy data-driven header replacing the 3D scene.
-- **Consistency**: High-fidelity overlays and glass-morphism panels for data visualization (e.g., Frame 7 Analytics).
+- **Consistency**: High-fidelity overlays and glass-morphism panels for data visualization (e.g., Focus Fatigue Analytics).
 - **Mobile-First**: High-legibility spacing and touch-optimized buttons.

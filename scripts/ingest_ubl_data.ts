@@ -50,8 +50,12 @@ async function parseFile(filename: string, division: string, weekNumber: number)
                         const avg = nums[nums.length - 1];
                         const gms = nums[nums.length - 2];
                         const pins = nums[nums.length - 3];
+                        const hsh = nums[nums.length - 4];
+                        const hgh = nums[nums.length - 5];
                         const hss = nums[nums.length - 6];
                         const hgs = nums[nums.length - 7];
+                        const hdcp = nums.length >= 8 ? nums[nums.length - 8] : 0;
+                        const lw = nums[0];
 
                         bowlers.push({
                             bowler_name: bowlerName,
@@ -62,7 +66,11 @@ async function parseFile(filename: string, division: string, weekNumber: number)
                             high_series: hss,
                             total_pins: pins,
                             week_number: weekNumber,
-                            division: division
+                            division: division,
+                            last_week_score: lw,
+                            handicap: hdcp,
+                            high_game_hdcp: hgh,
+                            high_series_hdcp: hsh
                         });
                     }
                 }
@@ -91,7 +99,7 @@ async function ingest() {
     sql += '\n';
 
     for (const b of allBowlers) {
-        sql += `INSERT INTO ubl_bowler_stats (bowler_name, team_name, games, average, high_game, high_series, total_pins, week_number, division) VALUES ('${b.bowler_name.replace(/'/g, "''")}', '${b.team_name.replace(/'/g, "''")}', ${b.games}, ${b.average}, ${b.high_game}, ${b.high_series}, ${b.total_pins}, ${b.week_number}, '${b.division}') ON CONFLICT (bowler_name, team_name, week_number, division) DO UPDATE SET games=EXCLUDED.games, average=EXCLUDED.average, high_game=EXCLUDED.high_game, high_series=EXCLUDED.high_series, total_pins=EXCLUDED.total_pins;\n`;
+        sql += `INSERT INTO ubl_bowler_stats (bowler_name, team_name, games, average, high_game, high_series, total_pins, week_number, division, last_week_score, handicap, high_game_hdcp, high_series_hdcp) VALUES ('${b.bowler_name.replace(/'/g, "''")}', '${b.team_name.replace(/'/g, "''")}', ${b.games}, ${b.average}, ${b.high_game}, ${b.high_series}, ${b.total_pins}, ${b.week_number}, '${b.division}', ${b.last_week_score}, ${b.handicap}, ${b.high_game_hdcp}, ${b.high_series_hdcp}) ON CONFLICT (bowler_name, team_name, week_number, division) DO UPDATE SET games=EXCLUDED.games, average=EXCLUDED.average, high_game=EXCLUDED.high_game, high_series=EXCLUDED.high_series, total_pins=EXCLUDED.total_pins, last_week_score=EXCLUDED.last_week_score, handicap=EXCLUDED.handicap, high_game_hdcp=EXCLUDED.high_game_hdcp, high_series_hdcp=EXCLUDED.high_series_hdcp;\n`;
     }
 
     fs.writeFileSync(path.join(__dirname, 'insert.sql'), sql);

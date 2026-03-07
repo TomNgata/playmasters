@@ -1,0 +1,1530 @@
+
+
+
+
+
+
+
+
+UBL Season 16
+
+Analytics Implementation Guide
+
+Complete Analysis Catalogue · Supabase Setup · Dashboard Blueprints
+
+
+
+
+
+Monday & Tuesday Divisions  ·  Weeks 9–10 Dataset  ·  March 2026
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Overview
+
+This guide covers every analysis possible from the UBL Season 16 scorecard data — Monday and Tuesday divisions, weeks 9 and 10. It is structured in two parts:
+
+
+
+Part A — START HERE: The four richest, highest-value analyses recommended as your immediate first build. Each includes full Supabase implementation, SQL logic, and dashboard specifications.
+
+Part B — Full Catalogue: Every remaining analysis possible from this dataset, with the same level of implementation detail.
+
+
+
+All SQL is written for Supabase (PostgreSQL). Every analysis assumes the scorecard data is already loaded. The Supabase setup section for each analysis describes the exact table structures, views, and RLS policies needed.
+
+
+
+📦  Data Available
+
+Players · Teams · Games (2 per match) · Weekly scores · Season cumulative pins & games · Match results (W/L/points) · High game & series records · Most Improved rankings · Weekly pairings (weeks 11–12).
+
+
+
+⚠️  Data Not Available
+
+Frame-by-frame breakdown · Strike/spare counts · Individual roll data · Lane sensor data. Analyses requiring these are noted in Part B.
+
+
+
+PART A  —  Start Here: Recommended First Builds
+
+
+
+PRIORITY ★★★ IMMEDIATE
+
+1. Standings Projection & Title Race
+
+With 4 weeks left in a 14-week season and full W/L data available for all teams in both divisions, you can project final standings, calculate points gaps, and identify which teams can still win, finish top 3, or are effectively eliminated. This is the single highest-engagement analysis for every league participant.
+
+
+
+Why Start Here
+
+You have 10 weeks of cumulative W/L data for 8 teams × 2 divisions. The weekly pairings for weeks 11 and 12 are explicitly in the PDFs. This gives you everything needed to model every possible finish scenario right now.
+
+
+
+Supabase Table Structure
+
+Table
+
+Columns
+
+Purpose
+
+teams
+
+team_id, team_name, division, season
+
+Master team list
+
+weekly_results
+
+result_id, team_id, week, wins, losses, points_earned, total_pins
+
+One row per team per week
+
+season_standings
+
+team_id, total_wins, total_losses, total_points, total_pins, rank, division
+
+Materialised view or refreshed table
+
+schedule
+
+week, home_team_id, away_team_id, division
+
+Remaining fixtures
+
+
+
+Core SQL Logic
+
+-- Current standings with points gap to leader
+
+WITH leader AS (
+
+  SELECT division, MAX(total_points) AS top_points
+
+  FROM season_standings GROUP BY division
+
+)
+
+SELECT s.team_name, s.division,
+
+       s.total_wins, s.total_losses,
+
+       s.total_points,
+
+       s.total_points - l.top_points AS points_gap,
+
+       s.total_pins,
+
+       RANK() OVER (PARTITION BY s.division
+
+                    ORDER BY s.total_points DESC,
+
+                             s.total_pins DESC) AS current_rank
+
+FROM season_standings s
+
+JOIN leader l USING (division)
+
+ORDER BY s.division, current_rank;
+
+
+
+-- Max possible points remaining (4 weeks × 3 pts/match = 12 pts)
+
+SELECT s.team_name,
+
+       s.total_points AS current_pts,
+
+       s.total_points + 12 AS max_possible_pts,
+
+       l.top_points AS leader_pts,
+
+       CASE WHEN s.total_points + 12 >= l.top_points
+
+            THEN 'Still in title race'
+
+            ELSE 'Eliminated from 1st'
+
+       END AS title_status
+
+FROM season_standings s
+
+JOIN (SELECT division, MAX(total_points) top_points
+
+      FROM season_standings GROUP BY division) l USING (division)
+
+ORDER BY s.division, s.total_points DESC;
+
+
+
+Monday Division Example (from data)
+
+Playmasters lead at 26 pts with 12 pts remaining. 4Baggerz at 20 pts (6 behind) can reach max 32 — must win all 4 remaining AND Playmasters must lose all 4. Amigos Segundo at 24 pts (2 behind) can realistically catch up. Everyone else is 8+ behind — mathematically still possible but probability <5%.
+
+
+
+Supabase Setup Steps
+
+Create the teams, weekly_results, and schedule tables with the schema above.
+
+Insert all 8 teams per division with their week 10 cumulative W/L from the PDFs.
+
+Create a Postgres VIEW called season_standings that sums weekly_results by team.
+
+Create a Supabase Edge Function called refresh_standings — triggered after each weekly_results INSERT.
+
+Enable Row Level Security: public can SELECT standings; only authenticated admins can INSERT/UPDATE results.
+
+
+
+Dashboards & Visualisations
+
+Chart
+
+Type
+
+X / Y / Colour
+
+Key Insight
+
+Standings Table
+
+Ranked table widget
+
+Rank · Team · W · L · Pts · Gap to 1st · Pins (tiebreaker)
+
+At-a-glance league position
+
+Points Over Season
+
+Multi-line chart
+
+Week (x) · Cumulative points (y) · One line per team
+
+Shows momentum — which teams are accelerating
+
+Title Race Probability Bar
+
+Horizontal stacked bar
+
+Team (y) · Current pts vs remaining max pts (x)
+
+Instantly shows who is in/out of contention
+
+Remaining Schedule Difficulty
+
+Heat-map table
+
+Team (row) · Week (col) · Opponent rank (colour)
+
+Flags which teams have easy/hard run-ins
+
+
+
+
+
+PRIORITY ★★★ IMMEDIATE
+
+2. Player Score Trend & Form Index
+
+Every player in both divisions has cumulative season pins, games played, and season average — plus their week 9 and week 10 individual game scores. This lets you calculate improving/declining form, week-over-week movement, and rank players by current trajectory rather than just raw average.
+
+
+
+Why Start Here
+
+The Most Improved leaderboard in the PDFs already hints at this — DUFLA is +31.85 pins above their start-of-season average on Monday; WONI is +19.10 on Tuesday. But the raw list doesn't show trajectory direction, context, or whether players are still improving. You can build a full form dashboard from the data already in Supabase.
+
+
+
+Supabase Table Structure
+
+Table
+
+Key Columns
+
+Notes
+
+players
+
+player_id, display_name, team_id, division, season
+
+Master player list
+
+game_scores
+
+score_id, player_id, week, game_number (1 or 2), scratch_score, match_id
+
+One row per game bowled
+
+player_season_stats
+
+player_id, season, games_played, total_pins, season_avg, hgs, hss, most_improved_delta
+
+Refreshed after each week
+
+
+
+Core SQL Logic
+
+-- Week-over-week average movement
+
+WITH weekly_avg AS (
+
+  SELECT player_id,
+
+         week,
+
+         AVG(scratch_score) AS week_avg,
+
+         COUNT(*)           AS games_that_week
+
+  FROM game_scores
+
+  GROUP BY player_id, week
+
+),
+
+with_lag AS (
+
+  SELECT player_id, week, week_avg,
+
+         LAG(week_avg) OVER (PARTITION BY player_id
+
+                             ORDER BY week) AS prev_week_avg
+
+  FROM weekly_avg
+
+)
+
+SELECT p.display_name,
+
+       w.week,
+
+       ROUND(w.week_avg, 1)                    AS this_week,
+
+       ROUND(w.prev_week_avg, 1)               AS last_week,
+
+       ROUND(w.week_avg - w.prev_week_avg, 1)  AS change
+
+FROM with_lag w
+
+JOIN players p USING (player_id)
+
+ORDER BY ABS(w.week_avg - w.prev_week_avg) DESC;
+
+
+
+-- EWMA form index (alpha=0.3, rolling all games)
+
+WITH ordered AS (
+
+  SELECT player_id, scratch_score,
+
+         ROW_NUMBER() OVER (
+
+           PARTITION BY player_id ORDER BY week, game_number) AS seq
+
+  FROM game_scores
+
+),
+
+ewma AS (
+
+  SELECT player_id, seq, scratch_score,
+
+         AVG(scratch_score) OVER (
+
+           PARTITION BY player_id
+
+           ORDER BY seq
+
+           ROWS BETWEEN 4 PRECEDING AND CURRENT ROW) AS rolling_5_avg
+
+  FROM ordered
+
+)
+
+SELECT p.display_name, e.rolling_5_avg AS form_index
+
+FROM ewma e
+
+JOIN players p USING (player_id)
+
+WHERE e.seq = (SELECT MAX(seq) FROM ewma e2
+
+               WHERE e2.player_id = e.player_id)
+
+ORDER BY form_index DESC;
+
+
+
+Supabase Setup Steps
+
+Populate game_scores with both games per player from weeks 9 and 10 recap sheets (each player gets 2 rows per week they bowled).
+
+Create a VIEW player_form that joins game_scores with players and computes rolling 5-game average using a window function.
+
+Create a VIEW most_improved that computes current season_avg minus estimated start-of-season average (season_avg − most_improved_delta from the PDF data).
+
+Set up a Postgres trigger on game_scores INSERT to refresh player_season_stats.
+
+
+
+Dashboards & Visualisations
+
+Chart
+
+Type
+
+Details
+
+Insight
+
+Player Trend Line
+
+Line chart per player
+
+X=game number, Y=scratch score. Overlay rolling 5-game average as a bold line.
+
+Instantly shows improving/declining form
+
+Form Index Leaderboard
+
+Ranked bar chart
+
+Horizontal bars — players sorted by rolling-5 avg. Colour = above/below season avg.
+
+Identifies who is in form right now vs relying on early-season scores
+
+Week-over-Week Movement
+
+Arrow/delta table
+
+Player · Wk9 avg · Wk10 avg · Change (+/-) · Trend arrow ↑↓
+
+Quick scan of who moved most this week
+
+Most Improved Season Chart
+
+Scatter plot
+
+X = start avg (estimated), Y = current avg. Dot size = games played.
+
+Shows genuine improvement vs small sample outliers
+
+
+
+
+
+PRIORITY ★★☆ HIGH VALUE
+
+3. Game 1 vs Game 2 Performance Split
+
+Every UBL match consists of exactly two games. Every recap sheet in the dataset shows both game scores individually. This enables a unique analysis: identifying players and teams that consistently improve or fade across the two-game block — a directly coachable insight.
+
+
+
+Why This Is Uniquely Valuable
+
+Most bowling stats systems only show series totals. The UBL data captures game-level splits, which reveals patterns invisible in averages alone. A player averaging 175 could be consistently 165 / 185 (strong finisher) or 185 / 165 (fades under pressure). Teams exhibit the same patterns.
+
+
+
+Supabase Table Structure
+
+Uses the same game_scores table from Analysis 2. No additional tables required. The game_number column (1 or 2) is the key split dimension.
+
+
+
+Core SQL Logic
+
+-- Player game 1 vs game 2 average split
+
+SELECT
+
+  p.display_name,
+
+  p.team_name,
+
+  ROUND(AVG(CASE WHEN g.game_number = 1
+
+                 THEN g.scratch_score END), 1) AS avg_game1,
+
+  ROUND(AVG(CASE WHEN g.game_number = 2
+
+                 THEN g.scratch_score END), 1) AS avg_game2,
+
+  ROUND(AVG(CASE WHEN g.game_number = 2
+
+                 THEN g.scratch_score END) -
+
+        AVG(CASE WHEN g.game_number = 1
+
+                 THEN g.scratch_score END), 1) AS g2_minus_g1,
+
+  COUNT(DISTINCT g.week) AS weeks_bowled
+
+FROM game_scores g
+
+JOIN players p USING (player_id)
+
+GROUP BY p.player_id, p.display_name, p.team_name
+
+HAVING COUNT(DISTINCT g.week) >= 2
+
+ORDER BY g2_minus_g1 DESC;
+
+
+
+-- Team-level game 1 vs game 2 (sum of 4 bowlers)
+
+SELECT
+
+  t.team_name,
+
+  SUM(CASE WHEN g.game_number = 1 THEN g.scratch_score END) AS team_g1_total,
+
+  SUM(CASE WHEN g.game_number = 2 THEN g.scratch_score END) AS team_g2_total,
+
+  SUM(CASE WHEN g.game_number = 2 THEN g.scratch_score END) -
+
+  SUM(CASE WHEN g.game_number = 1 THEN g.scratch_score END) AS g2_advantage
+
+FROM game_scores g
+
+JOIN players p USING (player_id)
+
+JOIN teams t ON p.team_id = t.team_id
+
+GROUP BY t.team_id, t.team_name
+
+ORDER BY g2_advantage DESC;
+
+
+
+Real Example from Data
+
+Monday Week 10: 4Baggerz bowled 769 in game 1 and 753 in game 2 (−16). Amigos Segundo bowled 741 game 1 and 571 game 2 (−170) — a dramatic collapse in game 2 despite having good individuals. This is exactly the kind of pattern this analysis surfaces.
+
+
+
+Supabase Setup Steps
+
+Confirm game_number (1 or 2) is populated for all game_scores rows. This maps directly from the recap sheet layout.
+
+Create a VIEW player_game_split with avg_game1, avg_game2, split_delta, and consistency_label (Strong Finisher / Fader / Consistent).
+
+Add a computed column: split_label = CASE WHEN g2_minus_g1 > 10 THEN 'Strong Finisher' WHEN g2_minus_g1 < -10 THEN 'Fader' ELSE 'Consistent' END.
+
+
+
+Dashboards & Visualisations
+
+Chart
+
+Type
+
+Details
+
+Insight
+
+Player Split Dot Plot
+
+Diverging bar/dot chart
+
+Each player is a horizontal bar. Bars right of centre = improves game 2; left = fades. Coloured by split_label.
+
+Instantly classifies every player
+
+Team Split Comparison
+
+Grouped bar chart
+
+For each team: two bars (game 1 avg, game 2 avg) side by side.
+
+Reveals which teams are better starters vs closers
+
+Head-to-Head Split Impact
+
+Table
+
+Match · Team1 G1 · Team1 G2 · Team2 G1 · Team2 G2 · Who won G2
+
+Shows whether the G2 winner typically wins the match
+
+Week-by-Week Split Trend
+
+Small multiple lines
+
+One mini chart per player: G1 and G2 scores by week.
+
+Tracks whether fade pattern is consistent or occasional
+
+
+
+
+
+PRIORITY ★★☆ HIGH VALUE
+
+4. Head-to-Head Matchup Breakdown
+
+Every recap sheet gives the exact scores for each game in each matchup. This dataset contains 8 complete matchups across 2 weeks across both divisions — enough to build a full head-to-head matrix, margin-of-victory analysis, and lineup contribution tracking.
+
+
+
+What This Unlocks
+
+Beyond the W/L record, head-to-head data answers questions like: Which team wins when it's close? Which individual bowler consistently outperforms their counterpart in matchups? Which team is the most inconsistent in results? These drive engagement — every bowler wants to know who beats who.
+
+
+
+Supabase Table Structure
+
+Table
+
+Key Columns
+
+Notes
+
+matches
+
+match_id, week, division, home_team_id, away_team_id, home_points, away_points, home_series, away_series
+
+One row per match
+
+match_game_totals
+
+match_id, game_number, home_score, away_score, winner (home/away/draw)
+
+Two rows per match
+
+player_match_scores
+
+score_id, match_id, player_id, team_id, game_number, scratch_score
+
+Individual bowler scores per match game
+
+
+
+Core SQL Logic
+
+-- Head-to-head matrix (points won between every pair)
+
+SELECT
+
+  t1.team_name AS team,
+
+  t2.team_name AS opponent,
+
+  SUM(CASE WHEN m.home_team_id = t1.team_id
+
+           THEN m.home_points ELSE m.away_points END) AS pts_won,
+
+  SUM(CASE WHEN m.home_team_id = t1.team_id
+
+           THEN m.away_points ELSE m.home_points END) AS pts_conceded
+
+FROM matches m
+
+JOIN teams t1 ON t1.team_id IN (m.home_team_id, m.away_team_id)
+
+JOIN teams t2 ON t2.team_id IN (m.home_team_id, m.away_team_id)
+
+             AND t2.team_id != t1.team_id
+
+GROUP BY t1.team_id, t1.team_name, t2.team_id, t2.team_name;
+
+
+
+-- Margin of victory / defeat per match
+
+SELECT
+
+  ht.team_name AS home_team,
+
+  at.team_name AS away_team,
+
+  m.week,
+
+  m.home_series, m.away_series,
+
+  ABS(m.home_series - m.away_series) AS pin_margin,
+
+  CASE WHEN m.home_series > m.away_series THEN ht.team_name
+
+       WHEN m.away_series > m.home_series THEN at.team_name
+
+       ELSE 'Draw' END                  AS series_winner,
+
+  m.home_points, m.away_points
+
+FROM matches m
+
+JOIN teams ht ON m.home_team_id = ht.team_id
+
+JOIN teams at ON m.away_team_id = at.team_id
+
+ORDER BY m.week, pin_margin DESC;
+
+
+
+Supabase Setup Steps
+
+Populate matches with all matchups from both weeks, both divisions (8 matchups × 2 divisions × 2 weeks = 32 rows).
+
+Populate match_game_totals with the team game scores from each recap sheet (2 rows per match = 64 rows total).
+
+Create a Supabase RPC function get_h2h_matrix(division, season) that returns the pivot table for the dashboard.
+
+Create a VIEW upset_detector: matches where the lower-ranked team won.
+
+
+
+Dashboards & Visualisations
+
+Chart
+
+Type
+
+Details
+
+Insight
+
+H2H Results Matrix
+
+N×N heatmap grid
+
+Teams on both axes. Cell colour = points won in head-to-head. Green = dominated, red = dominated by.
+
+Who beats who at a glance
+
+Match Margin Histogram
+
+Histogram
+
+X = pin margin of series victory, Y = count. Bins: 0-50, 51-100, 100-200, 200+
+
+Shows whether matches are close or blowouts
+
+Lineup Contribution Bars
+
+Stacked bar per match
+
+Each bar = one match. 4 stacked segments = each bowler's game total. Colour per player.
+
+Identifies which bowlers drive wins vs drag results down
+
+Win When It Matters Table
+
+Filtered table
+
+Matches decided by ≤1 point (close matches only). Shows who wins the close ones.
+
+Pressure performance indicator
+
+
+
+
+
+PART B  —  Full Analysis Catalogue
+
+
+
+5. Player Performance Averages & Rankings
+
+Season average, median, and standard deviation per player across both divisions. The data provides cumulative pins and games played, giving exact season averages plus per-week game-level scores for variance calculations.
+
+
+
+Supabase Logic
+
+-- Full player rankings with variance
+
+SELECT p.display_name, t.team_name,
+
+       ps.season_avg,
+
+       ps.games_played,
+
+       ps.hgs, ps.hss,
+
+       ROUND(STDDEV(g.scratch_score), 2) AS score_stddev,
+
+       RANK() OVER (PARTITION BY p.division
+
+                    ORDER BY ps.season_avg DESC) AS division_rank
+
+FROM players p
+
+JOIN player_season_stats ps USING (player_id)
+
+JOIN game_scores g USING (player_id)
+
+JOIN teams t USING (team_id)
+
+GROUP BY p.player_id, p.display_name, t.team_name,
+
+         ps.season_avg, ps.games_played, ps.hgs, ps.hss, p.division
+
+ORDER BY p.division, division_rank;
+
+
+
+Setup
+
+Populate player_season_stats from the 'Bowler Statistics' section of each PDF (Avg column = season avg, Pins / Gms = totals).
+
+The Avg column in the PDF is already calculated — insert directly. Supabase computes STDDEV from game_scores rows.
+
+Create a VIEW division_leaderboard partitioned by division, ordered by season_avg DESC.
+
+
+
+Visualisations
+
+Chart
+
+Type
+
+Key Insight
+
+Division Leaderboard
+
+Ranked table with medals for top 3
+
+Full average ranking with HGS and HSS columns
+
+Average Distribution Histogram
+
+Histogram by 10-pin buckets
+
+Shows talent spread — how many bowlers in each range
+
+Men vs Women Comparison
+
+Side-by-side box plots
+
+Separate distributions; Monday has Dorothy & Darshi, Tuesday has 7 women
+
+
+
+
+
+6. Participation Rate & Roster Attendance
+
+The Bowler Statistics section flags which players bowled each week (LW column shows week number; 0 means absent). This lets you calculate attendance rates, identify teams relying on a small core, and flag availability risks.
+
+
+
+Supabase Logic
+
+-- Attendance rate per player
+
+SELECT p.display_name, t.team_name,
+
+       COUNT(CASE WHEN g.scratch_score > 0 THEN 1 END) AS weeks_bowled,
+
+       s.total_weeks,
+
+       ROUND(100.0 * COUNT(CASE WHEN g.scratch_score > 0 THEN 1 END)
+
+             / s.total_weeks, 1)                        AS attendance_pct
+
+FROM players p
+
+JOIN game_scores g USING (player_id)
+
+JOIN teams t USING (team_id)
+
+JOIN seasons s ON s.season_id = p.season_id
+
+GROUP BY p.player_id, p.display_name, t.team_name, s.total_weeks
+
+ORDER BY attendance_pct DESC;
+
+
+
+Key Setup Note
+
+Add a bowled_week_flag BOOLEAN column to game_scores, set to TRUE when a score exists, FALSE for absent weeks. This enables clean attendance aggregation.
+
+
+
+Visualisations
+
+Chart
+
+Type
+
+Key Insight
+
+Team Attendance Heat Map
+
+Grid: team rows × week cols, green/red cells
+
+Instantly shows which teams have consistent lineups vs frequent absences
+
+Attendance % Leaderboard
+
+Bar chart sorted by %
+
+Player reliability ranking
+
+Core vs Occasional Bowler Pie
+
+Pie per team
+
+What % of team's pins come from bowlers with >70% attendance
+
+
+
+
+
+7. Most Improved — Season Trajectory Analysis
+
+Both PDFs include an explicit 'Most Improved' list showing how many pins above their start-of-season average each player currently sits. DUFLA on Monday leads at +31.85; WONI on Tuesday leads at +19.10. This is ready to visualise immediately.
+
+
+
+Supabase Logic
+
+-- Most improved with current form context
+
+SELECT p.display_name,
+
+       ps.most_improved_delta    AS season_improvement,
+
+       ps.season_avg             AS current_avg,
+
+       ROUND(ps.season_avg -
+
+             ps.most_improved_delta, 1) AS est_start_avg,
+
+       ps.games_played,
+
+       CASE WHEN ps.games_played < 8 THEN 'Small sample'
+
+            ELSE 'Reliable' END         AS sample_flag
+
+FROM player_season_stats ps
+
+JOIN players p USING (player_id)
+
+ORDER BY ps.most_improved_delta DESC;
+
+
+
+Visualisations
+
+Chart
+
+Type
+
+Key Insight
+
+Improvement Leaderboard
+
+Horizontal bar (sorted by delta)
+
+Top improvers with sample-size flag for small-game players
+
+Before/After Scatter
+
+Scatter: start avg (x) vs current avg (y), diagonal = no change
+
+Points above diagonal = improved; below = regressed
+
+Improvement by Team
+
+Grouped bars per team
+
+Which team has developed the most players this season
+
+
+
+
+
+8. High Game & Series Records
+
+HGS and HSS are tracked per player across the full season and are explicitly listed in the Bowler Statistics section. Weekly high game and series winners are also listed in 'Last Week Highs'. This enables personal bests, weekly award tracking, and record-chase dashboards.
+
+
+
+Supabase Logic
+
+-- Top 10 high games, both divisions
+
+SELECT p.display_name, t.team_name, p.division,
+
+       ps.hgs AS high_game,
+
+       ps.hss AS high_series
+
+FROM player_season_stats ps
+
+JOIN players p USING (player_id)
+
+JOIN teams t USING (team_id)
+
+ORDER BY ps.hgs DESC LIMIT 10;
+
+
+
+Add a weekly_highs table: (week, division, category, rank, player_id, score) — populate from 'Last Week Highs' in each PDF.
+
+Create a personal_bests VIEW: flags any game_score that matches or exceeds the player's all-time HGS.
+
+
+
+Visualisations
+
+Chart
+
+Type
+
+Key Insight
+
+Season Record Board
+
+Trophy-style table
+
+Top 5 HGS and HSS for each division with player name and date
+
+Weekly Award Timeline
+
+Icon timeline
+
+Shows who won high game/series each week — streaks and consistency
+
+Personal Best Tracker
+
+Per-player mini chart
+
+Each game shown as a dot; personal best highlighted with a star
+
+
+
+
+
+9. Cross-Division Comparison (Monday vs Tuesday)
+
+Both divisions are at the same point in the season with the same format. Comparing average scoring levels, top performer distributions, and team strength reveals structural differences between the two leagues — useful for handicap calibration and league planning.
+
+
+
+Key Observations Available in the Data
+
+Tuesday's top average is Omar at 193.50; Monday's top is Deepen at 180.25 — Tuesday scores approximately 13 pins higher at the top end.
+
+Tuesday's top HGS is Hari at 258; Monday's is Josline at 243.
+
+Tuesday's top team HGS: Eastline Stars 840 vs Monday's Playmasters 806.
+
+
+
+Supabase Logic
+
+-- Division-level scoring comparison
+
+SELECT p.division,
+
+       ROUND(AVG(ps.season_avg), 2)  AS mean_avg,
+
+       ROUND(STDDEV(ps.season_avg), 2) AS stddev_avg,
+
+       MAX(ps.season_avg)            AS top_average,
+
+       MAX(ps.hgs)                   AS top_hgs,
+
+       MAX(ps.hss)                   AS top_hss,
+
+       COUNT(*)                       AS active_bowlers
+
+FROM player_season_stats ps
+
+JOIN players p USING (player_id)
+
+WHERE ps.games_played >= 6
+
+GROUP BY p.division;
+
+
+
+Visualisations
+
+Chart
+
+Type
+
+Key Insight
+
+Division Average Comparison
+
+Box plot (one box per division)
+
+Median, IQR, and outliers for each division's scoring distribution
+
+Overlapping Histogram
+
+Two semi-transparent histograms overlaid
+
+Shape of talent distribution — is one division deeper or more top-heavy
+
+Top 10 Cross-Division Leaderboard
+
+Merged ranking table
+
+If Monday and Tuesday bowlers competed together, what would the leaderboard look like
+
+
+
+
+
+10. Team Consistency & Variance
+
+Using team series totals across weeks, you can calculate which teams score consistently (low variance) vs which are unpredictable. Consistent teams are harder to upset; volatile teams may spike but also collapse — visible in the data.
+
+
+
+Supabase Logic
+
+-- Team consistency: StdDev of weekly series totals
+
+SELECT t.team_name,
+
+       ROUND(AVG(m.home_series + m.away_series) / 2, 0) AS avg_team_series,
+
+       ROUND(STDDEV(
+
+         CASE WHEN m.home_team_id = t.team_id THEN m.home_series
+
+              ELSE m.away_series END), 0)                AS series_stddev,
+
+       MIN(CASE WHEN m.home_team_id = t.team_id THEN m.home_series
+
+                ELSE m.away_series END)                  AS worst_series,
+
+       MAX(CASE WHEN m.home_team_id = t.team_id THEN m.home_series
+
+                ELSE m.away_series END)                  AS best_series
+
+FROM teams t
+
+JOIN matches m ON t.team_id IN (m.home_team_id, m.away_team_id)
+
+GROUP BY t.team_id, t.team_name
+
+ORDER BY series_stddev ASC;
+
+
+
+Visualisations
+
+Chart
+
+Type
+
+Key Insight
+
+Consistency Ranking
+
+Error bar chart
+
+Team avg series with ± 1 StdDev bars. Short bars = consistent.
+
+Best vs Worst Series Range
+
+Butterfly chart
+
+Best and worst series per team side by side. Shows ceiling and floor.
+
+
+
+
+
+11. Lineup Contribution Analysis
+
+Within each match, the 4-bowler lineup can be evaluated for individual contribution. Which bowler carries the team? Which position consistently underperforms? This is directly available from the player_match_scores table.
+
+
+
+-- Bowler contribution as % of team total
+
+SELECT p.display_name,
+
+       SUM(g.scratch_score)                         AS total_pins,
+
+       SUM(ts.team_total)                           AS team_total_over_matches,
+
+       ROUND(100.0 * SUM(g.scratch_score) /
+
+             SUM(ts.team_total), 1)                 AS contribution_pct
+
+FROM game_scores g
+
+JOIN players p USING (player_id)
+
+JOIN (SELECT match_id, team_id, SUM(scratch_score) AS team_total
+
+      FROM game_scores JOIN players USING (player_id)
+
+      GROUP BY match_id, team_id) ts
+
+  ON ts.match_id = g.match_id AND ts.team_id = p.team_id
+
+GROUP BY p.player_id, p.display_name
+
+ORDER BY contribution_pct DESC;
+
+
+
+Visualisations
+
+Chart
+
+Type
+
+Key Insight
+
+Team Contribution Pie
+
+Per-team pie chart
+
+Share of team pins by bowler across all matches
+
+Under/Over Performance Heatmap
+
+Grid: player rows × match cols
+
+Colour = bowled above/below personal avg in that match
+
+
+
+
+
+12. Remaining Schedule & Strength-of-Opponent
+
+The PDFs include explicit pairings for weeks 11 and 12 in both divisions. Combined with current standings, you can calculate each team's remaining schedule difficulty and model expected points outcomes.
+
+
+
+Supabase Logic
+
+-- Remaining schedule difficulty (avg opponent rank)
+
+WITH future_matches AS (
+
+  SELECT sc.week, sc.home_team_id AS team_id,
+
+         ss.rank AS opp_rank
+
+  FROM schedule sc
+
+  JOIN season_standings ss ON ss.team_id = sc.away_team_id
+
+  WHERE sc.week > 10
+
+  UNION ALL
+
+  SELECT sc.week, sc.away_team_id,
+
+         ss.rank AS opp_rank
+
+  FROM schedule sc
+
+  JOIN season_standings ss ON ss.team_id = sc.home_team_id
+
+  WHERE sc.week > 10
+
+)
+
+SELECT t.team_name,
+
+       ROUND(AVG(f.opp_rank), 1) AS avg_remaining_opp_rank,
+
+       COUNT(*) AS remaining_matches
+
+FROM future_matches f
+
+JOIN teams t USING (team_id)
+
+GROUP BY t.team_id, t.team_name
+
+ORDER BY avg_remaining_opp_rank DESC;
+
+
+
+Visualisations
+
+Chart
+
+Type
+
+Key Insight
+
+Schedule Difficulty Matrix
+
+Heat map: team rows × remaining week cols, colour = opponent rank
+
+Green = easy match, red = tough match coming up
+
+Points Projection Range
+
+Range bar chart
+
+Expected min/max final points per team based on schedule difficulty
+
+
+
+
+
+13. Women's Division Standalone Analytics
+
+Both PDFs track women's High Game, High Series, and Average separately. Monday has Dorothy and Darshi; Tuesday has Sonika, Justine, Rose, Nilma, Dashni, Amrit, and Alexa. The Tuesday women's data is rich enough for full standalone analytics.
+
+
+
+Filter all analyses above by gender = 'F' to produce women-only equivalents of every analysis.
+
+Tuesday's Sonika leads at 156.45 average; Justine is improving the fastest (+6.39 season improvement). Dorothy on Monday is the standout with a 224 HGS and 381 HSS.
+
+Add a gender column to the players table and an is_women_division BOOLEAN to each stats view.
+
+
+
+Visualisations
+
+Chart
+
+Type
+
+Key Insight
+
+Women's Leaderboard
+
+Separate ranked table
+
+Top averages, HGS, HSS for women only
+
+Women's Trend Lines
+
+Line chart per player
+
+Form trajectory for all women bowlers
+
+Pins Over Average — Women
+
+Bar chart
+
+Weekly pins-over-average for each women's bowler
+
+
+
+
+
+14. Pins Over Average — Weekly Award Tracking
+
+The 'Last Week Highs' section explicitly lists Pins Over Average winners (1st and 2nd) each week per division. On Monday Week 10, Parth led with +64. On Tuesday Week 9, Sharu led with +96. This is a weekly engagement metric — who bowled their best relative to expectations.
+
+
+
+Supabase Logic
+
+-- Pins over average per game
+
+SELECT p.display_name,
+
+       g.week,
+
+       g.scratch_score,
+
+       ps.season_avg,
+
+       ROUND(g.scratch_score - ps.season_avg, 0) AS pins_over_avg
+
+FROM game_scores g
+
+JOIN players p USING (player_id)
+
+JOIN player_season_stats ps USING (player_id)
+
+ORDER BY pins_over_avg DESC;
+
+
+
+Visualisations
+
+Chart
+
+Type
+
+Key Insight
+
+Weekly POA Winners Timeline
+
+Bar chart per week
+
+Shows consistency of over-performance — same players winning repeatedly
+
+POA Distribution
+
+Histogram
+
+Most games cluster near 0; large positive values = exceptional performances
+
+Individual POA Record
+
+Mini leaderboard per player
+
+Best ever pins-over-average game for each player
+
+
+
+
+
+
+
+Supabase Implementation Master Reference
+
+The table below summarises every table required across all 14 analyses, their row estimate from this dataset, and dependencies.
+
+
+
+Table
+
+Rows (est.)
+
+Feeds Analyses
+
+Key Columns
+
+players
+
+~120 (both div)
+
+All
+
+player_id, display_name, team_id, division, gender
+
+teams
+
+16 (8 × 2 div)
+
+1,4,9,10,11
+
+team_id, team_name, division, season_id
+
+seasons
+
+1
+
+1,2
+
+season_id, total_weeks, status
+
+game_scores
+
+~480
+
+2,3,4,6,8,11,14
+
+score_id, player_id, week, game_number, scratch_score, match_id
+
+matches
+
+~32
+
+1,4,10,12
+
+match_id, week, home_team_id, away_team_id, home_points, away_points, home_series, away_series
+
+player_season_stats
+
+~120
+
+2,5,7,8,9,13
+
+player_id, season_avg, games_played, total_pins, hgs, hss, most_improved_delta
+
+weekly_results
+
+~160
+
+1
+
+result_id, team_id, week, wins, losses, total_points, total_pins
+
+schedule
+
+~64 (future wks)
+
+12
+
+week, home_team_id, away_team_id, division
+
+weekly_highs
+
+~40
+
+8,14
+
+week, division, category, rank, player_id, score
+
+
+
+
+
+Recommended Build Order
+
+Load static reference data: players, teams, seasons (30 mins)
+
+Load game_scores from weeks 9 & 10 recap sheets (~480 rows — one row per game per player) (1 hour)
+
+Load player_season_stats from Bowler Statistics section of each PDF (~120 rows) (1 hour)
+
+Load matches and weekly_results from team standings sections (45 mins)
+
+Build VIEWs: season_standings, player_form, player_game_split, division_leaderboard (1 hour)
+
+Build Analyses 1–4 dashboards (Priority builds) (1–2 days)
+
+Extend with Analyses 5–14 iteratively (1 week)
+
+
+
+
+
+💡 Pro Tip: Supabase Realtime
+
+Enable Supabase Realtime on game_scores and weekly_results tables. Any dashboard built against these tables will auto-update the moment new scores are inserted — turning weekly results entry into a live scoreboard with zero additional engineering.
+
+
+
+
+
+UBL Season 16  ·  Analytics Implementation Guide  ·  March 2026
+

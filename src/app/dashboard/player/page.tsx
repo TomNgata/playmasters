@@ -21,11 +21,28 @@ type Teammate = {
 
 type UploadStatus = 'idle' | 'uploading' | 'success' | 'error';
 
+type UBLBowler = {
+    bowler_name: string;
+    team_name: string;
+    games: number;
+    average: number;
+    high_game: number;
+    high_series: number;
+    last_week_score: number;
+    handicap: number;
+    high_game_hdcp: number;
+    high_series_hdcp: number;
+    division: string;
+};
+
 export default function PlayerDashboard() {
     const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [profile, setProfile] = useState<PlayerProfile | null>(null);
     const [teammates, setTeammates] = useState<Teammate[]>([]);
+    const [ublProfile, setUblProfile] = useState<UBLBowler | null>(null);
+    const [allPlaymasters, setAllPlaymasters] = useState<UBLBowler[]>([]);
+    const [selectedBowlerName, setSelectedBowlerName] = useState<string>('');
     const [loading, setLoading] = useState(true);
     const [uploadStatus, setUploadStatus] = useState<UploadStatus>('idle');
     const [uploadMessage, setUploadMessage] = useState('');
@@ -146,6 +163,26 @@ export default function PlayerDashboard() {
                             heatmapData
                         });
                     }
+
+                    // 4. Fetch UBL Bowlers (Playmasters only)
+                    const { data: ublData } = await supabase
+                        .from('ubl_bowler_stats')
+                        .select('*')
+                        .ilike('team_name', '%PLAYMASTERS%');
+
+                    if (ublData && isMounted) {
+                        setAllPlaymasters(ublData);
+                        
+                        // Try to auto-select the profile name match
+                        const match = ublData.find(b => b.bowler_name.toLowerCase() === (profileData?.name || '').toLowerCase());
+                        if (match) {
+                            setUblProfile(match);
+                            setSelectedBowlerName(match.bowler_name);
+                        } else if (ublData.length > 0) {
+                            setUblProfile(ublData[0]);
+                            setSelectedBowlerName(ublData[0].bowler_name);
+                        }
+                    }
                 }
             } catch (err) {
                 console.error("Dashboard Fetch Exception:", err);
@@ -158,6 +195,14 @@ export default function PlayerDashboard() {
 
         return () => { isMounted = false; };
     }, [router]);
+
+    const handleBowlerChange = (name: string) => {
+        const found = allPlaymasters.find(b => b.bowler_name === name);
+        if (found) {
+            setUblProfile(found);
+            setSelectedBowlerName(name);
+        }
+    };
 
 
 
@@ -258,12 +303,127 @@ export default function PlayerDashboard() {
                     {/* LEFT COLUMN: Analytics */}
                     <div className="lg:col-span-2 space-y-8">
 
+                        {/* UBL Personal Profile Card (NEW) */}
+                        <section className="bg-navy border border-white/5 rounded-2xl p-8 relative overflow-hidden group bg-gradient-to-br from-navy via-navy to-strike/5">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                                <div>
+                                    <h2 className="font-ui text-2xl font-bold tracking-[4px] text-white uppercase flex items-center gap-3">
+                                        <span className="w-2 h-2 rounded-full bg-strike shadow-[0_0_8px_#E82030]" />
+                                        UBL Profile
+                                    </h2>
+                                    <p className="text-gray-mid text-xs font-ui tracking-[2px] mt-1 uppercase">Official League Statistics // Season 16</p>
+                                </div>
+
+                                <div className="flex items-center gap-3">
+                                    <label className="font-ui text-[10px] text-gray-500 uppercase tracking-widest font-bold">Switch Player:</label>
+                                    <select 
+                                        value={selectedBowlerName}
+                                        onChange={(e) => handleBowlerChange(e.target.value)}
+                                        className="bg-navy-dark border border-white/10 text-white font-ui text-xs px-3 py-2 rounded-lg focus:border-strike outline-none transition-all"
+                                    >
+                                        <option value="">Select a Bowler</option>
+                                        {allPlaymasters.map(b => (
+                                            <option key={b.bowler_name} value={b.bowler_name}>{b.bowler_name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            {ublProfile ? (
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    {/* Stats Grid */}
+                                    <div className="p-4 bg-navy-dark border border-white/5 rounded-xl group hover:border-strike/30 transition-all">
+                                        <p className="font-ui text-[9px] text-gray-mid uppercase tracking-widest mb-1">League Avg</p>
+                                        <p className="font-wordmark text-4xl text-strike italic">{ublProfile.average}</p>
+                                        <div className="mt-2 flex items-center gap-2">
+                                            <span className="text-[10px] text-gray-500 font-bold">{ublProfile.games} Games</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="p-4 bg-navy-dark border border-white/5 rounded-xl group hover:border-bat-blue/30 transition-all">
+                                        <p className="font-ui text-[9px] text-gray-mid uppercase tracking-widest mb-1">Weekly Focus (LW)</p>
+                                        <p className={`font-wordmark text-4xl italic ${ublProfile.last_week_score >= ublProfile.average ? 'text-emerald-400' : 'text-amber-400'}`}>
+                                            {ublProfile.last_week_score}
+                                        </p>
+                                        <div className="mt-2 flex items-center gap-2">
+                                            <span className="text-[10px] text-gray-500 font-bold">
+                                                {ublProfile.last_week_score >= ublProfile.average ? '↑ Pacing Up' : '↓ Below Avg'}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-4 bg-navy-dark border border-white/5 rounded-xl group hover:border-white/20 transition-all">
+                                        <p className="font-ui text-[9px] text-gray-mid uppercase tracking-widest mb-1">Handicap</p>
+                                        <p className="font-wordmark text-4xl text-white italic">{ublProfile.handicap}</p>
+                                        <div className="mt-2 flex items-center gap-2">
+                                            <span className="text-[10px] text-gray-500 font-bold font-ui">Competition Buffer</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-4 bg-navy-dark border border-white/5 rounded-xl group hover:border-ball-pink/30 transition-all">
+                                        <p className="font-ui text-[9px] text-gray-mid uppercase tracking-widest mb-1">Peak Game (HGS)</p>
+                                        <p className="font-wordmark text-4xl text-ball-pink italic">{ublProfile.high_game}</p>
+                                        <div className="mt-2 flex items-center gap-2">
+                                            <span className="text-[10px] text-gray-500 font-bold">HDCP: {ublProfile.high_game_hdcp}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="py-12 text-center border-2 border-dashed border-white/5 rounded-xl">
+                                    <p className="text-gray-dark font-ui uppercase text-sm tracking-widest">Select a Playmaster to view UBL stats</p>
+                                </div>
+                            )}
+
+                            {ublProfile && (
+                                <div className="mt-8">
+                                    <h3 className="font-ui text-[10px] text-gray-500 uppercase tracking-[4px] mb-4 font-bold flex items-center gap-2">
+                                        <div className="w-4 h-[1px] bg-white/10"></div>
+                                        Teammate Standings ({ublProfile.division})
+                                    </h3>
+                                    <div className="overflow-hidden rounded-xl border border-white/5 bg-navy-dark/30">
+                                        <table className="w-full text-left font-ui text-xs">
+                                            <thead>
+                                                <tr className="bg-navy-dark/50 border-b border-white/5">
+                                                    <th className="py-3 px-4 text-gray-mid font-bold uppercase tracking-widest">Player</th>
+                                                    <th className="py-3 px-4 text-gray-mid font-bold uppercase tracking-widest text-center">Avg</th>
+                                                    <th className="py-3 px-4 text-gray-mid font-bold uppercase tracking-widest text-center">HGS</th>
+                                                    <th className="py-3 px-4 text-gray-mid font-bold uppercase tracking-widest text-right">Trend</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-white/5">
+                                                {allPlaymasters
+                                                    .filter(b => b.division === ublProfile.division)
+                                                    .sort((a, b) => b.average - a.average)
+                                                    .map((teammate) => (
+                                                        <tr key={teammate.bowler_name} className={`hover:bg-white/[0.02] transition-colors ${teammate.bowler_name === selectedBowlerName ? 'bg-strike/5' : ''}`}>
+                                                            <td className="py-3 px-4">
+                                                                <p className="font-bold text-white">{teammate.bowler_name}</p>
+                                                                <p className="text-[9px] text-gray-500 uppercase">{teammate.team_name}</p>
+                                                            </td>
+                                                            <td className="py-3 px-4 text-center font-wordmark text-lg text-white">{teammate.average}</td>
+                                                            <td className="py-3 px-4 text-center text-gray-300 font-bold">{teammate.high_game}</td>
+                                                            <td className="py-3 px-4 text-right">
+                                                                <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${teammate.last_week_score >= teammate.average ? 'bg-emerald-500/10 text-emerald-400' : 'bg-strike/10 text-strike'}`}>
+                                                                    {teammate.last_week_score >= teammate.average ? '+' : ''}{Math.round(teammate.last_week_score - teammate.average)}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
+                        </section>
+
                         {/* Focus Fatigue Engine */}
                         <section className="bg-navy border border-white/5 rounded-2xl p-8 relative overflow-hidden group">
                             <div className="relative z-10">
-                                <h2 className="font-ui text-2xl font-bold tracking-[4px] text-white mb-6 uppercase flex items-center gap-3">
-                                    <span className="w-2 h-2 rounded-full bg-strike shadow-[0_0_8px_#E82030]" />
-                                    Focus Engine
+                                <h2 className="font-ui text-2xl font-bold tracking-[4px] text-white mb-6 uppercase flex items-center justify-between gap-3">
+                                    <div className="flex items-center gap-3">
+                                        <span className="w-2 h-2 rounded-full bg-strike shadow-[0_0_8px_#E82030]" />
+                                        Focus Engine
+                                    </div>
                                 </h2>
                                 
                                 <p className="text-gray-mid text-sm leading-relaxed mb-6 font-medium">
@@ -277,7 +437,7 @@ export default function PlayerDashboard() {
                                         
                                         return (
                                             <div key={i} className={`flex flex-col items-center bg-navy-dark border ${isDip ? 'border-strike border-b-2 shadow-[0_4px_15px_rgba(224,31,61,0.15)]' : 'border-white/5'} rounded-lg p-3 overflow-hidden relative transition-all`}>
-                                                <span className="font-ui text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold flex items-center gap-1">
+                                                <span className="font-ui text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2 flex items-center gap-1">
                                                     {isDip && <span className="w-1.5 h-1.5 rounded-full bg-strike animate-pulse"></span>}
                                                     F{i+1}
                                                 </span>
@@ -297,9 +457,11 @@ export default function PlayerDashboard() {
                                     <div className="mt-8 p-5 bg-gradient-to-r from-strike/10 to-transparent border-l-4 border-strike rounded-r-xl flex items-start gap-4">
                                         <div className="text-strike mt-0.5 text-xl">⚠️</div>
                                         <div>
-                                            <h4 className="font-bold text-white uppercase text-sm mb-1 tracking-wider">Pressure Deviation Detected</h4>
+                                            <h4 className="font-bold text-white uppercase text-sm mb-1 tracking-wider">
+                                                Pressure Deviation Detected
+                                            </h4>
                                             <p className="text-sm text-gray-300 font-medium">
-                                                In your last match, performance dropped below your established average in <span className="text-white font-bold">Frames {stats.fatigueFrames.map(f => f + 1).join(', ')}</span>. Re-center your focus during these specific intervals!
+                                                In your last match, performance dropped below your established average in Frames {stats.fatigueFrames.map(f => f + 1).join(', ')}. Re-center your focus during these specific intervals!
                                             </p>
                                         </div>
                                     </div>

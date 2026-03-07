@@ -12,6 +12,14 @@ async function extract() {
     } else {
         console.log('Not found:', docxPath);
     }
+    const guidePath = path.resolve('../UBL_Analytics_Implementation_Guide.docx');
+    if (fs.existsSync(guidePath)) {
+        const result = await mammoth.extractRawText({ path: guidePath });
+        fs.writeFileSync('guide.txt', result.value);
+        console.log('Saved guide.txt');
+    } else {
+        console.log('Not found:', guidePath);
+    }
 
     const pdf1 = path.resolve('../MonWk5Results_UBLSn16_2026_Amended.pdf');
     if (fs.existsSync(pdf1)) {
