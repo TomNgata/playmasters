@@ -193,7 +193,6 @@ export default function PlayerDashboard() {
                                         {[
                                             { label: 'Average', value: selectedPlayer.average, color: 'text-white' },
                                             { label: 'High Series', value: selectedPlayer.high_series, color: 'text-ball-pink', highlight: true },
-                                            { label: 'Handicap', value: selectedPlayer.handicap, color: 'text-bat-light' },
                                             { label: 'Weekly High', value: Math.max(selectedPlayer.game1 || 0, selectedPlayer.game2 || 0), color: 'text-white' }
                                         ].map((stat, i) => (
                                             <div key={i} className={`bg-white/5 border border-white/10 p-5 rounded-xl border-t-4 ${stat.highlight ? 'border-t-ball-pink bg-gradient-to-br from-ball-pink/[0.08] to-transparent' : 'border-t-strike'}`}>
