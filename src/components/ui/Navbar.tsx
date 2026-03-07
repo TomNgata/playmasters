@@ -46,6 +46,10 @@ export default function Navbar() {
                             {link.name}
                         </Link>
                     ))}
+                    <div className="px-8 flex items-center gap-3 h-full">
+                        <span className="w-2 h-2 rounded-full bg-ball-pink animate-[pulse_2s_ease-in-out_infinite] shadow-[0_0_8px_#D42080]" />
+                        <span className="text-[10px] font-ui font-black uppercase tracking-[3px] text-ball-pink">Live</span>
+                    </div>
                 </div>
 
                 {/* Mobile Menu Button */}

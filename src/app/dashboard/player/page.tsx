@@ -25,14 +25,13 @@ export default function PlayerDashboard() {
     const [allPlaymasters, setAllPlaymasters] = useState<UBLBowler[]>([]);
     const [selectedBowlerName, setSelectedBowlerName] = useState<string>('');
     const [loading, setLoading] = useState(true);
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         let isMounted = true;
-
         async function fetchData() {
             try {
                 const supabase = createClient();
-
                 const { data: allBowlerData } = await supabase
                     .from('ubl_bowler_stats')
                     .select('*')
@@ -41,7 +40,6 @@ export default function PlayerDashboard() {
                 if (isMounted && allBowlerData) {
                     const playmasters = allBowlerData.filter(b => (b.team_name || '').toUpperCase().includes('PLAYMASTERS'));
                     setAllPlaymasters(playmasters);
-
                     if (playmasters.length > 0) {
                         setSelectedBowlerName(playmasters[0].bowler_name);
                     }
@@ -49,18 +47,43 @@ export default function PlayerDashboard() {
             } catch (err) {
                 console.error("Dashboard Fetch Exception:", err);
             } finally {
-                if (isMounted) setLoading(false);
+                if (isMounted) {
+                    setLoading(false);
+                    setTimeout(() => setMounted(true), 100);
+                }
             }
         }
-
         fetchData();
         return () => { isMounted = false; };
     }, []);
 
     const selectedPlayer = allPlaymasters.find(b => b.bowler_name === selectedBowlerName) || null;
 
+    // Counter Hook helper
+    function Counter({ value, duration = 1000 }: { value: number; duration?: number }) {
+        const [count, setCount] = useState(0);
+        useEffect(() => {
+            if (!mounted) return;
+            let start = 0;
+            const end = value;
+            const range = end - start;
+            let current = start;
+            const increment = end > start ? 1 : -1;
+            const stepTime = Math.abs(Math.floor(duration / range));
+            const timer = setInterval(() => {
+                current += increment;
+                setCount(current);
+                if (current === end) clearInterval(timer);
+            }, stepTime);
+            return () => clearInterval(timer);
+        }, [value, mounted]);
+        return <span>{count}</span>;
+    }
+
     const handleBowlerChange = (name: string) => {
+        setMounted(false);
         setSelectedBowlerName(name);
+        setTimeout(() => setMounted(true), 50);
     };
 
     if (loading) return (
@@ -79,49 +102,62 @@ export default function PlayerDashboard() {
 
     const maxScoreForBars = selectedPlayer ? Math.max(selectedPlayer.high_game || 0, 300) : 300;
 
+    // G1 vs G2 Split Calculation
+    const g1 = selectedPlayer?.game1 || 0;
+    const g2 = selectedPlayer?.game2 || 0;
+    const splitDiff = g2 - g1;
+    const splitType = splitDiff > 15 ? "Strong Finisher" : splitDiff < -15 ? "Quick Starter" : "Consistent";
+    const splitColor = splitDiff > 15 ? "text-ball-pink border-ball-pink" : splitDiff < -15 ? "text-strike border-strike" : "text-bat-light border-bat-light";
+
     return (
-        <div className="min-h-screen bg-navy-dark text-white font-sans pb-24">
+        <div className="min-h-screen bg-navy-dark text-white font-sans pb-24 overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
                 <header className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/10 pb-8">
                     <div>
-                        <h1 className="text-4xl sm:text-6xl font-wordmark tracking-tight text-white uppercase leading-none mb-2">PLAYER HUB</h1>
-                        <p className="text-gray-mid font-ui uppercase tracking-[4px] text-sm md:text-base italic">Strike like Playmasters {'//'} System Online</p>
-                    </div>
-                    <div className="flex items-center gap-3 bg-navy-dark/50 p-2 rounded-xl border border-white/5">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]" />
-                        <span className="text-[10px] font-ui font-black uppercase tracking-widest text-emerald-500">Live</span>
+                        <h1 className="text-5xl sm:text-7xl font-wordmark tracking-tighter text-white uppercase leading-none mb-2">
+                            PLAYER HUB
+                        </h1>
+                        <p className="text-gray-mid font-ui uppercase tracking-[5px] text-xs md:text-sm italic">
+                            Strike like Playmasters {'//'} System Online
+                        </p>
                     </div>
                 </header>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                    <div className="lg:col-span-2 space-y-12">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-2 space-y-8">
                         {/* Profile & Squad Summary */}
                         <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-navy border border-white/5 p-8 rounded-2xl relative overflow-hidden group">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-strike/5 -mr-16 -mt-16 rounded-full blur-3xl group-hover:bg-strike/10 transition-colors" />
-                                <h3 className="text-gray-dark font-ui uppercase tracking-[3px] text-xs mb-6">Active Profile</h3>
+                            <div className="bg-navy border border-white/10 p-8 rounded-2xl relative overflow-hidden group shadow-2xl">
+                                <div className="absolute top-0 right-0 w-48 h-48 bg-ball-pink/5 -mr-24 -mt-24 rounded-full blur-[80px] group-hover:bg-ball-pink/10 transition-all duration-700" />
+                                <h3 className="text-gray-mid font-ui uppercase tracking-[4px] text-[10px] mb-6">Active Profile</h3>
                                 <div className="flex items-center gap-6">
-                                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-strike to-bat-blue p-[2px] shadow-2xl">
-                                        <div className="w-full h-full bg-navy rounded-[14px] flex items-center justify-center text-3xl">🎳</div>
+                                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-ball-purple to-ball-pink p-[2px] shadow-2xl transform group-hover:rotate-3 transition-transform">
+                                        <div className="w-full h-full bg-navy rounded-[14px] flex items-center justify-center text-3xl font-wordmark">
+                                            {selectedPlayer?.bowler_name.slice(0, 2).toUpperCase() || 'PM'}
+                                        </div>
                                     </div>
                                     <div>
-                                        <h2 className="text-3xl font-wordmark uppercase tracking-tight">{selectedPlayer?.bowler_name || 'PLAYMASTER'}</h2>
-                                        <p className="text-strike font-ui font-black uppercase text-[10px] tracking-[2px]">Playmasters Kenya</p>
+                                        <h2 className="text-4xl font-wordmark uppercase tracking-tight leading-none mb-1">
+                                            {selectedPlayer?.bowler_name || 'PLAYMASTER'}
+                                        </h2>
+                                        <p className="text-bat-light font-ui font-bold uppercase text-[11px] tracking-[3px] italic">
+                                            {selectedPlayer?.team_name || 'Kenya Unit'}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="bg-navy border border-white/5 p-8 rounded-2xl">
-                                <h3 className="text-gray-dark font-ui uppercase tracking-[3px] text-xs mb-6">Squad Roster</h3>
-                                <div className="flex -space-x-3 mb-4">
-                                    {allPlaymasters.slice(0, 5).map((b) => (
-                                        <div key={b.bowler_name} className="w-10 h-10 rounded-full bg-navy-dark border-2 border-navy flex items-center justify-center text-xs font-bold" title={b.bowler_name}>
-                                            {b.bowler_name.charAt(0)}
+                            <div className="bg-navy border border-white/10 p-8 rounded-2xl shadow-2xl">
+                                <h3 className="text-gray-mid font-ui uppercase tracking-[4px] text-[10px] mb-6">Squad Status</h3>
+                                <div className="flex -space-x-3 mb-6">
+                                    {allPlaymasters.slice(0, 8).map((b) => (
+                                        <div key={b.bowler_name} className="w-10 h-10 rounded-xl bg-navy-mid border-2 border-navy flex items-center justify-center text-[10px] font-wordmark hover:-translate-y-2 transition-transform cursor-help" title={b.bowler_name}>
+                                            {b.bowler_name.slice(0, 2).toUpperCase()}
                                         </div>
                                     ))}
-                                    {allPlaymasters.length > 5 && (
-                                        <div className="w-10 h-10 rounded-full bg-strike/20 border-2 border-navy flex items-center justify-center text-[10px] font-black text-strike">
-                                            +{allPlaymasters.length - 5}
+                                    {allPlaymasters.length > 8 && (
+                                        <div className="w-10 h-10 rounded-xl bg-strike/20 border-2 border-navy flex items-center justify-center text-[10px] font-black text-strike">
+                                            +{allPlaymasters.length - 8}
                                         </div>
                                     )}
                                 </div>
@@ -129,18 +165,19 @@ export default function PlayerDashboard() {
                             </div>
                         </section>
 
-                        {/* Focus Engine: UBL Data — linked to selected player */}
-                        <section className="bg-navy border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
+                        {/* Focus Engine: UBL Data */}
+                        <section className="bg-navy border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-strike" />
                             <div className="p-8 border-b border-white/5 bg-gradient-to-r from-navy to-navy-dark flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                                 <div>
-                                    <h3 className="text-2xl font-black uppercase text-white flex items-center gap-3">
-                                        <span className="w-2 h-2 rounded-full bg-strike shadow-[0_0_8px_#E82030]" />
+                                    <h3 className="text-xl font-wordmark uppercase text-white flex items-center gap-4">
+                                        <span className="text-strike animate-pulse">⚡</span>
                                         Focus Engine
                                     </h3>
-                                    <p className="text-gray-400 text-[10px] mt-1 font-bold uppercase tracking-widest italic">Live UBL League Stats {'//'} Playmasters Roster</p>
+                                    <p className="text-gray-mid text-[10px] mt-1 font-bold uppercase tracking-[3px] italic">Live UBL Stats {'//'} Unit Data Stream</p>
                                 </div>
                                 <select 
-                                    className="bg-navy-dark/80 border border-white/10 rounded-lg px-4 py-2 text-[10px] font-black uppercase tracking-widest outline-none focus:border-strike transition-all"
+                                    className="bg-navy-dark border border-white/10 rounded-xl px-6 py-3 text-[11px] font-ui font-black uppercase tracking-[2px] outline-none focus:border-strike transition-all"
                                     value={selectedBowlerName}
                                     onChange={(e) => handleBowlerChange(e.target.value)}
                                 >
@@ -151,22 +188,60 @@ export default function PlayerDashboard() {
                             </div>
                             
                             {selectedPlayer ? (
-                                <div className="p-8 grid grid-cols-2 md:grid-cols-4 gap-8">
-                                    <div className="space-y-1">
-                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-tight">Average</p>
-                                        <p className="text-4xl font-wordmark text-white">{selectedPlayer.average}</p>
+                                <div className="p-8">
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                                        {[
+                                            { label: 'Average', value: selectedPlayer.average, color: 'text-white' },
+                                            { label: 'High Series', value: selectedPlayer.high_series, color: 'text-ball-pink', highlight: true },
+                                            { label: 'Handicap', value: selectedPlayer.handicap, color: 'text-bat-light' },
+                                            { label: 'Weekly High', value: Math.max(selectedPlayer.game1 || 0, selectedPlayer.game2 || 0), color: 'text-white' }
+                                        ].map((stat, i) => (
+                                            <div key={i} className={`bg-white/5 border border-white/10 p-5 rounded-xl border-t-4 ${stat.highlight ? 'border-t-ball-pink bg-gradient-to-br from-ball-pink/[0.08] to-transparent' : 'border-t-strike'}`}>
+                                                <div className={`text-4xl font-wordmark ${stat.color} mb-1`}>
+                                                    <Counter value={stat.value} />
+                                                </div>
+                                                <p className="text-[10px] text-gray-mid font-ui font-black uppercase tracking-widest">{stat.label}</p>
+                                            </div>
+                                        ))}
                                     </div>
-                                    <div className="space-y-1">
-                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-tight">High Series</p>
-                                        <p className="text-4xl font-wordmark text-strike">{selectedPlayer.high_series}</p>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-tight">Handicap</p>
-                                        <p className="text-4xl font-wordmark text-bat-blue">{selectedPlayer.handicap}</p>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-tight">Last Week</p>
-                                        <p className="text-4xl font-wordmark text-white">{selectedPlayer.last_week_score}</p>
+
+                                    {/* G1 vs G2 Split Bar */}
+                                    <div className="pt-8 border-t border-white/5">
+                                        <div className="flex justify-between items-center mb-6">
+                                            <p className="text-[10px] text-gray-mid font-ui font-black uppercase tracking-[3px]">G1 vs G2 Heat Gradient</p>
+                                            <div className={`px-4 py-1 border rounded-lg text-[10px] font-ui font-black uppercase tracking-widest ${splitColor}`}>
+                                                {splitType}
+                                            </div>
+                                        </div>
+                                        <div className="flex items-end gap-10 h-32 px-4">
+                                            {[
+                                                { label: 'G1', val: selectedPlayer.game1 || 0, col: 'bg-bat-blue' },
+                                                { label: 'G2', val: selectedPlayer.game2 || 0, col: splitDiff > 0 ? 'bg-ball-pink' : 'bg-strike' }
+                                            ].map((game, i) => {
+                                                const pct = Math.max(10, (game.val / 300) * 100);
+                                                return (
+                                                    <div key={i} className="flex-1 flex flex-col items-center gap-4 group">
+                                                        <div className="text-xl font-wordmark text-white opacity-0 group-hover:opacity-100 transition-opacity">{game.val}</div>
+                                                        <div className={`w-full rounded-t-lg ${game.col} transition-all duration-1000 ease-out shadow-[0_0_20px_rgba(232,32,48,0.1)]`} style={{ height: mounted ? `${pct}%` : '0%' }}>
+                                                            <div className="w-full h-full bg-gradient-to-t from-black/20 to-transparent" />
+                                                        </div>
+                                                        <div className="text-[11px] font-ui font-black text-gray-mid tracking-[2px]">{game.label}</div>
+                                                    </div>
+                                                );
+                                            })}
+                                            <div className="flex-[2] flex flex-col gap-4 pb-4">
+                                                {[
+                                                    { label: 'Season Best', val: selectedPlayer.high_game, col: 'text-strike' },
+                                                    { label: 'Games Played', val: selectedPlayer.games, col: 'text-bat-light' },
+                                                    { label: 'Total Pins', val: selectedPlayer.total_pins.toLocaleString(), col: 'text-white' }
+                                                ].map((row, i) => (
+                                                    <div key={i} className="flex justify-between items-center border-b border-white/5 pb-2">
+                                                        <span className="text-[10px] font-ui text-gray-mid uppercase tracking-widest">{row.label}</span>
+                                                        <span className={`text-sm font-wordmark ${row.col}`}>{row.val}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             ) : (
@@ -392,6 +467,41 @@ export default function PlayerDashboard() {
                             </div>
                             <div className="mt-8 pt-6 border-t border-white/5 text-center">
                                 <p className="text-[9px] text-gray-600 font-black uppercase tracking-[4px] italic opacity-50 underline decoration-strike/20">Authorized Squad Records</p>
+                            </div>
+                        </section>
+
+                        <section className="bg-navy border border-white/5 p-8 rounded-2xl relative overflow-hidden shadow-2xl">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-ball-pink/5 -mr-16 -mt-16 rounded-full blur-3xl" />
+                            <h3 className="text-xl font-black uppercase text-white mb-8 flex items-center gap-3 font-ui tracking-widest">
+                                <span className="text-ball-pink animate-pulse">🎖️</span>
+                                Achievement Unit
+                            </h3>
+                            <div className="space-y-4">
+                                {[
+                                    { name: "Verified", sub: "Core Playmaster", unlocked: true, icon: "🎖️" },
+                                    { name: "Squad", sub: "Unit Member", unlocked: true, icon: "🏅" },
+                                    { name: "Challenger", sub: "Sync 5 Matches", unlocked: false, icon: "⏳" },
+                                    { name: "On Fire", sub: "+20 This Season", unlocked: (selectedPlayer?.average || 0) > 170, icon: "🔥" },
+                                    { name: "High Series", sub: "Bowled 400+", unlocked: (selectedPlayer?.high_series || 0) >= 400, icon: "⚡" }
+                                ].map((a, i) => (
+                                    <div key={i} className={`flex items-center gap-4 p-4 rounded-xl border transition-all ${a.unlocked ? 'bg-ball-pink/5 border-ball-pink/20 opacity-100' : 'bg-white/5 border-white/5 opacity-40'}`}>
+                                        <span className="text-2xl">{a.icon}</span>
+                                        <div className="flex-1">
+                                            <p className={`font-ui font-black uppercase tracking-widest text-xs ${a.unlocked ? 'text-ball-pink' : 'text-gray-mid'}`}>{a.name}</p>
+                                            <p className="text-[9px] font-ui uppercase tracking-widest text-gray-dark">{a.sub}</p>
+                                        </div>
+                                        {a.unlocked && <span className="text-ball-pink text-xs">✓</span>}
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+
+                        <section className="bg-navy border border-white/5 p-8 rounded-2xl shadow-2xl">
+                            <h3 className="text-gray-mid font-ui uppercase tracking-[4px] text-[10px] mb-6">Sync Scores</h3>
+                            <div className="border-2 border-dashed border-white/10 rounded-2xl p-8 text-center bg-navy-dark/40 hover:bg-navy-dark/60 hover:border-strike/30 transition-all group cursor-pointer">
+                                <span className="text-4xl block mb-4 group-hover:scale-110 transition-transform">⬆️</span>
+                                <p className="font-ui font-black uppercase text-sm tracking-[3px] text-bat-light">Select CSV Data</p>
+                                <p className="text-[10px] text-gray-dark font-ui uppercase tracking-widest mt-2">Upload your session scores</p>
                             </div>
                         </section>
 
