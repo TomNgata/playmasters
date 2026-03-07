@@ -252,7 +252,7 @@ export default function PlayerDashboard() {
                 <header className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/10 pb-8">
                     <div>
                         <h1 className="text-4xl sm:text-6xl font-wordmark tracking-tight text-white uppercase leading-none mb-2">PLAYER HUB</h1>
-                        <p className="text-gray-mid font-ui uppercase tracking-[4px] text-sm md:text-base italic">Welcome Back, {profile.name} // System Online</p>
+                        <p className="text-gray-mid font-ui uppercase tracking-[4px] text-sm md:text-base italic">Welcome Back, {profile.name} {'//'} System Online</p>
                     </div>
                     <div className="flex items-center gap-3 bg-navy-dark/50 p-2 rounded-xl border border-white/5">
                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]" />

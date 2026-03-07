@@ -63,6 +63,11 @@ type ScheduleMatch = {
     away_team: string;
 };
 
+const WOMEN_PLAYERS = [
+    'DOROTHY', 'DARSHI', // Monday
+    'SONIKA', 'JUSTINE', 'ROSE', 'NILMA', 'DASHNI', 'AMRIT', 'ALEXA' // Tuesday
+];
+
 export default function CompetitionAnalysis() {
     const router = useRouter();
     const [activeDivision, setActiveDivision] = useState<'Monday' | 'Tuesday'>('Monday');
@@ -73,11 +78,6 @@ export default function CompetitionAnalysis() {
     const [teamConsistency, setTeamConsistency] = useState<TeamConsistency[]>([]);
     const [topPOA, setTopPOA] = useState<UBLBowler[]>([]);
     const [womenElite, setWomenElite] = useState<UBLBowler[]>([]);
-
-    const WOMEN_PLAYERS = [
-        'DOROTHY', 'DARSHI', // Monday
-        'SONIKA', 'JUSTINE', 'ROSE', 'NILMA', 'DASHNI', 'AMRIT', 'ALEXA' // Tuesday
-    ];
 
     useEffect(() => {
         let isMounted = true;
@@ -397,7 +397,7 @@ export default function CompetitionAnalysis() {
                             <div className="bg-navy border border-white/5 p-6 rounded-2xl relative overflow-hidden group bg-gradient-to-br from-navy to-pink-500/5">
                                 <h3 className="text-xl font-black uppercase text-white mb-6 flex items-center gap-2">
                                     <span className="text-pink-500">👑</span>
-                                    Women's Elite
+                                    Women&apos;s Elite
                                 </h3>
                                 <div className="space-y-3">
                                     {womenElite.map((b, i) => (
