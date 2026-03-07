@@ -342,27 +342,6 @@ export default function PlayerDashboard() {
                                 <span className="font-ui text-xs uppercase tracking-[3px] text-gray-mid group-hover:text-white transition-colors">Enter Game Data</span>
                             </div>
                         </a>
-
-                        <div className="bg-navy border border-white/5 p-8 rounded-2xl">
-                            <h3 className="font-ui text-2xl uppercase tracking-widest text-bat-blue mb-6">Achievement Unit</h3>
-                            <div className="grid grid-cols-2 gap-4 text-center">
-                                <div className="p-4 bg-navy-dark/50 rounded-xl border border-white/5">
-                                    <div className="text-3xl mb-1">🛡️</div>
-                                    <div className="font-wordmark text-white">VERIFIED</div>
-                                    <div className="text-[8px] text-gray-mid uppercase tracking-[2px]">Core Playmaster</div>
-                                </div>
-                                <div className="p-4 bg-navy-dark/50 rounded-xl border border-white/5">
-                                    <div className="text-3xl mb-1">🤝</div>
-                                    <div className="font-wordmark text-white">SQUAD</div>
-                                    <div className="text-[8px] text-gray-mid uppercase tracking-[2px]">Unit Member</div>
-                                </div>
-                                <div className="p-4 bg-navy-dark/50 rounded-xl border border-white/5 col-span-2 mt-2">
-                                    <div className="text-3xl mb-1">⏳</div>
-                                    <div className="font-wordmark text-white">CHALLENGER</div>
-                                    <div className="text-[8px] text-gray-mid uppercase tracking-[2px]">Sync 5 Matches for Tier 1</div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
