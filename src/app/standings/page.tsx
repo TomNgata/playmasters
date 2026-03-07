@@ -25,7 +25,7 @@ type BowlerStat = {
     division: string;
 };
 
-export default function CompetitiveDashboard() {
+export default function CompetitionAnalysis() {
     const supabase = createClient();
     const [teams, setTeams] = useState<TeamStanding[]>([]);
     const [bowlers, setBowlers] = useState<BowlerStat[]>([]);
@@ -59,7 +59,7 @@ export default function CompetitiveDashboard() {
         <div className="py-8 space-y-8 animate-fade-in pb-24">
             <header className="mb-10 text-center md:text-left">
                 <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight text-playmasters-light">
-                    Rivalry Matrix
+                    Competition Analysis
                 </h1>
                 <p className="text-gray-400 mt-2 font-medium tracking-wide">
                     Live UBL analytics. Compare Playmasters vs the Field.
