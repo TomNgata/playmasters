@@ -3,24 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import Link from 'next/link';
-
-type PlayerProfile = {
-    id: string;
-    name: string;
-    role: string;
-    team_id: string | null;
-    team_name?: string;
-    isPublicPreview?: boolean;
-};
-
-type Teammate = {
-    id: string;
-    name: string;
-    role: string;
-};
-
-type UploadStatus = 'idle' | 'uploading' | 'success' | 'error';
 
 type UBLBowler = {
     bowler_name: string;
@@ -36,7 +18,7 @@ type UBLBowler = {
     division: string;
 };
 
-// Standard Squad Benchmarks for "Zero Data" states
+// Squad Benchmarks — always-available baseline data
 const SQUAD_BENCHMARKS = {
     historicalFrameAvgs: [12, 14, 15, 13, 16, 18, 17, 15, 19, 21],
     heatmapData: [
@@ -51,13 +33,11 @@ const SQUAD_BENCHMARKS = {
 export default function PlayerDashboard() {
     const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [profile, setProfile] = useState<PlayerProfile | null>(null);
-    const [teammates, setTeammates] = useState<Teammate[]>([]);
     const [ublProfile, setUblProfile] = useState<UBLBowler | null>(null);
     const [allPlaymasters, setAllPlaymasters] = useState<UBLBowler[]>([]);
     const [selectedBowlerName, setSelectedBowlerName] = useState<string>('');
     const [loading, setLoading] = useState(true);
-    const [uploadStatus, setUploadStatus] = useState<UploadStatus>('idle');
+    const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
     const [uploadMessage, setUploadMessage] = useState('');
     const [stats, setStats] = useState({
         totalMatches: 0,
@@ -65,7 +45,6 @@ export default function PlayerDashboard() {
         totalPins: 0,
         historicalFrameAvgs: SQUAD_BENCHMARKS.historicalFrameAvgs,
         recentGameFrames: Array(10).fill(0),
-        fatigueFrames: [] as number[],
         recentGameScores: [] as number[],
         recentGameDates: [] as string[],
         heatmapData: SQUAD_BENCHMARKS.heatmapData,
@@ -75,142 +54,71 @@ export default function PlayerDashboard() {
     useEffect(() => {
         let isMounted = true;
 
-        async function fetchUserData() {
+        async function fetchData() {
             try {
                 const supabase = createClient();
-                const { data: { user } } = await supabase.auth.getUser();
 
-                // 1. Fetch UBL Stats early to get "Top Playmaster" for preview
+                // Fetch UBL stats — the core data source
                 const { data: allBowlerData } = await supabase
                     .from('ubl_bowler_stats')
                     .select('*')
                     .order('average', { ascending: false });
 
-                let topPlaymaster: UBLBowler | null = null;
-                let playmasters: UBLBowler[] = [];
+                if (isMounted && allBowlerData) {
+                    const playmasters = allBowlerData.filter(b => (b.team_name || '').toUpperCase().includes('PLAYMASTERS'));
+                    setAllPlaymasters(playmasters);
 
-                if (allBowlerData) {
-                    playmasters = allBowlerData.filter(b => (b.team_name || '').toUpperCase().includes('PLAYMASTERS'));
-                    topPlaymaster = playmasters[0] || null;
-                    if (isMounted) setAllPlaymasters(playmasters);
+                    if (playmasters.length > 0) {
+                        setUblProfile(playmasters[0]);
+                        setSelectedBowlerName(playmasters[0].bowler_name);
+                    }
                 }
 
-                if (!user) {
-                    // PUBLIC PREVIEW MODE
-                    if (isMounted) {
-                        setProfile({
-                            id: 'preview',
-                            name: topPlaymaster?.bowler_name || 'GUEST',
-                            role: 'preview',
-                            team_id: null,
-                            team_name: topPlaymaster?.team_name || 'SQUAD PREVIEW',
-                            isPublicPreview: true
-                        });
-                        if (topPlaymaster) {
-                            setUblProfile(topPlaymaster);
-                            setSelectedBowlerName(topPlaymaster.bowler_name);
+                // Try to fetch personal scores (if any exist in the DB)
+                const { data: scoresData } = await supabase
+                    .from('scores')
+                    .select('total_score, frame_scores, updated_at')
+                    .order('updated_at', { ascending: false })
+                    .limit(20);
+
+                if (scoresData && scoresData.length > 0 && isMounted) {
+                    const totalPins = scoresData.reduce((sum, s) => sum + (s.total_score || 0), 0);
+                    const seasonAvg = Math.round(totalPins / scoresData.length);
+                    const totalFrameScores = new Array(10).fill(0);
+                    const frameCounts = new Array(10).fill(0);
+
+                    scoresData.forEach(s => {
+                        const frames = (s.frame_scores as any[] || []).map(f => typeof f === 'object' && f !== null ? (f.score || 0) : Number(f));
+                        for (let i = 0; i < Math.min(10, frames.length); i++) {
+                            totalFrameScores[i] += frames[i];
+                            frameCounts[i]++;
                         }
-                    }
-                    setLoading(false);
-                    return;
-                }
-
-                // AUTHENTICATED MODE
-                const { data: profileData, error: profileError } = await supabase
-                    .from('profiles')
-                    .select('*, teams(name)')
-                    .eq('id', user.id)
-                    .single();
-
-                if (profileError || !profileData) {
-                    if (isMounted) setProfile({
-                        id: user.id,
-                        name: user.email?.split('@')[0].toUpperCase() || 'PLAYER',
-                        role: 'player',
-                        team_id: null
-                    });
-                } else {
-                    if (isMounted) setProfile({
-                        ...profileData,
-                        team_name: profileData.teams?.name
                     });
 
-                    if (profileData.team_id) {
-                        const { data: teammatesData } = await supabase
-                            .from('profiles')
-                            .select('id, name, role')
-                            .eq('team_id', profileData.team_id)
-                            .neq('id', user.id);
+                    const historicalFrameAvgs = totalFrameScores.map((t, i) => frameCounts[i] > 0 ? Math.round(t / frameCounts[i]) : 0);
 
-                        if (teammatesData && isMounted) setTeammates(teammatesData);
-                    }
+                    const recent10 = scoresData.slice(0, 10).reverse();
+                    const recentGameScores = recent10.map(s => s.total_score || 0);
+                    const recentGameDates = recent10.map(s => new Date(s.updated_at || Date.now()).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }));
 
-                    const { data: scoresData } = await supabase
-                        .from('scores')
-                        .select('total_score, frame_scores, updated_at')
-                        .eq('player_id', user.id);
+                    const recent5 = scoresData.slice(0, 5);
+                    const heatmapData = recent5.map(s => {
+                        const f = (s.frame_scores as any[] || []).map(frame => typeof frame === 'object' && frame !== null ? (frame.score || 0) : Number(frame));
+                        while (f.length < 10) f.push(0);
+                        return f;
+                    });
 
-                    if (scoresData && scoresData.length > 0 && isMounted) {
-                        const totalPins = scoresData.reduce((sum, s) => sum + (s.total_score || 0), 0);
-                        const seasonAvg = Math.round(totalPins / scoresData.length);
-                        const totalFrameScores = new Array(10).fill(0);
-                        const frameCounts = new Array(10).fill(0);
-                        const sortedScores = [...scoresData].sort((a, b) => new Date(b.updated_at || 0).getTime() - new Date(a.updated_at || 0).getTime());
-
-                        scoresData.forEach(s => {
-                            const frames = (s.frame_scores as any[] || []).map(f => typeof f === 'object' && f !== null ? (f.score || 0) : Number(f));
-                            for (let i = 0; i < Math.min(10, frames.length); i++) {
-                                totalFrameScores[i] += frames[i];
-                                frameCounts[i]++;
-                            }
-                        });
-
-                        const historicalFrameAvgs = totalFrameScores.map((t, i) => frameCounts[i] > 0 ? Math.round(t / frameCounts[i]) : 0);
-                        const mostRecentScores = sortedScores[0];
-                        const recentGameFrames = (mostRecentScores?.frame_scores as any[] || []).map(f => typeof f === 'object' && f !== null ? (f.score || 0) : Number(f));
-                        while (recentGameFrames.length < 10) recentGameFrames.push(0);
-
-                        const fatigueFrames = recentGameFrames.map((score, i) => {
-                            if (frameCounts[i] > 0 && score < historicalFrameAvgs[i] - 1) return i;
-                            return -1;
-                        }).filter(i => i !== -1);
-
-                        const recent10 = sortedScores.slice(0, 10).reverse();
-                        const recentGameScores = recent10.map(s => s.total_score || 0);
-                        const recentGameDates = recent10.map(s => new Date(s.updated_at || Date.now()).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }));
-
-                        const recent5 = sortedScores.slice(0, 5);
-                        const heatmapData = recent5.map(s => {
-                            const f = (s.frame_scores as any[] || []).map(frame => typeof frame === 'object' && frame !== null ? (frame.score || 0) : Number(frame));
-                            while (f.length < 10) f.push(0);
-                            return f;
-                        });
-
-                        setStats({
-                            totalMatches: scoresData.length,
-                            seasonAvg,
-                            totalPins,
-                            historicalFrameAvgs,
-                            recentGameFrames,
-                            fatigueFrames,
-                            recentGameScores,
-                            recentGameDates,
-                            heatmapData,
-                            isUsingBenchmarks: false
-                        });
-                    }
-                }
-
-                // Match UBL profile or fallback to top Playmaster
-                const match = playmasters.find(b => b.bowler_name.toLowerCase() === (profile?.name || '').toLowerCase());
-                if (isMounted) {
-                    if (match) {
-                        setUblProfile(match);
-                        setSelectedBowlerName(match.bowler_name);
-                    } else if (topPlaymaster) {
-                        setUblProfile(topPlaymaster);
-                        setSelectedBowlerName(topPlaymaster.bowler_name);
-                    }
+                    setStats({
+                        totalMatches: scoresData.length,
+                        seasonAvg,
+                        totalPins,
+                        historicalFrameAvgs,
+                        recentGameFrames: heatmapData[0] || Array(10).fill(0),
+                        recentGameScores,
+                        recentGameDates,
+                        heatmapData,
+                        isUsingBenchmarks: false
+                    });
                 }
             } catch (err) {
                 console.error("Dashboard Fetch Exception:", err);
@@ -219,9 +127,9 @@ export default function PlayerDashboard() {
             }
         }
 
-        fetchUserData();
+        fetchData();
         return () => { isMounted = false; };
-    }, [profile?.name]);
+    }, []);
 
     const handleBowlerChange = (name: string) => {
         const found = allPlaymasters.find(b => b.bowler_name === name);
@@ -267,34 +175,26 @@ export default function PlayerDashboard() {
         </div>
     );
 
-    const uploadStatusColors: Record<UploadStatus, string> = {
+    const uploadStatusColors = {
         idle: 'border-white/20',
         uploading: 'border-bat-blue/60 animate-pulse',
         success: 'border-emerald-500/60',
         error: 'border-strike/60',
     };
 
-    if (!profile) return null; // Should be handled by loading or effects
+    const displayName = ublProfile?.bowler_name || 'PLAYMASTER';
 
     return (
         <div className="min-h-screen bg-navy-dark text-white font-sans pb-24">
-            {profile.isPublicPreview && (
-                <div className="bg-strike text-white px-4 py-2 text-center text-[10px] font-black uppercase tracking-[4px] animate-pulse">
-                    Public Preview Mode // Sign in for personal analytics
-                </div>
-            )}
-            
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
                 <header className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/10 pb-8">
                     <div>
                         <h1 className="text-4xl sm:text-6xl font-wordmark tracking-tight text-white uppercase leading-none mb-2">PLAYER HUB</h1>
-                        <p className="text-gray-mid font-ui uppercase tracking-[4px] text-sm md:text-base italic">Welcome Back, {profile.name} {'//'} System Online</p>
+                        <p className="text-gray-mid font-ui uppercase tracking-[4px] text-sm md:text-base italic">Strike like Playmasters {'//'} System Online</p>
                     </div>
                     <div className="flex items-center gap-3 bg-navy-dark/50 p-2 rounded-xl border border-white/5">
-                        <span className={`w-2 h-2 rounded-full ${profile.isPublicPreview ? 'bg-amber-500' : 'bg-emerald-500'} animate-pulse shadow-[0_0_8px_currentColor]`} />
-                        <span className={`text-[10px] font-ui font-black uppercase tracking-widest ${profile.isPublicPreview ? 'text-amber-500' : 'text-emerald-500'}`}>
-                            {profile.isPublicPreview ? 'Public View' : 'Authenticated'}
-                        </span>
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]" />
+                        <span className="text-[10px] font-ui font-black uppercase tracking-widest text-emerald-500">Live</span>
                     </div>
                 </header>
 
@@ -304,40 +204,33 @@ export default function PlayerDashboard() {
                         <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="bg-navy border border-white/5 p-8 rounded-2xl relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-strike/5 -mr-16 -mt-16 rounded-full blur-3xl group-hover:bg-strike/10 transition-colors" />
-                                <h3 className="text-gray-dark font-ui uppercase tracking-[3px] text-xs mb-6">Personal Profile</h3>
+                                <h3 className="text-gray-dark font-ui uppercase tracking-[3px] text-xs mb-6">Active Profile</h3>
                                 <div className="flex items-center gap-6">
                                     <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-strike to-bat-blue p-[2px] shadow-2xl">
                                         <div className="w-full h-full bg-navy rounded-[14px] flex items-center justify-center text-3xl">🎳</div>
                                     </div>
                                     <div>
-                                        <h2 className="text-3xl font-wordmark uppercase tracking-tight">{profile.name}</h2>
-                                        <p className="text-strike font-ui font-black uppercase text-[10px] tracking-[2px]">{profile.team_name || 'Free Agent'}</p>
+                                        <h2 className="text-3xl font-wordmark uppercase tracking-tight">{displayName}</h2>
+                                        <p className="text-strike font-ui font-black uppercase text-[10px] tracking-[2px]">Playmasters Kenya</p>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="bg-navy border border-white/5 p-8 rounded-2xl">
-                                <h3 className="text-gray-dark font-ui uppercase tracking-[3px] text-xs mb-6">Current Squad</h3>
+                                <h3 className="text-gray-dark font-ui uppercase tracking-[3px] text-xs mb-6">Squad Roster</h3>
                                 <div className="flex -space-x-3 mb-4">
-                                    {teammates.length > 0 ? (
-                                        <>
-                                            {teammates.slice(0, 4).map((t) => (
-                                                <div key={t.id} className="w-10 h-10 rounded-full bg-navy-dark border-2 border-navy flex items-center justify-center text-xs font-bold" title={t.name}>
-                                                    {t.name.charAt(0)}
-                                                </div>
-                                            ))}
-                                            <div className="w-10 h-10 rounded-full bg-strike/20 border-2 border-navy flex items-center justify-center text-[10px] font-black text-strike">
-                                                +{teammates.length > 4 ? teammates.length - 4 : 1}
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] text-gray-600">?</div>
-                                            <span className="text-[10px] text-gray-600 font-bold uppercase tracking-widest italic">Squad Data Loading...</span>
+                                    {allPlaymasters.slice(0, 5).map((b) => (
+                                        <div key={b.bowler_name} className="w-10 h-10 rounded-full bg-navy-dark border-2 border-navy flex items-center justify-center text-xs font-bold" title={b.bowler_name}>
+                                            {b.bowler_name.charAt(0)}
+                                        </div>
+                                    ))}
+                                    {allPlaymasters.length > 5 && (
+                                        <div className="w-10 h-10 rounded-full bg-strike/20 border-2 border-navy flex items-center justify-center text-[10px] font-black text-strike">
+                                            +{allPlaymasters.length - 5}
                                         </div>
                                     )}
                                 </div>
-                                <p className="text-[10px] text-gray-mid font-bold uppercase tracking-widest">Active unit members online</p>
+                                <p className="text-[10px] text-gray-mid font-bold uppercase tracking-widest">{allPlaymasters.length} Active Playmasters</p>
                             </div>
                         </section>
 
@@ -349,9 +242,7 @@ export default function PlayerDashboard() {
                                         <span className="w-2 h-2 rounded-full bg-strike shadow-[0_0_8px_#E82030]" />
                                         Focus Engine
                                     </h3>
-                                    <p className="text-gray-400 text-[10px] mt-1 font-bold uppercase tracking-widest italic">
-                                        {profile.isPublicPreview ? 'Squad Leader Analytics' : 'Live UBL League Stats // Playmasters Roster'}
-                                    </p>
+                                    <p className="text-gray-400 text-[10px] mt-1 font-bold uppercase tracking-widest italic">Live UBL League Stats {'//'} Playmasters Roster</p>
                                 </div>
                                 <select 
                                     className="bg-navy-dark/80 border border-white/10 rounded-lg px-4 py-2 text-[10px] font-black uppercase tracking-widest outline-none focus:border-strike transition-all"
@@ -397,7 +288,7 @@ export default function PlayerDashboard() {
                                 </h3>
                                 {stats.isUsingBenchmarks && (
                                     <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-[9px] font-black uppercase tracking-[2px] text-gray-400 italic">
-                                        Squad Benchmarks Mode
+                                        Squad Benchmarks
                                     </span>
                                 )}
                             </div>
@@ -449,16 +340,14 @@ export default function PlayerDashboard() {
                                 <p className="text-sm font-sans text-gray-mid">Upload your CSV from Westgate sessions.</p>
                             </div>
                             <div
-                                onClick={() => profile.isPublicPreview ? router.push('/auth/signin') : fileInputRef.current?.click()}
+                                onClick={() => fileInputRef.current?.click()}
                                 className={`w-full h-40 border-2 border-dashed rounded-xl flex flex-col items-center justify-center hover:bg-white/[0.02] hover:border-strike/40 transition-all cursor-pointer group bg-navy-dark/50 ${uploadStatusColors[uploadStatus]}`}
                             >
                                 <svg className="w-10 h-10 text-gray-mid mb-3 group-hover:text-strike group-hover:-translate-y-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                 </svg>
-                                <span className="font-ui text-xs uppercase tracking-[3px] text-gray-mid group-hover:text-white transition-colors">
-                                    {profile.isPublicPreview ? 'Sign In to Upload' : 'Select CSV Data'}
-                                </span>
-                                {!profile.isPublicPreview && <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleFileChange} />}
+                                <span className="font-ui text-xs uppercase tracking-[3px] text-gray-mid group-hover:text-white transition-colors">Select CSV Data</span>
+                                <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleFileChange} />
                             </div>
                             {uploadMessage && (
                                 <div className={`text-xs font-ui uppercase tracking-widest p-4 rounded-lg border text-center ${uploadStatus === 'success' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-strike/10 border-strike/30 text-strike'}`}>
@@ -480,23 +369,13 @@ export default function PlayerDashboard() {
                                     <div className="font-wordmark text-white">SQUAD</div>
                                     <div className="text-[8px] text-gray-mid uppercase tracking-[2px]">Unit Member</div>
                                 </div>
-                                {!profile.isPublicPreview && (
-                                    <>
-                                        <div className="p-4 bg-navy-dark/50 rounded-xl border border-white/5 col-span-2 mt-2">
-                                            <div className="text-3xl mb-1">⏳</div>
-                                            <div className="font-wordmark text-white">CHALLENGER</div>
-                                            <div className="text-[8px] text-gray-mid uppercase tracking-[2px]">Sync 5 Matches for Tier 1</div>
-                                        </div>
-                                    </>
-                                )}
+                                <div className="p-4 bg-navy-dark/50 rounded-xl border border-white/5 col-span-2 mt-2">
+                                    <div className="text-3xl mb-1">⏳</div>
+                                    <div className="font-wordmark text-white">CHALLENGER</div>
+                                    <div className="text-[8px] text-gray-mid uppercase tracking-[2px]">Sync 5 Matches for Tier 1</div>
+                                </div>
                             </div>
                         </div>
-
-                        {profile.isPublicPreview && (
-                            <Link href="/auth/signup" className="block w-full py-4 bg-gradient-to-r from-strike to-bat-blue text-white text-center font-ui font-black uppercase tracking-[4px] rounded-xl shadow-2xl hover:-translate-y-1 transition-all">
-                                JOIN THE UNIT
-                            </Link>
-                        )}
                     </div>
                 </div>
             </div>

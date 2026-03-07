@@ -8,25 +8,14 @@ export default function LogGame() {
     const supabase = createClient();
     const router = useRouter();
     
-    const [userId, setUserId] = useState<string | null>(null);
     const [frames, setFrames] = useState<number[]>(Array(10).fill(0));
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [message, setMessage] = useState<{type: 'error'|'success', text: string} | null>(null);
 
-    useEffect(() => {
-        async function fetchUser() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session?.user) {
-                setUserId(session.user.id);
-            }
-        }
-        fetchUser();
-    }, [supabase.auth]);
-
     const handleFrameChange = (index: number, value: string) => {
         const num = parseInt(value, 10);
         const newFrames = [...frames];
-        newFrames[index] = isNaN(num) ? 0 : Math.min(30, Math.max(0, num)); // Max 30 points per frame
+        newFrames[index] = isNaN(num) ? 0 : Math.min(30, Math.max(0, num));
         setFrames(newFrames);
     };
 
@@ -36,11 +25,6 @@ export default function LogGame() {
         e.preventDefault();
         setMessage(null);
 
-        if (!userId) {
-            setMessage({ type: 'error', text: 'You must be logged in to log a game.' });
-            return;
-        }
-
         if (totalScore === 0) {
             setMessage({ type: 'error', text: 'Total score cannot be 0. Please enter your frames.' });
             return;
@@ -49,7 +33,6 @@ export default function LogGame() {
         setIsSubmitting(true);
 
         const { error } = await supabase.from('scores').insert({
-            player_id: userId,
             total_score: totalScore,
             frame_scores: frames,
             version: 1
@@ -68,15 +51,6 @@ export default function LogGame() {
             }, 2000);
         }
     };
-
-    if (!userId) {
-        return (
-            <div className="py-20 text-center max-w-xl mx-auto animate-fade-in">
-                <h1 className="text-3xl font-black uppercase text-playmasters-red mb-4">Access Denied</h1>
-                <p className="text-gray-400">Please sign in to the Playmasters Hub to submit scores.</p>
-            </div>
-        );
-    }
 
     return (
         <div className="py-12 max-w-3xl mx-auto animate-fade-in pb-24 px-4 text-center">
