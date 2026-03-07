@@ -11,6 +11,7 @@ type PlayerProfile = {
     role: string;
     team_id: string | null;
     team_name?: string;
+    isPublicPreview?: boolean;
 };
 
 type Teammate = {
@@ -35,6 +36,18 @@ type UBLBowler = {
     division: string;
 };
 
+// Standard Squad Benchmarks for "Zero Data" states
+const SQUAD_BENCHMARKS = {
+    historicalFrameAvgs: [12, 14, 15, 13, 16, 18, 17, 15, 19, 21],
+    heatmapData: [
+        [15, 20, 10, 25, 12, 18, 22, 15, 28, 30],
+        [12, 18, 15, 20, 10, 15, 18, 12, 25, 28],
+        [18, 22, 12, 18, 15, 20, 25, 18, 30, 35],
+        [10, 15, 10, 15, 12, 12, 15, 10, 20, 22],
+        [20, 25, 18, 30, 15, 22, 28, 20, 35, 40]
+    ]
+};
+
 export default function PlayerDashboard() {
     const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -50,12 +63,13 @@ export default function PlayerDashboard() {
         totalMatches: 0,
         seasonAvg: 0,
         totalPins: 0,
-        historicalFrameAvgs: Array(10).fill(0),
+        historicalFrameAvgs: SQUAD_BENCHMARKS.historicalFrameAvgs,
         recentGameFrames: Array(10).fill(0),
         fatigueFrames: [] as number[],
         recentGameScores: [] as number[],
         recentGameDates: [] as string[],
-        heatmapData: [] as number[][]
+        heatmapData: SQUAD_BENCHMARKS.heatmapData,
+        isUsingBenchmarks: true
     });
 
     useEffect(() => {
@@ -66,11 +80,42 @@ export default function PlayerDashboard() {
                 const supabase = createClient();
                 const { data: { user } } = await supabase.auth.getUser();
 
+                // 1. Fetch UBL Stats early to get "Top Playmaster" for preview
+                const { data: allBowlerData } = await supabase
+                    .from('ubl_bowler_stats')
+                    .select('*')
+                    .order('average', { ascending: false });
+
+                let topPlaymaster: UBLBowler | null = null;
+                let playmasters: UBLBowler[] = [];
+
+                if (allBowlerData) {
+                    playmasters = allBowlerData.filter(b => (b.team_name || '').toUpperCase().includes('PLAYMASTERS'));
+                    topPlaymaster = playmasters[0] || null;
+                    if (isMounted) setAllPlaymasters(playmasters);
+                }
+
                 if (!user) {
-                    if (isMounted) setLoading(false);
+                    // PUBLIC PREVIEW MODE
+                    if (isMounted) {
+                        setProfile({
+                            id: 'preview',
+                            name: topPlaymaster?.bowler_name || 'GUEST',
+                            role: 'preview',
+                            team_id: null,
+                            team_name: topPlaymaster?.team_name || 'SQUAD PREVIEW',
+                            isPublicPreview: true
+                        });
+                        if (topPlaymaster) {
+                            setUblProfile(topPlaymaster);
+                            setSelectedBowlerName(topPlaymaster.bowler_name);
+                        }
+                    }
+                    setLoading(false);
                     return;
                 }
 
+                // AUTHENTICATED MODE
                 const { data: profileData, error: profileError } = await supabase
                     .from('profiles')
                     .select('*, teams(name)')
@@ -150,28 +195,21 @@ export default function PlayerDashboard() {
                             fatigueFrames,
                             recentGameScores,
                             recentGameDates,
-                            heatmapData
+                            heatmapData,
+                            isUsingBenchmarks: false
                         });
                     }
                 }
 
-                // Fetch UBL Stats for Playmasters
-                const { data: allBowlerData } = await supabase
-                    .from('ubl_bowler_stats')
-                    .select('*')
-                    .order('average', { ascending: false });
-
-                if (isMounted && allBowlerData) {
-                    const playmasters = allBowlerData.filter(b => (b.team_name || '').toUpperCase().includes('PLAYMASTERS'));
-                    setAllPlaymasters(playmasters);
-                    
-                    const match = playmasters.find(b => b.bowler_name.toLowerCase() === (profile?.name || '').toLowerCase());
+                // Match UBL profile or fallback to top Playmaster
+                const match = playmasters.find(b => b.bowler_name.toLowerCase() === (profile?.name || '').toLowerCase());
+                if (isMounted) {
                     if (match) {
                         setUblProfile(match);
                         setSelectedBowlerName(match.bowler_name);
-                    } else if (playmasters.length > 0) {
-                        setUblProfile(playmasters[0]);
-                        setSelectedBowlerName(playmasters[0].bowler_name);
+                    } else if (topPlaymaster) {
+                        setUblProfile(topPlaymaster);
+                        setSelectedBowlerName(topPlaymaster.bowler_name);
                     }
                 }
             } catch (err) {
@@ -236,18 +274,16 @@ export default function PlayerDashboard() {
         error: 'border-strike/60',
     };
 
-    if (!profile) return (
-        <div className="min-h-screen bg-navy-dark flex items-center justify-center p-4">
-            <div className="text-center space-y-6">
-                <h1 className="text-3xl font-wordmark text-white uppercase tracking-tighter">Sign In Required</h1>
-                <p className="text-gray-mid font-ui uppercase tracking-widest text-sm">Please sign in to access your personal hub</p>
-                <Link href="/auth/signin" className="inline-block px-8 py-3 bg-strike text-white font-ui font-black uppercase tracking-widest rounded-xl shadow-[0_4px_20px_rgba(232,32,48,0.3)] hover:-translate-y-1 transition-all">Sign In</Link>
-            </div>
-        </div>
-    );
+    if (!profile) return null; // Should be handled by loading or effects
 
     return (
         <div className="min-h-screen bg-navy-dark text-white font-sans pb-24">
+            {profile.isPublicPreview && (
+                <div className="bg-strike text-white px-4 py-2 text-center text-[10px] font-black uppercase tracking-[4px] animate-pulse">
+                    Public Preview Mode // Sign in for personal analytics
+                </div>
+            )}
+            
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
                 <header className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/10 pb-8">
                     <div>
@@ -255,8 +291,10 @@ export default function PlayerDashboard() {
                         <p className="text-gray-mid font-ui uppercase tracking-[4px] text-sm md:text-base italic">Welcome Back, {profile.name} {'//'} System Online</p>
                     </div>
                     <div className="flex items-center gap-3 bg-navy-dark/50 p-2 rounded-xl border border-white/5">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]" />
-                        <span className="text-[10px] font-ui font-black uppercase tracking-widest text-emerald-500">Authenticated</span>
+                        <span className={`w-2 h-2 rounded-full ${profile.isPublicPreview ? 'bg-amber-500' : 'bg-emerald-500'} animate-pulse shadow-[0_0_8px_currentColor]`} />
+                        <span className={`text-[10px] font-ui font-black uppercase tracking-widest ${profile.isPublicPreview ? 'text-amber-500' : 'text-emerald-500'}`}>
+                            {profile.isPublicPreview ? 'Public View' : 'Authenticated'}
+                        </span>
                     </div>
                 </header>
 
@@ -281,14 +319,23 @@ export default function PlayerDashboard() {
                             <div className="bg-navy border border-white/5 p-8 rounded-2xl">
                                 <h3 className="text-gray-dark font-ui uppercase tracking-[3px] text-xs mb-6">Current Squad</h3>
                                 <div className="flex -space-x-3 mb-4">
-                                    {teammates.slice(0, 4).map((t) => (
-                                        <div key={t.id} className="w-10 h-10 rounded-full bg-navy-dark border-2 border-navy flex items-center justify-center text-xs font-bold" title={t.name}>
-                                            {t.name.charAt(0)}
+                                    {teammates.length > 0 ? (
+                                        <>
+                                            {teammates.slice(0, 4).map((t) => (
+                                                <div key={t.id} className="w-10 h-10 rounded-full bg-navy-dark border-2 border-navy flex items-center justify-center text-xs font-bold" title={t.name}>
+                                                    {t.name.charAt(0)}
+                                                </div>
+                                            ))}
+                                            <div className="w-10 h-10 rounded-full bg-strike/20 border-2 border-navy flex items-center justify-center text-[10px] font-black text-strike">
+                                                +{teammates.length > 4 ? teammates.length - 4 : 1}
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] text-gray-600">?</div>
+                                            <span className="text-[10px] text-gray-600 font-bold uppercase tracking-widest italic">Squad Data Loading...</span>
                                         </div>
-                                    ))}
-                                    <div className="w-10 h-10 rounded-full bg-strike/20 border-2 border-navy flex items-center justify-center text-[10px] font-black text-strike">
-                                        +{teammates.length > 4 ? teammates.length - 4 : 1}
-                                    </div>
+                                    )}
                                 </div>
                                 <p className="text-[10px] text-gray-mid font-bold uppercase tracking-widest">Active unit members online</p>
                             </div>
@@ -302,7 +349,9 @@ export default function PlayerDashboard() {
                                         <span className="w-2 h-2 rounded-full bg-strike shadow-[0_0_8px_#E82030]" />
                                         Focus Engine
                                     </h3>
-                                    <p className="text-gray-400 text-[10px] mt-1 font-bold uppercase tracking-widest italic">Live UBL League Stats // Playmasters Roster</p>
+                                    <p className="text-gray-400 text-[10px] mt-1 font-bold uppercase tracking-widest italic">
+                                        {profile.isPublicPreview ? 'Squad Leader Analytics' : 'Live UBL League Stats // Playmasters Roster'}
+                                    </p>
                                 </div>
                                 <select 
                                     className="bg-navy-dark/80 border border-white/10 rounded-lg px-4 py-2 text-[10px] font-black uppercase tracking-widest outline-none focus:border-strike transition-all"
@@ -318,7 +367,7 @@ export default function PlayerDashboard() {
                             {ublProfile ? (
                                 <div className="p-8 grid grid-cols-2 md:grid-cols-4 gap-8">
                                     <div className="space-y-1">
-                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-tight">Current Average</p>
+                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-tight">Average</p>
                                         <p className="text-4xl font-wordmark text-white">{ublProfile.average}</p>
                                     </div>
                                     <div className="space-y-1">
@@ -335,57 +384,61 @@ export default function PlayerDashboard() {
                                     </div>
                                 </div>
                             ) : (
-                                <div className="p-12 text-center text-gray-dark italic text-sm font-ui uppercase tracking-widest">No UBL link found for this profile</div>
+                                <div className="p-12 text-center text-gray-dark italic text-sm font-ui uppercase tracking-widest">Initialising roster data...</div>
                             )}
                         </section>
 
                         {/* Performance Heatmap */}
                         <section className="bg-navy border border-white/5 p-8 rounded-2xl relative overflow-hidden">
-                            <h3 className="text-2xl font-black uppercase text-white mb-8 flex items-center gap-3">
-                                <span className="text-ball-pink text-3xl">🔥</span>
-                                Frame Consistency Heatmap
-                            </h3>
-                            {stats.heatmapData.length > 0 ? (
-                                <div className="space-y-6">
-                                    <div className="overflow-x-auto pb-4">
-                                        <div className="min-w-[500px] relative">
-                                            <div className="grid grid-cols-11 gap-2 mb-2">
-                                                <div className="col-span-1"></div>
-                                                {Array.from({length: 10}).map((_, i) => (
-                                                    <div key={i} className="text-center font-ui text-[9px] font-black text-gray-500 uppercase">F{i+1}</div>
-                                                ))}
-                                            </div>
-                                            {stats.heatmapData.map((frames, rowIdx) => (
-                                                <div key={rowIdx} className="grid grid-cols-11 gap-2 mb-2">
-                                                    <div className="col-span-1 flex items-center">
-                                                        <span className="font-ui text-[8px] font-black text-gray-600 uppercase">G{stats.heatmapData.length - rowIdx}</span>
-                                                    </div>
-                                                    {frames.map((score, colIdx) => {
-                                                        let bgColor = 'bg-white/5';
-                                                        let textColor = 'text-gray-400';
-                                                        if (score >= 20) { bgColor = 'bg-strike/80'; textColor = 'text-white font-bold shadow-sm'; }
-                                                        else if (score >= 10) { bgColor = 'bg-bat-blue/60'; textColor = 'text-white'; }
-                                                        return (
-                                                            <div key={colIdx} className={`col-span-1 h-10 ${bgColor} rounded-sm flex items-center justify-center font-wordmark text-sm ${textColor} transition-colors hover:brightness-125`} title={`Frame ${colIdx+1}: ${score} pins`}>
-                                                                {score}
-                                                            </div>
-                                                        );
-                                                    })}
-                                                </div>
+                            <div className="flex justify-between items-start mb-8">
+                                <h3 className="text-2xl font-black uppercase text-white flex items-center gap-3">
+                                    <span className="text-ball-pink text-3xl">🔥</span>
+                                    Frame Consistency Heatmap
+                                </h3>
+                                {stats.isUsingBenchmarks && (
+                                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-[9px] font-black uppercase tracking-[2px] text-gray-400 italic">
+                                        Squad Benchmarks Mode
+                                    </span>
+                                )}
+                            </div>
+                            
+                            <div className="space-y-6">
+                                <div className="overflow-x-auto pb-4">
+                                    <div className="min-w-[500px] relative">
+                                        <div className="grid grid-cols-11 gap-2 mb-2">
+                                            <div className="col-span-1"></div>
+                                            {Array.from({length: 10}).map((_, i) => (
+                                                <div key={i} className="text-center font-ui text-[9px] font-black text-gray-500 uppercase">F{i+1}</div>
                                             ))}
-                                            <div className="absolute -bottom-8 right-0 flex items-center gap-4">
-                                                <div className="flex items-center gap-1.5 font-ui text-[9px] text-gray-400 uppercase tracking-widest"><div className="w-3 h-3 rounded-sm bg-strike/80"></div> Closed (20+)</div>
-                                                <div className="flex items-center gap-1.5 font-ui text-[9px] text-gray-400 uppercase tracking-widest"><div className="w-3 h-3 rounded-sm bg-bat-blue/60"></div> Mark (10-19)</div>
-                                                <div className="flex items-center gap-1.5 font-ui text-[9px] text-gray-400 uppercase tracking-widest"><div className="w-3 h-3 rounded-sm bg-white/5 border border-white/10"></div> Open (&lt;10)</div>
+                                        </div>
+                                        {stats.heatmapData.map((frames, rowIdx) => (
+                                            <div key={rowIdx} className="grid grid-cols-11 gap-2 mb-2">
+                                                <div className="col-span-1 flex items-center">
+                                                    <span className="font-ui text-[8px] font-black text-gray-600 uppercase">
+                                                        {stats.isUsingBenchmarks ? `REF 0${rowIdx + 1}` : `G${stats.heatmapData.length - rowIdx}`}
+                                                    </span>
+                                                </div>
+                                                {frames.map((score, colIdx) => {
+                                                    let bgColor = 'bg-white/5';
+                                                    let textColor = 'text-gray-400';
+                                                    if (score >= 20) { bgColor = 'bg-strike/80'; textColor = 'text-white font-bold shadow-sm'; }
+                                                    else if (score >= 10) { bgColor = 'bg-bat-blue/60'; textColor = 'text-white'; }
+                                                    return (
+                                                        <div key={colIdx} className={`col-span-1 h-10 ${bgColor} rounded-sm flex items-center justify-center font-wordmark text-sm ${textColor} transition-colors hover:brightness-125`} title={`Frame ${colIdx+1}: ${score} pins`}>
+                                                            {score}
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
+                                        ))}
+                                        <div className="absolute -bottom-8 right-0 flex items-center gap-4">
+                                            <div className="flex items-center gap-1.5 font-ui text-[9px] text-gray-400 uppercase tracking-widest"><div className="w-3 h-3 rounded-sm bg-strike/80"></div> Closed (20+)</div>
+                                            <div className="flex items-center gap-1.5 font-ui text-[9px] text-gray-400 uppercase tracking-widest"><div className="w-3 h-3 rounded-sm bg-bat-blue/60"></div> Mark (10-19)</div>
+                                            <div className="flex items-center gap-1.5 font-ui text-[9px] text-gray-400 uppercase tracking-widest"><div className="w-3 h-3 rounded-sm bg-white/5 border border-white/10"></div> Open (&lt;10)</div>
                                         </div>
                                     </div>
                                 </div>
-                            ) : (
-                                <div className="h-40 flex items-center justify-center border-2 border-dashed border-white/5 rounded-xl">
-                                    <p className="text-gray-dark font-ui uppercase text-sm tracking-widest">Insufficient data for heatmap</p>
-                                </div>
-                            )}
+                            </div>
                         </section>
                     </div>
 
@@ -396,14 +449,16 @@ export default function PlayerDashboard() {
                                 <p className="text-sm font-sans text-gray-mid">Upload your CSV from Westgate sessions.</p>
                             </div>
                             <div
-                                onClick={() => fileInputRef.current?.click()}
+                                onClick={() => profile.isPublicPreview ? router.push('/auth/signin') : fileInputRef.current?.click()}
                                 className={`w-full h-40 border-2 border-dashed rounded-xl flex flex-col items-center justify-center hover:bg-white/[0.02] hover:border-strike/40 transition-all cursor-pointer group bg-navy-dark/50 ${uploadStatusColors[uploadStatus]}`}
                             >
                                 <svg className="w-10 h-10 text-gray-mid mb-3 group-hover:text-strike group-hover:-translate-y-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                 </svg>
-                                <span className="font-ui text-xs uppercase tracking-[3px] text-gray-mid group-hover:text-white transition-colors">Select CSV Data</span>
-                                <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleFileChange} />
+                                <span className="font-ui text-xs uppercase tracking-[3px] text-gray-mid group-hover:text-white transition-colors">
+                                    {profile.isPublicPreview ? 'Sign In to Upload' : 'Select CSV Data'}
+                                </span>
+                                {!profile.isPublicPreview && <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleFileChange} />}
                             </div>
                             {uploadMessage && (
                                 <div className={`text-xs font-ui uppercase tracking-widest p-4 rounded-lg border text-center ${uploadStatus === 'success' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-strike/10 border-strike/30 text-strike'}`}>
@@ -416,17 +471,32 @@ export default function PlayerDashboard() {
                             <h3 className="font-ui text-2xl uppercase tracking-widest text-bat-blue mb-6">Achievement Unit</h3>
                             <div className="grid grid-cols-2 gap-4 text-center">
                                 <div className="p-4 bg-navy-dark/50 rounded-xl border border-white/5">
-                                    <div className="text-3xl mb-1">👑</div>
-                                    <div className="font-wordmark text-white">MVP</div>
-                                    <div className="text-[8px] text-gray-mid uppercase tracking-[2px]">Wk 04 Winner</div>
+                                    <div className="text-3xl mb-1">🛡️</div>
+                                    <div className="font-wordmark text-white">VERIFIED</div>
+                                    <div className="text-[8px] text-gray-mid uppercase tracking-[2px]">Core Playmaster</div>
                                 </div>
                                 <div className="p-4 bg-navy-dark/50 rounded-xl border border-white/5">
-                                    <div className="text-3xl mb-1">🔥</div>
-                                    <div className="font-wordmark text-white">HOT</div>
-                                    <div className="text-[8px] text-gray-mid uppercase tracking-[2px]">5 Strike Streak</div>
+                                    <div className="text-3xl mb-1">🤝</div>
+                                    <div className="font-wordmark text-white">SQUAD</div>
+                                    <div className="text-[8px] text-gray-mid uppercase tracking-[2px]">Unit Member</div>
                                 </div>
+                                {!profile.isPublicPreview && (
+                                    <>
+                                        <div className="p-4 bg-navy-dark/50 rounded-xl border border-white/5 col-span-2 mt-2">
+                                            <div className="text-3xl mb-1">⏳</div>
+                                            <div className="font-wordmark text-white">CHALLENGER</div>
+                                            <div className="text-[8px] text-gray-mid uppercase tracking-[2px]">Sync 5 Matches for Tier 1</div>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
+
+                        {profile.isPublicPreview && (
+                            <Link href="/auth/signup" className="block w-full py-4 bg-gradient-to-r from-strike to-bat-blue text-white text-center font-ui font-black uppercase tracking-[4px] rounded-xl shadow-2xl hover:-translate-y-1 transition-all">
+                                JOIN THE UNIT
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div>
