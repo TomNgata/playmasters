@@ -35,6 +35,51 @@ type UBLBowler = {
     division: string;
 };
 
+type TeamStanding = {
+    id: string;
+    team_name: string;
+    won: number;
+    lost: number;
+    total_pins: number;
+    high_game: number;
+    high_series: number;
+    division: string;
+};
+
+type DivisionMetrics = {
+    avgScore: number;
+    medianScore: number;
+    topScore: number;
+    totalBowlers: number;
+    avgG1: number;
+    avgG2: number;
+};
+
+type TeamProjection = {
+    team_name: string;
+    current_won: number;
+    max_possible_won: number;
+    status: 'In Contention' | 'Eliminated';
+    gap: number;
+    nextOpponent?: string;
+    nextOpponentRank?: number;
+};
+
+type TeamConsistency = {
+    team_name: string;
+    g1_total: number;
+    g2_total: number;
+    gap: number;
+    consistency_label: string;
+};
+
+type ScheduleMatch = {
+    week: number;
+    division: string;
+    home_team: string;
+    away_team: string;
+};
+
 export default function PlayerDashboard() {
     const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -46,6 +91,13 @@ export default function PlayerDashboard() {
     const [loading, setLoading] = useState(true);
     const [uploadStatus, setUploadStatus] = useState<UploadStatus>('idle');
     const [uploadMessage, setUploadMessage] = useState('');
+    const [activeDivision, setActiveDivision] = useState<'Monday' | 'Tuesday'>('Monday');
+    const [teams, setTeams] = useState<TeamStanding[]>([]);
+    const [divMetrics, setDivMetrics] = useState<Record<string, DivisionMetrics>>({});
+    const [projections, setProjections] = useState<TeamProjection[]>([]);
+    const [teamConsistency, setTeamConsistency] = useState<TeamConsistency[]>([]);
+    const [topPOA, setTopPOA] = useState<UBLBowler[]>([]);
+    const [womenElite, setWomenElite] = useState<UBLBowler[]>([]);
     const [stats, setStats] = useState({
         totalMatches: 0,
         seasonAvg: 0,
@@ -57,6 +109,11 @@ export default function PlayerDashboard() {
         recentGameDates: [] as string[],
         heatmapData: [] as number[][]
     });
+
+    const WOMEN_PLAYERS = [
+        'DOROTHY', 'DARSHI', // Monday
+        'SONIKA', 'JUSTINE', 'ROSE', 'NILMA', 'DASHNI', 'AMRIT', 'ALEXA' // Tuesday
+    ];
 
     useEffect(() => {
         let isMounted = true;
@@ -164,25 +221,116 @@ export default function PlayerDashboard() {
                         });
                     }
 
-                    // 4. Fetch UBL Bowlers (Playmasters only)
-                    const { data: ublData } = await supabase
-                        .from('ubl_bowler_stats')
-                        .select('*')
-                        .ilike('team_name', '%PLAYMASTERS%');
+                }
 
-                    if (ublData && isMounted) {
-                        setAllPlaymasters(ublData);
-                        
-                        // Try to auto-select the profile name match
-                        const match = ublData.find(b => b.bowler_name.toLowerCase() === (profileData?.name || '').toLowerCase());
-                        if (match) {
-                            setUblProfile(match);
-                            setSelectedBowlerName(match.bowler_name);
-                        } else if (ublData.length > 0) {
-                            setUblProfile(ublData[0]);
-                            setSelectedBowlerName(ublData[0].bowler_name);
-                        }
+                // 4. Fetch Multi-Entity UBL Analytics (Migrated from Standings)
+                const [
+                    { data: teamData }, 
+                    { data: allBowlerData },
+                    { data: scheduleData }
+                ] = await Promise.all([
+                    supabase.from('ubl_team_standings')
+                        .select('*')
+                        .eq('division', activeDivision)
+                        .order('won', { ascending: false }),
+                    supabase.from('ubl_bowler_stats')
+                        .select('*')
+                        .order('average', { ascending: false }),
+                    supabase.from('ubl_schedule')
+                        .select('*')
+                        .eq('division', activeDivision)
+                ]);
+
+                if (isMounted && allBowlerData) {
+                    const currentDivBowlers = allBowlerData.filter(b => b.division === activeDivision);
+                    const playmasters = allBowlerData.filter(b => (b.team_name || '').toUpperCase().includes('PLAYMASTERS'));
+                    
+                    setAllPlaymasters(playmasters);
+                    
+                    // Profile Match
+                    const match = playmasters.find(b => b.bowler_name.toLowerCase() === (profile?.name || '').toLowerCase());
+                    if (match) {
+                        setUblProfile(match);
+                        setSelectedBowlerName(match.bowler_name);
+                    } else if (playmasters.length > 0) {
+                        setUblProfile(playmasters[0]);
+                        setSelectedBowlerName(playmasters[0].bowler_name);
                     }
+
+                    // Calculation Logic (Analysis 9, 10, 13, 14, 1, 12)
+                    
+                    // Analysis 13: Women's Elite
+                    const women = allBowlerData.filter(b => WOMEN_PLAYERS.includes((b.bowler_name || '').trim().toUpperCase()));
+                    setWomenElite(women.slice(0, 10));
+
+                    // Analysis 9: Division Metrics
+                    const divisions = ['Monday', 'Tuesday'];
+                    const metrics: Record<string, DivisionMetrics> = {};
+                    divisions.forEach(div => {
+                        const divBowlers = allBowlerData.filter(b => b.division === div);
+                        if (divBowlers.length > 0) {
+                            const avgs = divBowlers.map(b => b.average).sort((a, b) => a - b);
+                            const g1Scores = divBowlers.map(b => (b as any).game1 || 0).filter(s => s > 0);
+                            const g2Scores = divBowlers.map(b => (b as any).game2 || 0).filter(s => s > 0);
+                            
+                            metrics[div] = {
+                                avgScore: avgs.reduce((a, b) => a + b, 0) / avgs.length,
+                                medianScore: avgs[Math.floor(avgs.length / 2)],
+                                topScore: avgs[avgs.length - 1],
+                                totalBowlers: divBowlers.length,
+                                avgG1: g1Scores.length > 0 ? g1Scores.reduce((a, b) => a + b, 0) / g1Scores.length : 0,
+                                avgG2: g2Scores.length > 0 ? g2Scores.reduce((a, b) => a + b, 0) / g2Scores.length : 0
+                            };
+                        }
+                    });
+                    setDivMetrics(metrics);
+
+                    // Analysis 14: POA Tracker (Playmasters Focus)
+                    const poaList = playmasters
+                        .filter(b => (b as any).series && (b as any).last_week_avg)
+                        .map(b => ({
+                            ...b,
+                            poa: ((b as any).series || 0) - (((b as any).last_week_avg || 0) * 2)
+                        }))
+                        .sort((a, b) => (b as any).poa - (a as any).poa);
+                    setTopPOA(poaList.slice(0, 5));
+
+                    // Analysis 10: Consistency Matrix
+                    const teamNames = Array.from(new Set(currentDivBowlers.map(b => b.team_name)));
+                    const consistency = teamNames.map(name => {
+                        const tb = currentDivBowlers.filter(b => b.team_name === name);
+                        const g1 = tb.reduce((sum, b) => sum + ((b as any).game1 || 0), 0);
+                        const g2 = tb.reduce((sum, b) => sum + ((b as any).game2 || 0), 0);
+                        const gap = Math.abs(g2 - g1);
+                        let label = 'Steady';
+                        if (gap > 50) label = 'Volatile';
+                        if (gap < 20) label = 'Machine-like';
+                        return { team_name: name, g1_total: g1, g2_total: g2, gap, consistency_label: label };
+                    }).sort((a, b) => a.gap - b.gap);
+                    setTeamConsistency(consistency);
+
+                    // Analysis 1 & 12: Projections
+                    if (teamData && teamData.length > 0) {
+                        const leaderWon = Math.max(...teamData.map(t => t.won));
+                        const scheduleMatchups = (scheduleData || []) as ScheduleMatch[];
+                        const proj = teamData.map((t, index) => {
+                            const match = scheduleMatchups.find(m => m.home_team === t.team_name || m.away_team === t.team_name);
+                            const nextOpp = match ? (match.home_team === t.team_name ? match.away_team : match.home_team) : undefined;
+                            const nextOppRank = nextOpp ? teamData.findIndex(td => td.team_name === nextOpp) + 1 : undefined;
+
+                            return {
+                                team_name: t.team_name,
+                                current_won: t.won,
+                                max_possible_won: t.won + 4,
+                                status: (t.won + 4 >= leaderWon) ? ('In Contention' as const) : ('Eliminated' as const),
+                                gap: leaderWon - t.won,
+                                nextOpponent: nextOpp,
+                                nextOpponentRank: nextOppRank
+                            };
+                        });
+                        setProjections(proj);
+                    }
+                    setTeams(teamData || []);
                 }
             } catch (err) {
                 console.error("Dashboard Fetch Exception:", err);
@@ -194,7 +342,7 @@ export default function PlayerDashboard() {
         fetchUserData();
 
         return () => { isMounted = false; };
-    }, [router]);
+    }, [router, activeDivision]);
 
     const handleBowlerChange = (name: string) => {
         const found = allPlaymasters.find(b => b.bowler_name === name);
@@ -582,32 +730,220 @@ export default function PlayerDashboard() {
                             )}
                         </section>
 
-                        {/* Recent Matches Visual List */}
-                        <div className="bg-navy border border-white/5 rounded-2xl p-8">
-                            <h2 className="font-ui text-2xl font-bold tracking-[4px] text-white mb-6 uppercase flex items-center justify-between">
-                                <span>Rivalry Pulse</span>
-                                <span className="text-[10px] text-gray-mid tracking-widest">Live Updates</span>
-                            </h2>
-                            <div className="space-y-4">
-                                {teammates.length > 0 ? teammates.map((teammate, idx) => (
-                                    <div key={idx} className="flex items-center justify-between p-5 bg-navy-dark/50 rounded-xl border border-white/5 hover:border-strike/30 transition-all group">
-                                        <div className="flex items-center gap-4">
-                                            <div className={`w-12 h-12 rounded-full bg-bat-blue/20 flex items-center justify-center font-wordmark text-xl text-bat-blue`}>
-                                                {teammate.name.split(' ').map(n => n[0]).join('')}
-                                            </div>
-                                            <div>
-                                                <p className="font-title italic text-white group-hover:text-strike transition-colors">{teammate.name}</p>
-                                                <p className="font-ui text-[10px] text-gray-mid uppercase tracking-widest">Team {profile?.team_name} {' // '} {teammate.role}</p>
-                                            </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="font-wordmark text-3xl text-white">188</p>
-                                            <p className={`font-ui text-xs text-emerald-400 font-bold`}>+2 avg</p>
+                        {/* Competition Analysis SECTION (Migrated) */}
+                        <div id="competition" className="pt-8 border-t border-white/10 mt-12">
+                            <header className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                <div>
+                                    <h2 className="text-4xl font-black uppercase tracking-tight text-white mb-2">Competition Analysis</h2>
+                                    <p className="text-gray-mid font-medium tracking-wide uppercase text-xs">League-wide analytics // Compare against the Field</p>
+                                </div>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => setActiveDivision('Monday')}
+                                        className={`px-4 py-1.5 rounded-lg font-bold uppercase tracking-wider text-[10px] transition-all border ${
+                                            activeDivision === 'Monday'
+                                                ? 'bg-strike text-white border-strike shadow-[0_0_10px_rgba(232,32,48,0.4)]'
+                                                : 'bg-transparent text-gray-500 border-white/10 hover:border-white/20'
+                                        }`}
+                                    >
+                                        Monday
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveDivision('Tuesday')}
+                                        className={`px-4 py-1.5 rounded-lg font-bold uppercase tracking-wider text-[10px] transition-all border ${
+                                            activeDivision === 'Tuesday'
+                                                ? 'bg-strike text-white border-strike shadow-[0_0_10px_rgba(232,32,48,0.4)]'
+                                                : 'bg-transparent text-gray-500 border-white/10 hover:border-white/20'
+                                        }`}
+                                    >
+                                        Tuesday
+                                    </button>
+                                </div>
+                            </header>
+
+                            <div className="space-y-8">
+                                {/* Title Race Projections (Analysis 1 & 12) */}
+                                <section className="glass-panel p-8 rounded-2xl border border-strike/20 relative overflow-hidden bg-gradient-to-br from-navy via-navy to-strike/5">
+                                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                                        <div>
+                                            <h3 className="text-2xl font-black uppercase text-white flex items-center gap-3">
+                                                <span className="text-strike animate-pulse">🏁</span>
+                                                Title Race Projections
+                                            </h3>
+                                            <p className="text-gray-400 text-[10px] mt-1 font-bold uppercase tracking-widest italic">Mathematical probability based on wins gaps</p>
                                         </div>
                                     </div>
-                                )) : (
-                                    <p className="text-gray-dark font-ui uppercase tracking-widest text-center py-12 border-2 border-dashed border-white/5 rounded-xl">No team members found.</p>
-                                )}
+
+                                    <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+                                        {projections.slice(0, 6).map((p, i) => (
+                                            <div key={p.team_name} className={`p-5 rounded-xl border transition-all duration-500 ${
+                                                p.status === 'In Contention' 
+                                                    ? 'bg-white/[0.03] border-white/10' 
+                                                    : 'bg-black/20 border-white/5 opacity-60'
+                                            }`}>
+                                                <div className="flex justify-between items-start mb-4">
+                                                    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tighter ${
+                                                        p.status === 'In Contention' ? 'bg-green-500/20 text-green-400' : 'bg-strike/20 text-strike'
+                                                    }`}>
+                                                        {p.status}
+                                                    </span>
+                                                    <span className="text-[10px] font-black text-gray-600">POS #{i + 1}</span>
+                                                </div>
+                                                <h4 className={`font-black uppercase tracking-tight mb-3 truncate ${p.team_name.includes('PLAYMASTERS') ? 'text-strike' : 'text-white'}`}>
+                                                    {p.team_name}
+                                                </h4>
+                                                
+                                                <div className="space-y-4">
+                                                    {p.nextOpponent && (
+                                                        <div className="bg-navy-dark/40 p-2 rounded-lg border border-white/5">
+                                                            <div className="flex justify-between items-center mb-1">
+                                                                <span className="text-[8px] text-gray-500 font-bold uppercase">Next match</span>
+                                                                <span className={`text-[8px] font-black px-1.5 py-0.5 rounded ${
+                                                                    (p.nextOpponentRank || 0) <= 3 ? 'bg-strike/20 text-strike' : 'bg-green-500/20 text-green-400'
+                                                                }`}>
+                                                                    {(p.nextOpponentRank || 0) <= 3 ? 'HARD' : 'EASY'}
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-[10px] font-black text-gray-300">vs {p.nextOpponent}</p>
+                                                        </div>
+                                                    )}
+
+                                                    <div className="h-1.5 bg-navy-dark rounded-full overflow-hidden p-[1px] border border-white/5">
+                                                        <div 
+                                                            className={`h-full rounded-full transition-all duration-1000 ${
+                                                                p.team_name.includes('PLAYMASTERS') ? 'bg-strike' : 'bg-bat-blue'
+                                                            }`}
+                                                            style={{ width: `${(p.current_won / p.max_possible_won) * 100}%` }}
+                                                        />
+                                                    </div>
+                                                    <div className="flex justify-between text-[9px] font-bold uppercase tracking-tighter">
+                                                        <span className="text-gray-500">Gap to Lead</span>
+                                                        <span className={p.gap === 0 ? 'text-green-400' : 'text-amber-400'}>{p.gap === 0 ? 'LEADER' : `-${p.gap} Wins`}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+
+                                <div className="grid gap-8 grid-cols-1 md:grid-cols-2">
+                                    {/* Overperformers (POA) (Analysis 14) */}
+                                    <div className="glass-panel p-6 rounded-2xl border border-white/5 relative overflow-hidden group bg-gradient-to-br from-navy to-emerald-500/5">
+                                        <h3 className="text-xl font-black uppercase text-white mb-6 flex items-center gap-2">
+                                            <span className="text-emerald-400">🚀</span>
+                                            Overperformers
+                                        </h3>
+                                        <div className="space-y-3">
+                                            {topPOA.map((b, i) => (
+                                                <div key={b.bowler_name + '-poa'} className="flex items-center justify-between p-3 bg-white/[0.03] border border-white/5 rounded-xl">
+                                                    <div>
+                                                        <p className="font-bold text-white text-xs uppercase tracking-tight">{b.bowler_name}</p>
+                                                        <p className="text-[9px] text-gray-500 font-bold uppercase">{b.team_name}</p>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <p className="text-lg font-black text-emerald-400">+{(b as any).poa}</p>
+                                                        <p className="text-[8px] text-gray-500 uppercase font-black">Pins Over Avg</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Women's Elite (Analysis 13) */}
+                                    <div className="glass-panel p-6 rounded-2xl border border-white/5 relative overflow-hidden group bg-gradient-to-br from-navy to-pink-500/5">
+                                        <h3 className="text-xl font-black uppercase text-white mb-6 flex items-center gap-2">
+                                            <span className="text-pink-500">👑</span>
+                                            Women&apos;s Elite
+                                        </h3>
+                                        <div className="space-y-3">
+                                            {womenElite.map((b, i) => (
+                                                <div key={b.bowler_name + '-elite'} className="flex items-center justify-between p-3 bg-white/[0.03] border border-white/5 rounded-xl">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-6 h-6 rounded bg-pink-500/20 flex items-center justify-center font-black text-pink-500 text-[10px]">
+                                                            #{i + 1}
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-bold text-white text-xs uppercase tracking-tight">{b.bowler_name}</p>
+                                                            <p className="text-[9px] text-gray-500 font-bold uppercase">{b.team_name}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <p className="text-lg font-black text-white">{b.average}</p>
+                                                        <p className="text-[8px] text-pink-500 font-black uppercase tracking-widest">Avg</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Consistency Matrix (Analysis 10) */}
+                                <section className="glass-panel p-8 rounded-2xl border border-white/5 bg-navy-dark/30">
+                                    <h3 className="text-2xl font-black uppercase text-white mb-8 flex items-center gap-3">
+                                        <span className="text-purple-400 text-3xl">📊</span>
+                                        Consistency Matrix
+                                    </h3>
+                                    <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+                                        {teamConsistency.slice(0, 4).map((t) => (
+                                            <div key={t.team_name + '-cons'} className="p-4 bg-white/[0.02] border border-white/5 rounded-xl">
+                                                <div className="flex justify-between items-center mb-3">
+                                                    <p className="font-black text-xs text-white uppercase">{t.team_name}</p>
+                                                    <span className={`text-[8px] font-black px-2 py-0.5 rounded uppercase ${
+                                                        t.consistency_label === 'Machine-like' ? 'bg-emerald-500/20 text-emerald-400' : 
+                                                        t.consistency_label === 'Volatile' ? 'bg-strike/20 text-strike' : 
+                                                        'bg-bat-blue/20 text-bat-blue'
+                                                    }`}>
+                                                        {t.consistency_label}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex-1 h-1.5 bg-navy-dark rounded-full overflow-hidden">
+                                                        <div className="h-full bg-bat-blue/50" style={{ width: `${(t.g1_total / 1000) * 100}%` }}></div>
+                                                    </div>
+                                                    <div className="flex-1 h-1.5 bg-navy-dark rounded-full overflow-hidden">
+                                                        <div className="h-full bg-purple-500/50" style={{ width: `${(t.g2_total / 1000) * 100}%` }}></div>
+                                                    </div>
+                                                </div>
+                                                <p className="text-[8px] text-gray-600 mt-2 font-bold uppercase tracking-widest">
+                                                    Variance: <span className="text-gray-400">{t.gap} pins</span>
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+
+                                {/* Division Benchmarks (Analysis 9) */}
+                                <section className="glass-panel p-8 rounded-2xl border border-white/5 bg-gradient-to-br from-navy to-strike/5">
+                                    <h3 className="text-xl font-black uppercase text-white mb-8 flex items-center gap-3">
+                                        <span className="text-strike">📊</span>
+                                        Division Benchmarks
+                                    </h3>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-tight">Div Avg</p>
+                                            <p className="text-2xl font-black text-white">{divMetrics[activeDivision]?.avgScore.toFixed(1) || '---'}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-tight">Median</p>
+                                            <p className="text-2xl font-black text-white">{divMetrics[activeDivision]?.medianScore || '---'}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-tight">Game 1 Avg</p>
+                                            <p className="text-2xl font-black text-strike">{divMetrics[activeDivision]?.avgG1.toFixed(1) || '---'}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-tight">Game 2 Avg</p>
+                                            <p className="text-2xl font-black text-bat-blue">{divMetrics[activeDivision]?.avgG2.toFixed(1) || '---'}</p>
+                                        </div>
+                                    </div>
+                                    <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between">
+                                        <p className="text-[9px] text-gray-600 font-bold uppercase tracking-tighter">Based on {divMetrics[activeDivision]?.totalBowlers || 0} active league members</p>
+                                        <div className="flex gap-2">
+                                            <div className="w-2 h-2 rounded-full bg-strike"></div>
+                                            <div className="w-2 h-2 rounded-full bg-bat-blue"></div>
+                                        </div>
+                                    </div>
+                                </section>
                             </div>
                         </div>
                     </div>

@@ -73,7 +73,7 @@ export default function Home() {
             <div className="p-8 lg:p-12 flex flex-col items-start text-left group hover:bg-white/[0.02] transition-colors">
               <span className="font-ui text-strike text-xs font-bold tracking-[3px] uppercase mb-4 opacity-70">Metric 03</span>
               <h3 className="font-ui text-3xl uppercase tracking-tighter text-white mb-4 group-hover:text-strike transition-colors">Social Performance</h3>
-              <p className="text-sm font-sans text-gray-mid leading-relaxed">PvP comparisons, Women's Elite tracking, and automated tournament bracket generation.</p>
+              <p className="text-sm font-sans text-gray-mid leading-relaxed">PvP comparisons, Women&apos;s Elite tracking, and automated tournament bracket generation.</p>
             </div>
           </div>
 
@@ -90,20 +90,20 @@ export default function Home() {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-24">
           <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden">
-            <img src="/5858096969979465002.jpg" className="w-full h-full object-cover" />
+            <img src="/5858096969979465002.jpg" alt="Bowling Action" className="w-full h-full object-cover" />
           </div>
           <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center md:col-span-2 md:row-span-2 relative group overflow-hidden">
-            <img src="/5860367998361734483.jpg" className="w-full h-full object-cover z-10 grayscale group-hover:grayscale-0 transition-opacity" />
+            <img src="/5860367998361734483.jpg" alt="Player Training Visualization" className="w-full h-full object-cover z-10 grayscale group-hover:grayscale-0 transition-opacity" />
             <div className="absolute inset-0 bg-strike/5 group-hover:bg-strike/10 transition-colors" />
           </div>
           <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden">
-            <img src="/5858168725998079239.jpg" className="w-full h-full object-cover" />
+            <img src="/5858168725998079239.jpg" alt="Team Spirit" className="w-full h-full object-cover" />
           </div>
           <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden">
-            <img src="/5860677712748416291.jpg" className="w-full h-full object-cover" />
+            <img src="/5860677712748416291.jpg" alt="Tournament Highlights" className="w-full h-full object-cover" />
           </div>
           <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden">
-            <img src="/logo-md.png" className="w-1/2 object-contain" />
+            <img src="/logo-md.png" alt="Playmasters Logo" className="w-1/2 object-contain" />
           </div>
         </div>
       </section>
