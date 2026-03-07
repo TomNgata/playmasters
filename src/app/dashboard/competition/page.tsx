@@ -34,47 +34,53 @@ const T = {
   offWhite:   "#F4F5FA",
 };
 
-const MON_STANDINGS = [
-  { rank:1, name:"PLAYMASTERS",          w:26, l:4,  pins:13700, hgs:806, hss:1498, pts:52 },
-  { rank:2, name:"AMIGOS SEGUNDO",       w:24, l:6,  pins:13649, hgs:750, hss:1486, pts:48 },
-  { rank:3, name:"4BAGGERZ NATION",      w:20, l:10, pins:13814, hgs:804, hss:1522, pts:40 },
-  { rank:4, name:"PLAYMASTERS MAVERICK", w:19, l:11, pins:13190, hgs:739, hss:1383, pts:38 },
-  { rank:5, name:"PLAYMASTERS RISING",   w:12, l:18, pins:12512, hgs:739, hss:1361, pts:24 },
-  { rank:6, name:"BALLBARIANS STRIKERS", w:8,  l:22, pins:12211, hgs:758, hss:1431, pts:16 },
-  { rank:7, name:"MAHADEV STRIKERS",     w:8,  l:22, pins:11825, hgs:661, hss:1254, pts:16 },
-  { rank:8, name:"NDOVU STRIKERS",       w:3,  l:27, pins:11056, hgs:645, hss:1181, pts:6  },
-];
-
-const TUE_STANDINGS = [
-  { rank:1, name:"EASTLINE STARS",       w:22, l:8,  pins:13608, hgs:840, hss:1532, pts:44 },
-  { rank:2, name:"AMIGOS ESTRELLA",      w:22, l:5,  pins:12265, hgs:774, hss:1437, pts:44 },
-  { rank:3, name:"THE UNBOWLIVABLES",    w:20, l:10, pins:13416, hgs:778, hss:1487, pts:40 },
-  { rank:4, name:"254 BOWLERS",          w:19, l:11, pins:13447, hgs:772, hss:1486, pts:38 },
-  { rank:5, name:"NOISY KINGS",          w:16, l:14, pins:13259, hgs:786, hss:1521, pts:32 },
-  { rank:6, name:"UNBOWLIVABLE STRIK",   w:8,  l:19, pins:10912, hgs:731, hss:1325, pts:16 },
-  { rank:7, name:"TEAM 55",              w:4,  l:20, pins:9165,  hgs:687, hss:1244, pts:8  },
-  { rank:8, name:"AMIGOS SENORAS",       w:3,  l:27, pins:11381, hgs:684, hss:1278, pts:6  },
-];
-
 export default function CompetitionHQ() {
   const [division, setDivision] = useState("monday");
+  const [standings, setStandings] = useState<Standing[]>([]);
+  const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    async function fetchStandings() {
+      setLoading(true);
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from('division_standings')
+          .select('*')
+          .eq('division', division)
+          .order('rank', { ascending: true });
 
-  const standings = division === "monday" ? MON_STANDINGS : TUE_STANDINGS;
-  const leader = standings[0];
-  const topPts = leader.pts;
+        if (error) throw error;
+        if (data) setStandings(data);
+      } catch (err) {
+        console.error("Error fetching standings:", err);
+      } finally {
+        setLoading(false);
+        setMounted(true);
+      }
+    }
+    fetchStandings();
+  }, [division]);
+
+  if (loading && !mounted) return (
+    <div className="min-h-screen bg-navy-dark flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-strike border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+
+  const leader = standings[0] || { pts: 0 };
+  const topPts = (leader as any).points || (leader as any).pts || 0;
 
   const titleRace = standings.slice(0, 6).map(t => {
-    const gap = topPts - t.pts;
+    const currentPts = (t as any).points || (t as any).pts || 0;
+    const gap = topPts - currentPts;
     return {
       ...t,
-      maxPts: t.pts + 12,
+      maxPts: currentPts + 12,
       gap: gap,
-      status: t.pts + 12 >= topPts ? (gap <= 2 ? "IN CONTENTION" : gap <= 6 ? "POSSIBLE" : "SLIM CHANCE") : "ELIMINATED",
+      pts: currentPts,
+      status: currentPts + 12 >= topPts ? (gap <= 2 ? "IN CONTENTION" : gap <= 6 ? "POSSIBLE" : "SLIM CHANCE") : "ELIMINATED",
     };
   });
 
@@ -133,13 +139,13 @@ export default function CompetitionHQ() {
                       <tr key={t.name} className={`border-b border-white/5 transition-colors hover:bg-white/[0.02] ${isPlaymasters(t.name) ? 'bg-navy-mid/30 border-l-4 border-l-bat-blue' : ''}`}>
                         <td className="p-6 font-wordmark text-2xl text-bat-light">{t.rank}</td>
                         <td className="p-6 font-ui font-black text-lg tracking-widest uppercase">
-                          {t.name}
-                          {isPlaymasters(t.name) && <span className="ml-3 bg-bat-blue text-[9px] px-2 py-0.5 rounded align-middle">PM</span>}
+                          {t.name || (t as any).team_name}
+                          {isPlaymasters(t.name || (t as any).team_name) && <span className="ml-3 bg-bat-blue text-[9px] px-2 py-0.5 rounded align-middle">PM</span>}
                         </td>
-                        <td className="p-6 font-wordmark text-emerald-500">{t.w}</td>
-                        <td className="p-6 font-wordmark text-strike">{t.l}</td>
+                        <td className="p-6 font-wordmark text-emerald-500">{(t as any).wins || (t as any).w}</td>
+                        <td className="p-6 font-wordmark text-strike">{(t as any).losses || (t as any).l}</td>
                         <td className="p-6 font-ui text-gray-mid">{t.pins.toLocaleString()}</td>
-                        <td className={`p-6 font-wordmark text-2xl ${t.rank === 1 ? 'text-ball-pink' : 'text-white'}`}>{t.pts}</td>
+                        <td className={`p-6 font-wordmark text-2xl ${t.rank === 1 ? 'text-ball-pink' : 'text-white'}`}>{(t as any).points || (t as any).pts}</td>
                       </tr>
                     ))}
                   </tbody>

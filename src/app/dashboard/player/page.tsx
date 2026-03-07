@@ -176,15 +176,20 @@ export default function PlayerDashboard() {
                                     </h3>
                                     <p className="text-gray-mid text-[10px] mt-1 font-bold uppercase tracking-[3px] italic">Live UBL Stats {'//'} Unit Data Stream</p>
                                 </div>
-                                <select 
-                                    className="bg-navy-dark border border-white/10 rounded-xl px-6 py-3 text-[11px] font-ui font-black uppercase tracking-[2px] outline-none focus:border-strike transition-all"
-                                    value={selectedBowlerName}
-                                    onChange={(e) => handleBowlerChange(e.target.value)}
-                                >
-                                    {allPlaymasters.map(b => (
-                                        <option key={b.bowler_name + b.division} value={b.bowler_name} className="bg-navy text-white">{b.bowler_name}</option>
-                                    ))}
-                                </select>
+                                <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                                    <select 
+                                        className="bg-navy-dark border border-white/10 rounded-xl px-6 py-3 text-[11px] font-ui font-black uppercase tracking-[2px] outline-none focus:border-strike transition-all"
+                                        value={selectedBowlerName}
+                                        onChange={(e) => handleBowlerChange(e.target.value)}
+                                    >
+                                        {allPlaymasters.map(b => (
+                                            <option key={b.bowler_name + b.division} value={b.bowler_name} className="bg-navy text-white">{b.bowler_name}</option>
+                                        ))}
+                                    </select>
+                                    <a href="/dashboard/comparison" className="px-6 py-3 bg-bat-blue/20 border border-bat-blue/40 rounded-xl text-[10px] font-ui font-black uppercase tracking-[2px] hover:bg-bat-blue hover:text-white transition-all">
+                                        Compare Rivals ⚔️
+                                    </a>
+                                </div>
                             </div>
                             
                             {selectedPlayer ? (
