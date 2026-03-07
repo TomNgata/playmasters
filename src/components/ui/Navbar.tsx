@@ -12,7 +12,8 @@ export default function Navbar() {
     const navLinks = [
         { name: 'Player Hub', href: '/dashboard/player' },
         { name: 'Competition Analysis', href: '/dashboard/competition' },
-        { name: 'Log Score', href: '/dashboard/player/log-game' }
+        { name: 'Rivalry Engine', href: '/dashboard/comparison' },
+        { name: 'Log Score', href: '/dashboard/player#sync-scores' }
     ];
 
     return (
@@ -67,20 +68,26 @@ export default function Navbar() {
             </div>
 
             {/* Mobile Navigation Pane */}
-            <div className={`fixed inset-0 top-20 bg-navy-dark/95 backdrop-blur-xl z-40 transition-transform duration-300 md:hidden ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-                <div className="flex flex-col items-center py-12 gap-8 px-6">
+            <div className={`fixed inset-0 top-20 bg-navy-dark/98 backdrop-blur-2xl z-40 transition-transform duration-500 md:hidden ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                <div className="flex flex-col items-center py-12 gap-6 px-8">
                     {navLinks.map((link) => (
                         <Link 
                             key={link.name} 
                             href={link.href} 
                             onClick={closeMenu}
-                            className="font-ui text-2xl tracking-[6px] uppercase text-gray-mid hover:text-strike transition-colors text-center w-full pb-4 border-b border-white/5"
+                            className="w-full py-5 bg-white/5 border border-white/10 rounded-2xl font-ui text-xl tracking-[4px] uppercase text-white hover:bg-strike hover:border-strike transition-all text-center shadow-xl active:scale-95"
                         >
                             {link.name}
                         </Link>
                     ))}
-                    <div className="mt-8">
-                         <img src="/logo-sm.png" alt="Playmasters" className="w-16 h-16 opacity-20 grayscale" />
+                    
+                    <div className="mt-8 flex items-center gap-4 bg-ball-pink/10 px-8 py-4 rounded-full border border-ball-pink/30">
+                         <span className="w-3 h-3 rounded-full bg-ball-pink animate-pulse shadow-[0_0_12px_#D42080]" />
+                         <span className="text-xs font-ui font-black uppercase tracking-[4px] text-ball-pink">Live Unit Stream</span>
+                    </div>
+
+                    <div className="mt-12">
+                         <img src="/logo-sm.png" alt="Playmasters" className="w-16 h-16 opacity-30 invert" />
                     </div>
                 </div>
             </div>
