@@ -250,13 +250,6 @@ export default function CompetitionHQ() {
                </div>
             </section>
 
-            <div className="p-8 bg-gradient-to-br from-strike to-navy border border-strike/30 rounded-2xl shadow-2xl relative overflow-hidden">
-                <h3 className="text-3xl font-wordmark uppercase mb-2">Strike!</h3>
-                <p className="font-ui font-black uppercase tracking-[2px] text-xs text-white/70 italic">Join the next sessions</p>
-                <div className="mt-8">
-                   <button className="w-full py-4 bg-white text-navy font-ui font-black uppercase tracking-[4px] rounded-xl hover:bg-strike hover:text-white transition-all shadow-xl">Register Now</button>
-                </div>
-            </div>
           </div>
         </div>
       </div>
