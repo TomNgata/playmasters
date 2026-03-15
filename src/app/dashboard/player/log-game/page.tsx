@@ -16,6 +16,14 @@ const MATCH_TYPES = [
     { value: 'tournament_team', label: 'Tournament (Team)' },
 ];
 
+const MATCH_PHASES = [
+    { value: 'regular', label: 'Regular Phase / Qualifiers' },
+    { value: 'knockout', label: 'Knockout Stage' },
+    { value: 'winners_bracket', label: 'Winners Bracket' },
+    { value: 'losers_tier', label: 'Losers Tier / Bracket' },
+    { value: 'finals', label: 'Finals / Step-Ladder' },
+];
+
 export default function LogGame() {
     const supabase = createClient();
     const router = useRouter();
@@ -29,6 +37,8 @@ export default function LogGame() {
     const [activeFrame, setActiveFrame] = useState(0);
     const [alley, setAlley] = useState('');
     const [eventName, setEventName] = useState('');
+    const [gameNumber, setGameNumber] = useState<number>(1);
+    const [tournamentTier, setTournamentTier] = useState<string>('regular');
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [pendingSession, setPendingSession] = useState<any | null>(null);
 
@@ -89,6 +99,8 @@ export default function LogGame() {
         setMatchType(pendingSession.match_type || 'practice');
         setAlley(pendingSession.alley || '');
         setEventName(pendingSession.event_name || '');
+        setGameNumber(pendingSession.game_number || 1);
+        setTournamentTier(pendingSession.tournament_tier || 'regular');
         setSessionId(pendingSession.id);
         
         // Calculate active frame based on rolls
@@ -127,6 +139,8 @@ export default function LogGame() {
         setRolls(Array.from({ length: 10 }, () => []));
         setAlley('');
         setEventName('');
+        setGameNumber(1);
+        setTournamentTier('regular');
         setActiveFrame(0);
     };
 
@@ -197,6 +211,8 @@ export default function LogGame() {
             match_type: matchType,
             alley: alley,
             event_name: eventName,
+            game_number: gameNumber,
+            tournament_tier: tournamentTier,
             status: 'in_progress',
             version: 1
         };
@@ -338,6 +354,8 @@ export default function LogGame() {
             match_type: matchType,
             alley: alley,
             event_name: eventName,
+            game_number: gameNumber,
+            tournament_tier: tournamentTier,
             status: 'completed',
             version: 1,
             updated_at: new Date().toISOString()
@@ -407,7 +425,7 @@ export default function LogGame() {
                                 className="w-full bg-navy-dark border border-white/10 rounded-xl px-4 py-3 text-white font-black uppercase tracking-widest text-sm outline-none focus:border-strike transition-all appearance-none cursor-pointer"
                             >
                                 <option value="" className="bg-navy">-- Select Player --</option>
-                                {playmasters.map(p => (
+                                {playmasters.map((p: any) => (
                                     <option key={p.bowler_name} value={p.bowler_name} className="bg-navy text-white">
                                         {p.bowler_name}
                                     </option>
@@ -438,7 +456,7 @@ export default function LogGame() {
                                 onChange={(e) => {
                                     const val = e.target.value.toUpperCase();
                                     setAlley(val);
-                                    saveProgress(rolls); // Optional: Trigger save on blur might be better but for consistency:
+                                    saveProgress(rolls); 
                                 }}
                                 onBlur={() => saveProgress(rolls)}
                                 className="w-full bg-navy-dark border border-white/10 rounded-xl px-4 py-3 text-white font-black uppercase tracking-widest text-[10px] outline-none focus:border-strike transition-all"
@@ -458,6 +476,37 @@ export default function LogGame() {
                                 className="w-full bg-navy-dark border border-white/10 rounded-xl px-4 py-3 text-white font-black uppercase tracking-widest text-[10px] outline-none focus:border-strike transition-all"
                             />
                             <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[8px] text-gray-500 font-bold tracking-widest uppercase pointer-events-none">EVENT</div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="relative">
+                            <select
+                                value={gameNumber}
+                                onChange={(e) => {
+                                    setGameNumber(parseInt(e.target.value));
+                                }}
+                                onBlur={() => saveProgress(rolls)}
+                                className="w-full bg-navy-dark border border-white/10 rounded-xl px-4 py-3 text-white font-black uppercase tracking-widest text-[10px] outline-none focus:border-strike transition-all appearance-none cursor-pointer"
+                            >
+                                {Array.from({length: 12}, (_, i) => i + 1).map(num => (
+                                    <option key={num} value={num} className="bg-navy">Game {num}</option>
+                                ))}
+                            </select>
+                            <div className="absolute right-10 top-1/2 -translate-y-1/2 text-[8px] text-gray-500 font-bold tracking-widest uppercase pointer-events-none">#</div>
+                        </div>
+                        <div className="relative">
+                            <select
+                                value={tournamentTier}
+                                onChange={(e) => setTournamentTier(e.target.value)}
+                                onBlur={() => saveProgress(rolls)}
+                                className="w-full bg-navy-dark border border-white/10 rounded-xl px-4 py-3 text-white font-black uppercase tracking-widest text-[10px] outline-none focus:border-strike transition-all appearance-none cursor-pointer"
+                            >
+                                {MATCH_PHASES.map(phase => (
+                                    <option key={phase.value} value={phase.value} className="bg-navy">{phase.label}</option>
+                                ))}
+                            </select>
+                            <div className="absolute right-10 top-1/2 -translate-y-1/2 text-[8px] text-gray-500 font-bold tracking-widest uppercase pointer-events-none">Phase</div>
                         </div>
                     </div>
 
