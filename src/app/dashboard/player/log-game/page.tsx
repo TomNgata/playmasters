@@ -55,13 +55,12 @@ export default function LogGame() {
             if (data) {
                 const pm = data.filter(b => (b.team_name || '').toUpperCase().includes('PLAYMASTERS'));
                 setPlaymasters(pm);
-                // Don't auto-set player so we can trigger session check on change
             }
         }
         fetchPlaymasters();
     }, []);
 
-    // Check for active \"in_progress\" session when player is selected
+    // Check for active "in_progress" session when player is selected
     useEffect(() => {
         if (!selectedPlayer) {
             setRolls(Array.from({ length: 10 }, () => []));
@@ -71,7 +70,6 @@ export default function LogGame() {
             return;
         }
 
-        // Clear current local state immediately to avoid showing wrong player data while checking
         setRolls(Array.from({ length: 10 }, () => []));
         setActiveFrame(0);
         setSessionId(null);
@@ -103,7 +101,6 @@ export default function LogGame() {
         setTournamentTier(pendingSession.tournament_tier || 'regular');
         setSessionId(pendingSession.id);
         
-        // Calculate active frame based on rolls
         const currentRolls = pendingSession.frame_scores as number[][];
         let nextFrame = 0;
         for (let i = 0; i < 10; i++) {
@@ -118,7 +115,6 @@ export default function LogGame() {
                     break;
                 }
             } else {
-                // 10th frame
                 const isBonus = f[0] === 10 || (f[0] + (f[1] || 0)) >= 10;
                 if ((!isBonus && f.length < 2) || (isBonus && f.length < 3)) {
                     nextFrame = i;
@@ -144,11 +140,9 @@ export default function LogGame() {
         setActiveFrame(0);
     };
 
-    // Pure function to calculate running totals based on conventional bowling math
     const calculateRunningTotals = (currentRolls: number[][]): number[] => {
         const totals: number[] = [];
         let cumulative = 0;
-        
         const flatRolls: number[] = [];
         for (const frame of currentRolls) {
             flatRolls.push(...frame);
@@ -161,14 +155,12 @@ export default function LogGame() {
                 totals.push(cumulative);
                 continue;
             }
-            
             if (frameIndex === 9) {
-                const frameSum = frame.reduce((a, b) => a + b, 0);
+                const frameSum = frame.reduce((a, b: any) => a + b, 0);
                 cumulative += frameSum;
                 totals.push(cumulative);
                 break;
             }
-            
             const isStrike = frame[0] === 10;
             const isSpare = !isStrike && frame.length > 1 && frame[0] + frame[1] === 10;
             
@@ -187,20 +179,18 @@ export default function LogGame() {
                 cumulative += 10 + bonus;
                 rollIndex += 2;
             } else {
-                const frameSum = frame.reduce((a, b) => a + b, 0);
+                const frameSum = frame.reduce((a, b: any) => a + b, 0);
                 cumulative += frameSum;
                 rollIndex += frame.length; 
             }
             totals.push(cumulative);
         }
-        
         return totals;
     };
 
     const runningTotals = calculateRunningTotals(rolls);
     const totalScore = Math.max(...runningTotals, 0);
 
-    // Auto-save progress to Supabase
     const saveProgress = async (currentRolls: number[][]) => {
         if (!selectedPlayer) return;
 
@@ -335,7 +325,7 @@ export default function LogGame() {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
         setMessage(null);
 
@@ -366,13 +356,15 @@ export default function LogGame() {
         if (error) {
             setMessage({ type: 'error', text: 'Failed to lock game.' });
         } else {
-            setMessage({ type: 'success', text: `${selectedPlayer}'s score locked!` });
+            setMessage({ type: 'success', text: `${selectedPlayer}'s Game ${gameNumber} locked! Ready for Game ${gameNumber + 1}.` });
+            
+            // Prepare for next game immediately
             setRolls(Array.from({ length: 10 }, () => []));
             setActiveFrame(0);
             setSessionId(null);
-            setTimeout(() => {
-                router.push('/dashboard/player');
-            }, 2000);
+            setGameNumber(prev => prev + 1);
+            
+            setTimeout(() => setMessage(null), 5000);
         }
     };
 
@@ -390,6 +382,18 @@ export default function LogGame() {
                     </p>
                 </header>
 
+                <div className="mb-6 flex justify-between items-center bg-navy/50 p-2 rounded-xl border border-white/5">
+                    <button 
+                        onClick={() => router.push('/dashboard/player')}
+                        className="flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-strike transition-colors"
+                    >
+                        <span className="text-sm">←</span> Return to Dashboard
+                    </button>
+                    <div className="px-4 py-2 text-[8px] font-black uppercase tracking-[3px] text-strike/60 animate-pulse">
+                        Session Active
+                    </div>
+                </div>
+
                 <div className="bg-navy border border-white/5 p-4 md:p-6 rounded-2xl relative overflow-hidden space-y-8 shadow-2xl">
                     <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-strike to-bat-blue"></div>
                     
@@ -403,7 +407,6 @@ export default function LogGame() {
                         </div>
                     )}
 
-                    {/* Resume Session Banner */}
                     {pendingSession && (
                         <div className="bg-strike/20 border border-strike/40 p-4 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
                             <div className="text-center md:text-left">
@@ -510,7 +513,6 @@ export default function LogGame() {
                         </div>
                     </div>
 
-                    {/* Scorecard Grid UI */}
                     <div className="overflow-x-auto pb-4 custom-scrollbar">
                         <div className="min-w-[800px] flex gap-1 border border-white/10 bg-white/5 rounded-xl p-2 select-none">
                             {Array.from({length: 10}).map((_, i) => (
@@ -545,7 +547,6 @@ export default function LogGame() {
                         </div>
                     </div>
 
-                    {/* Mobile Keypad UI */}
                     <div className="max-w-md mx-auto bg-navy-dark p-4 rounded-xl border border-white/10 shadow-inner">
                         <div className="grid grid-cols-3 gap-2">
                             {['1','2','3','4','5','6','7','8','9','/','0','X'].map((key) => {
@@ -576,7 +577,6 @@ export default function LogGame() {
                         </div>
                     </div>
 
-                    {/* Submit Bar */}
                     <div className="flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/5 pt-6 mt-4">
                         <div className="text-center md:text-left">
                             <p className="text-[10px] font-black text-gray-500 uppercase tracking-[3px] mb-1">Live Score</p>
