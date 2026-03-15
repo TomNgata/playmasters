@@ -136,6 +136,26 @@ export default function PlayerDashboard() {
         fetchHistory();
     }, [selectedBowlerName]);
 
+    const handleDeleteGame = async (gameId: string) => {
+        if (!window.confirm('Are you sure you want to delete this game? This cannot be undone.')) return;
+
+        try {
+            const supabase = createClient();
+            const { error } = await supabase
+                .from('scores')
+                .delete()
+                .eq('id', gameId);
+
+            if (error) throw error;
+
+            // Update local state to remove the game immediately
+            setMatchHistory(prev => prev.filter(g => g.id !== gameId));
+        } catch (err) {
+            console.error("Delete Game Error:", err);
+            alert("Failed to delete game. Please try again.");
+        }
+    };
+
     const groupedHistory = useMemo(() => {
         const groups: Record<string, ScoreRecord[]> = {};
         matchHistory.forEach(score => {
@@ -426,10 +446,19 @@ export default function PlayerDashboard() {
                                                                              <span className="mx-3 text-gray-700">|</span>
                                                                              <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">{game.tournament_tier?.replace('_', ' ') || 'REGULAR'}</span>
                                                                          </div>
-                                                                         <div className="text-right">
-                                                                             <span className="text-[10px] font-black uppercase text-gray-500 tracking-widest mr-2">Total</span>
-                                                                             <span className="text-3xl font-wordmark text-white">{game.total_score}</span>
-                                                                         </div>
+                                                                         <div className="text-right flex items-center gap-4">
+                                                                            <div className="text-right">
+                                                                                <span className="text-[10px] font-black uppercase text-gray-500 tracking-widest mr-2">Total</span>
+                                                                                <span className="text-3xl font-wordmark text-white">{game.total_score}</span>
+                                                                            </div>
+                                                                            <button 
+                                                                                onClick={() => handleDeleteGame(game.id)}
+                                                                                className="p-2 text-gray-400 hover:text-strike transition-colors hover:bg-strike/5 rounded-lg group"
+                                                                                title="Delete Game"
+                                                                            >
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-110 transition-transform"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                                                                            </button>
+                                                                        </div>
                                                                      </div>
 
                                                                      {/* Frame by Frame Scorecard */}
