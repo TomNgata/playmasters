@@ -36,6 +36,27 @@ type ScoreRecord = {
     updated_at: string;
 };
 
+// Counter Hook helper moved outside to follow React best practices
+function Counter({ value, duration = 1000, mounted }: { value: number; duration?: number; mounted: boolean }) {
+    const [count, setCount] = useState(0);
+    useEffect(() => {
+        if (!mounted) return;
+        let start = 0;
+        const end = value;
+        const range = end - start;
+        let current = start;
+        const increment = end > start ? 1 : -1;
+        const stepTime = Math.abs(Math.floor(duration / (range || 1)));
+        const timer = setInterval(() => {
+            current += increment;
+            setCount(current);
+            if (current === end) clearInterval(timer);
+        }, Math.max(stepTime, 10));
+        return () => clearInterval(timer);
+    }, [value, mounted, duration]);
+    return <span>{count}</span>;
+}
+
 export default function PlayerDashboard() {
     const [allPlaymasters, setAllPlaymasters] = useState<UBLBowler[]>([]);
     const [selectedBowlerName, setSelectedBowlerName] = useState<string>('');
@@ -73,27 +94,6 @@ export default function PlayerDashboard() {
     }, []);
 
     const selectedPlayer = allPlaymasters.find((b: UBLBowler) => b.bowler_name === selectedBowlerName) || null;
-
-    // Counter Hook helper
-    function Counter({ value, duration = 1000 }: { value: number; duration?: number }) {
-        const [count, setCount] = useState(0);
-        useEffect(() => {
-            if (!mounted) return;
-            let start = 0;
-            const end = value;
-            const range = end - start;
-            let current = start;
-            const increment = end > start ? 1 : -1;
-            const stepTime = Math.abs(Math.floor(duration / (range || 1)));
-            const timer = setInterval(() => {
-                current += increment;
-                setCount(current);
-                if (current === end) clearInterval(timer);
-            }, Math.max(stepTime, 10));
-            return () => clearInterval(timer);
-        }, [value, mounted]);
-        return <span>{count}</span>;
-    }
 
     const handleBowlerChange = (name: string) => {
         setMounted(false);
@@ -345,7 +345,7 @@ export default function PlayerDashboard() {
                                         ].map((stat, i) => (
                                             <div key={i} className={`bg-white/5 border border-white/10 p-5 rounded-xl border-t-4 ${stat.highlight ? 'border-t-ball-pink bg-gradient-to-br from-ball-pink/[0.08] to-transparent' : 'border-t-strike'}`}>
                                                 <div className={`text-4xl font-wordmark ${stat.color} mb-1`}>
-                                                    <Counter value={stat.value} />
+                                                    <Counter value={stat.value} mounted={mounted} />
                                                 </div>
                                                 <p className="text-[10px] text-gray-mid font-ui font-black uppercase tracking-widest">{stat.label}</p>
                                             </div>
