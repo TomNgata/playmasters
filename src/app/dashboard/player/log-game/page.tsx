@@ -81,7 +81,7 @@ export default function LogGame() {
                 .select('*')
                 .eq('player_name', selectedPlayer)
                 .eq('status', 'in_progress')
-                .order('created_at', { ascending: false })
+                .order('updated_at', { ascending: false })
                 .limit(1);
 
             if (data && data.length > 0) {
@@ -156,14 +156,13 @@ export default function LogGame() {
                 continue;
             }
             if (frameIndex === 9) {
-                const frameSum = frame.reduce((a, b: any) => a + b, 0);
+                const frameSum = frame.reduce((a, b) => a + b, 0);
                 cumulative += frameSum;
                 totals.push(cumulative);
                 break;
             }
             const isStrike = frame[0] === 10;
             const isSpare = !isStrike && frame.length > 1 && frame[0] + frame[1] === 10;
-            
             if (isStrike) {
                 let bonus = 0;
                 const next1 = flatRolls[rollIndex + 1];
@@ -179,7 +178,7 @@ export default function LogGame() {
                 cumulative += 10 + bonus;
                 rollIndex += 2;
             } else {
-                const frameSum = frame.reduce((a, b: any) => a + b, 0);
+                const frameSum = frame.reduce((a, b) => a + b, 0);
                 cumulative += frameSum;
                 rollIndex += frame.length; 
             }
@@ -193,7 +192,6 @@ export default function LogGame() {
 
     const saveProgress = async (currentRolls: number[][]) => {
         if (!selectedPlayer) return;
-
         const payload = {
             player_name: selectedPlayer,
             frame_scores: currentRolls,
@@ -206,7 +204,6 @@ export default function LogGame() {
             status: 'in_progress',
             version: 1
         };
-
         if (sessionId) {
             await supabase.from('scores').update(payload).eq('id', sessionId);
         } else {
@@ -218,37 +215,31 @@ export default function LogGame() {
     const getAvailableKeys = () => {
         if (activeFrame > 9) return [];
         const currentFrame = rolls[activeFrame];
-        
         if (activeFrame < 9) {
-            if (currentFrame.length === 0) {
-                return ['0','1','2','3','4','5','6','7','8','9','X'];
-            } else if (currentFrame.length === 1) {
-                const firstRoll = currentFrame[0];
-                const maxPins = 9 - firstRoll;
+            if (currentFrame.length === 0) return ['0','1','2','3','4','5','6','7','8','9','X'];
+            if (currentFrame.length === 1) {
+                const maxPins = 9 - currentFrame[0];
                 const keys = Array.from({length: maxPins + 1}, (_, i) => i.toString());
                 keys.push('/');
                 return keys;
             }
         } else {
-            if (currentFrame.length === 0) {
-                return ['0','1','2','3','4','5','6','7','8','9','X'];
-            } else if (currentFrame.length === 1) {
+            if (currentFrame.length === 0) return ['0','1','2','3','4','5','6','7','8','9','X'];
+            if (currentFrame.length === 1) {
                 if (currentFrame[0] === 10) return ['0','1','2','3','4','5','6','7','8','9','X'];
                 const maxPins = 9 - currentFrame[0];
                 const keys = Array.from({length: maxPins + 1}, (_, i) => i.toString());
                 keys.push('/');
                 return keys;
             } else if (currentFrame.length === 2) {
-                if (currentFrame[0] === 10 && currentFrame[1] === 10) {
-                    return ['0','1','2','3','4','5','6','7','8','9','X'];
-                } else if (currentFrame[0] === 10 && currentFrame[1] !== 10) {
+                if (currentFrame[0] === 10 && currentFrame[1] === 10) return ['0','1','2','3','4','5','6','7','8','9','X'];
+                if (currentFrame[0] === 10 && currentFrame[1] !== 10) {
                     const maxPins = 9 - currentFrame[1];
                     const keys = Array.from({length: maxPins + 1}, (_, i) => i.toString());
                     keys.push('/');
                     return keys;
-                } else if (currentFrame[0] + currentFrame[1] === 10) {
-                    return ['0','1','2','3','4','5','6','7','8','9','X'];
                 }
+                if (currentFrame[0] + currentFrame[1] === 10) return ['0','1','2','3','4','5','6','7','8','9','X'];
             }
         }
         return [];
@@ -257,45 +248,32 @@ export default function LogGame() {
     const handleKeypress = (key: string) => {
         const newRolls = [...rolls.map(r => [...r])]; 
         let currentFrameIdx = activeFrame;
-        
         if (key === 'del') {
             if (currentFrameIdx > 9) currentFrameIdx = 9;
             if (newRolls[currentFrameIdx] && newRolls[currentFrameIdx].length > 0) {
                 newRolls[currentFrameIdx].pop();
             } else if (currentFrameIdx > 0) {
                 currentFrameIdx--;
-                if (newRolls[currentFrameIdx].length > 0) {
-                   newRolls[currentFrameIdx].pop();
-                }
+                if (newRolls[currentFrameIdx].length > 0) newRolls[currentFrameIdx].pop();
             }
             setActiveFrame(currentFrameIdx);
             setRolls(newRolls);
             saveProgress(newRolls);
             return;
         }
-
         if (activeFrame > 9) return;
-
         const currentFrame = newRolls[currentFrameIdx];
         let value = 0;
-        
         if (key === 'X') value = 10;
         else if (key === '/') value = 10 - currentFrame[0];
         else value = parseInt(key);
-
         currentFrame.push(value);
-
         if (currentFrameIdx < 9) {
-            if (value === 10 || currentFrame.length === 2) {
-                currentFrameIdx++;
-            }
+            if (value === 10 || currentFrame.length === 2) currentFrameIdx++;
         } else {
             const isStrikeOrSpare = currentFrame[0] === 10 || (currentFrame[0] + (currentFrame[1] || 0)) >= 10;
-            if ((currentFrame.length === 2 && !isStrikeOrSpare) || currentFrame.length === 3) {
-                currentFrameIdx++; 
-            }
+            if ((currentFrame.length === 2 && !isStrikeOrSpare) || currentFrame.length === 3) currentFrameIdx++; 
         }
-        
         setActiveFrame(currentFrameIdx);
         setRolls(newRolls);
         saveProgress(newRolls);
@@ -308,8 +286,7 @@ export default function LogGame() {
         if (frameIndex < 9) {
             if (rollIndex === 0 && val === 10) return 'X';
             if (rollIndex === 1 && frame[0] + val === 10) return '/';
-            if (val === 0) return '-';
-            return val.toString();
+            return val === 0 ? '-' : val.toString();
         } else {
             if (rollIndex === 0 && val === 10) return 'X';
             if (rollIndex === 1) {
@@ -320,22 +297,18 @@ export default function LogGame() {
                 if (val === 10) return 'X';
                 if (frame[1] !== 10 && frame[1] + val === 10) return '/';
             }
-            if (val === 0) return '-';
-            return val.toString();
+            return val === 0 ? '-' : val.toString();
         }
     };
 
-    const handleSubmit = async (e: any) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setMessage(null);
-
         if (!selectedPlayer) {
             setMessage({ type: 'error', text: 'Select player first.' });
             return;
         }
-
         setIsSubmitting(true);
-
         const { error } = await supabase.from('scores').upsert({
             id: sessionId || undefined,
             total_score: totalScore,
@@ -350,20 +323,15 @@ export default function LogGame() {
             version: 1,
             updated_at: new Date().toISOString()
         });
-
         setIsSubmitting(false);
-
         if (error) {
             setMessage({ type: 'error', text: 'Failed to lock game.' });
         } else {
             setMessage({ type: 'success', text: `${selectedPlayer}'s Game ${gameNumber} locked! Ready for Game ${gameNumber + 1}.` });
-            
-            // Prepare for next game immediately
             setRolls(Array.from({ length: 10 }, () => []));
             setActiveFrame(0);
             setSessionId(null);
             setGameNumber(prev => prev + 1);
-            
             setTimeout(() => setMessage(null), 5000);
         }
     };
@@ -383,35 +351,22 @@ export default function LogGame() {
                 </header>
 
                 <div className="mb-6 flex justify-between items-center bg-navy/50 p-2 rounded-xl border border-white/5">
-                    <button 
-                        onClick={() => router.push('/dashboard/player')}
-                        className="flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-strike transition-colors"
-                    >
+                    <button onClick={() => router.push('/dashboard/player')} className="flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-strike transition-colors">
                         <span className="text-sm">←</span> Return to Dashboard
                     </button>
-                    <div className="px-4 py-2 text-[8px] font-black uppercase tracking-[3px] text-strike/60 animate-pulse">
-                        Session Active
-                    </div>
+                    <div className="px-4 py-2 text-[8px] font-black uppercase tracking-[3px] text-strike/60 animate-pulse">Session Active</div>
                 </div>
 
                 <div className="bg-navy border border-white/5 p-4 md:p-6 rounded-2xl relative overflow-hidden space-y-8 shadow-2xl">
                     <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-strike to-bat-blue"></div>
-                    
                     {message && (
-                        <div className={`p-4 rounded-lg font-bold text-center text-sm ${
-                            message.type === 'error' ? 'bg-strike/10 border border-strike/30 text-strike' : 
-                            message.type === 'info' ? 'bg-blue-500/10 border border-blue-500/30 text-blue-400' :
-                            'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400'
-                        }`}>
-                            {message.text}
-                        </div>
+                        <div className={`p-4 rounded-lg font-bold text-center text-sm ${message.type === 'error' ? 'bg-strike/10 border border-strike/30 text-strike' : message.type === 'info' ? 'bg-blue-500/10 border border-blue-500/30 text-blue-400' : 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400'}`}>{message.text}</div>
                     )}
-
                     {pendingSession && (
                         <div className="bg-strike/20 border border-strike/40 p-4 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
                             <div className="text-center md:text-left">
                                 <p className="font-wordmark uppercase tracking-wider text-sm">Active Session Detected</p>
-                                <p className="text-[10px] text-gray-400 uppercase">Resumed from {new Date(pendingSession.created_at).toLocaleTimeString()}</p>
+                                <p className="text-[10px] text-gray-400 uppercase">Resumed from {new Date(pendingSession.updated_at || pendingSession.created_at).toLocaleTimeString()}</p>
                             </div>
                             <div className="flex gap-2">
                                 <button onClick={startFresh} className="px-4 py-2 rounded-lg bg-white/5 text-[10px] uppercase font-bold hover:bg-white/10">Start Fresh</button>
@@ -421,127 +376,50 @@ export default function LogGame() {
                     )}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <select 
-                                value={selectedPlayer}
-                                onChange={(e) => setSelectedPlayer(e.target.value)}
-                                className="w-full bg-navy-dark border border-white/10 rounded-xl px-4 py-3 text-white font-black uppercase tracking-widest text-sm outline-none focus:border-strike transition-all appearance-none cursor-pointer"
-                            >
-                                <option value="" className="bg-navy">-- Select Player --</option>
-                                {playmasters.map((p: any) => (
-                                    <option key={p.bowler_name} value={p.bowler_name} className="bg-navy text-white">
-                                        {p.bowler_name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div>
-                            <select
-                                value={matchType}
-                                onChange={(e) => setMatchType(e.target.value)}
-                                className="w-full bg-navy-dark border border-white/10 rounded-xl px-4 py-3 text-white font-black uppercase tracking-widest text-sm outline-none focus:border-strike transition-all appearance-none cursor-pointer"
-                            >
-                                {MATCH_TYPES.map(mt => (
-                                    <option key={mt.value} value={mt.value} className="bg-navy text-white">
-                                        {mt.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                        <select value={selectedPlayer} onChange={(e) => setSelectedPlayer(e.target.value)} className="w-full bg-navy-dark border border-white/10 rounded-xl px-4 py-3 text-white font-black uppercase tracking-widest text-sm outline-none focus:border-strike transition-all appearance-none cursor-pointer">
+                            <option value="">-- Select Player --</option>
+                            {playmasters.map(p => <option key={p.bowler_name} value={p.bowler_name}>{p.bowler_name}</option>)}
+                        </select>
+                        <select value={matchType} onChange={(e) => setMatchType(e.target.value)} className="w-full bg-navy-dark border border-white/10 rounded-xl px-4 py-3 text-white font-black uppercase tracking-widest text-sm outline-none focus:border-strike transition-all appearance-none cursor-pointer">
+                            {MATCH_TYPES.map(mt => <option key={mt.value} value={mt.value}>{mt.label}</option>)}
+                        </select>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="relative">
-                            <input 
-                                type="text"
-                                placeholder="BOWLING ALLEY (E.G. STRIKEZ WESTGATE)"
-                                value={alley}
-                                onChange={(e) => {
-                                    const val = e.target.value.toUpperCase();
-                                    setAlley(val);
-                                    saveProgress(rolls); 
-                                }}
-                                onBlur={() => saveProgress(rolls)}
-                                className="w-full bg-navy-dark border border-white/10 rounded-xl px-4 py-3 text-white font-black uppercase tracking-widest text-[10px] outline-none focus:border-strike transition-all"
-                            />
+                            <input type="text" placeholder="BOWLING ALLEY (E.G. STRIKEZ WESTGATE)" value={alley} onChange={(e) => setAlley(e.target.value.toUpperCase())} onBlur={() => saveProgress(rolls)} className="w-full bg-navy-dark border border-white/10 rounded-xl px-4 py-3 text-white font-black uppercase tracking-widest text-[10px] outline-none focus:border-strike transition-all" />
                             <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[8px] text-gray-500 font-bold tracking-widest uppercase pointer-events-none">ALLEY</div>
                         </div>
                         <div className="relative">
-                            <input 
-                                type="text"
-                                placeholder="EVENT NAME (E.G. CHARITY OPEN X)"
-                                value={eventName}
-                                onChange={(e) => {
-                                    const val = e.target.value.toUpperCase();
-                                    setEventName(val);
-                                }}
-                                onBlur={() => saveProgress(rolls)}
-                                className="w-full bg-navy-dark border border-white/10 rounded-xl px-4 py-3 text-white font-black uppercase tracking-widest text-[10px] outline-none focus:border-strike transition-all"
-                            />
+                            <input type="text" placeholder="EVENT NAME (E.G. CHARITY OPEN X)" value={eventName} onChange={(e) => setEventName(e.target.value.toUpperCase())} onBlur={() => saveProgress(rolls)} className="w-full bg-navy-dark border border-white/10 rounded-xl px-4 py-3 text-white font-black uppercase tracking-widest text-[10px] outline-none focus:border-strike transition-all" />
                             <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[8px] text-gray-500 font-bold tracking-widest uppercase pointer-events-none">EVENT</div>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="relative">
-                            <select
-                                value={gameNumber}
-                                onChange={(e) => {
-                                    setGameNumber(parseInt(e.target.value));
-                                }}
-                                onBlur={() => saveProgress(rolls)}
-                                className="w-full bg-navy-dark border border-white/10 rounded-xl px-4 py-3 text-white font-black uppercase tracking-widest text-[10px] outline-none focus:border-strike transition-all appearance-none cursor-pointer"
-                            >
-                                {Array.from({length: 12}, (_, i) => i + 1).map(num => (
-                                    <option key={num} value={num} className="bg-navy">Game {num}</option>
-                                ))}
+                            <select value={gameNumber} onChange={(e) => setGameNumber(parseInt(e.target.value))} onBlur={() => saveProgress(rolls)} className="w-full bg-navy-dark border border-white/10 rounded-xl px-4 py-3 text-white font-black uppercase tracking-widest text-[10px] outline-none focus:border-strike transition-all appearance-none cursor-pointer">
+                                {Array.from({length: 12}, (_, i) => i + 1).map(num => <option key={num} value={num}>Game {num}</option>)}
                             </select>
-                            <div className="absolute right-10 top-1/2 -translate-y-1/2 text-[8px] text-gray-500 font-bold tracking-widest uppercase pointer-events-none">#</div>
                         </div>
                         <div className="relative">
-                            <select
-                                value={tournamentTier}
-                                onChange={(e) => setTournamentTier(e.target.value)}
-                                onBlur={() => saveProgress(rolls)}
-                                className="w-full bg-navy-dark border border-white/10 rounded-xl px-4 py-3 text-white font-black uppercase tracking-widest text-[10px] outline-none focus:border-strike transition-all appearance-none cursor-pointer"
-                            >
-                                {MATCH_PHASES.map(phase => (
-                                    <option key={phase.value} value={phase.value} className="bg-navy">{phase.label}</option>
-                                ))}
+                            <select value={tournamentTier} onChange={(e) => setTournamentTier(e.target.value)} onBlur={() => saveProgress(rolls)} className="w-full bg-navy-dark border border-white/10 rounded-xl px-4 py-3 text-white font-black uppercase tracking-widest text-[10px] outline-none focus:border-strike transition-all appearance-none cursor-pointer">
+                                {MATCH_PHASES.map(phase => <option key={phase.value} value={phase.value}>{phase.label}</option>)}
                             </select>
-                            <div className="absolute right-10 top-1/2 -translate-y-1/2 text-[8px] text-gray-500 font-bold tracking-widest uppercase pointer-events-none">Phase</div>
                         </div>
                     </div>
 
                     <div className="overflow-x-auto pb-4 custom-scrollbar">
                         <div className="min-w-[800px] flex gap-1 border border-white/10 bg-white/5 rounded-xl p-2 select-none">
                             {Array.from({length: 10}).map((_, i) => (
-                                <div 
-                                    key={i} 
-                                    onClick={() => {
-                                        if (i < activeFrame) setActiveFrame(i); 
-                                    }}
-                                    className={`flex-1 border ${activeFrame === i ? 'border-strike bg-strike/10' : 'border-white/10 bg-navy-dark'} rounded overflow-hidden flex flex-col transition-colors cursor-pointer`}
-                                >
-                                    <div className="text-[10px] uppercase font-black tracking-widest text-center py-1 bg-white/5 border-b border-white/10 text-gray-400">
-                                        {i + 1}
-                                    </div>
+                                <div key={i} onClick={() => i < activeFrame && setActiveFrame(i)} className={`flex-1 border ${activeFrame === i ? 'border-strike bg-strike/10' : 'border-white/10 bg-navy-dark'} rounded overflow-hidden flex flex-col transition-colors cursor-pointer`}>
+                                    <div className="text-[10px] uppercase font-black tracking-widest text-center py-1 bg-white/5 border-b border-white/10 text-gray-400">{i + 1}</div>
                                     <div className="flex border-b border-white/10 h-8">
-                                        <div className="flex-1 border-r border-white/10 flex items-center justify-center font-wordmark text-sm">
-                                            {renderRollValue(i, 0)}
-                                        </div>
-                                        <div className={`flex-1 flex items-center justify-center font-wordmark text-sm ${i === 9 ? 'border-r border-white/10' : ''}`}>
-                                            {renderRollValue(i, i === 9 && rolls[i]?.[0] === 10 ? 1 : (rolls[i]?.length > 1 ? 1 : -1))}
-                                        </div>
-                                        {i === 9 && (
-                                            <div className="flex-1 flex items-center justify-center font-wordmark text-sm">
-                                                {renderRollValue(i, 2)}
-                                            </div>
-                                        )}
+                                        <div className="flex-1 border-r border-white/10 flex items-center justify-center font-wordmark text-sm">{renderRollValue(i, 0)}</div>
+                                        <div className={`flex-1 flex items-center justify-center font-wordmark text-sm ${i === 9 ? 'border-r border-white/10' : ''}`}>{renderRollValue(i, i === 9 && rolls[i]?.[0] === 10 ? 1 : (rolls[i]?.length > 1 ? 1 : -1))}</div>
+                                        {i === 9 && <div className="flex-1 flex items-center justify-center font-wordmark text-sm">{renderRollValue(i, 2)}</div>}
                                     </div>
-                                    <div className="flex-1 flex items-center justify-center font-wordmark text-2xl py-2">
-                                        {((rolls[i] && rolls[i].length > 0) || activeFrame > i) ? runningTotals[i] || '-' : ''}
-                                    </div>
+                                    <div className="flex-1 flex items-center justify-center font-wordmark text-2xl py-2">{(rolls[i]?.length > 0 || activeFrame > i) ? runningTotals[i] || '-' : ''}</div>
                                 </div>
                             ))}
                         </div>
@@ -552,44 +430,21 @@ export default function LogGame() {
                             {['1','2','3','4','5','6','7','8','9','/','0','X'].map((key) => {
                                 const isDisabled = !availableKeys.includes(key);
                                 return (
-                                    <button
-                                        key={key}
-                                        type="button"
-                                        onClick={() => { if (!isDisabled) handleKeypress(key); }}
-                                        disabled={isDisabled}
-                                        className={`h-14 rounded-lg font-wordmark text-2xl flex items-center justify-center transition-all ${
-                                            isDisabled ? 'opacity-20 bg-white/5 text-gray-500 cursor-not-allowed' : 
-                                            key === 'X' || key === '/' ? 'bg-strike text-white shadow-[0_0_15px_rgba(232,32,48,0.4)] hover:bg-strike/80' : 
-                                            'bg-white/10 text-white hover:bg-white/20 active:bg-white/30 hover:scale-[1.02]'
-                                        }`}
-                                    >
+                                    <button key={key} type="button" onClick={() => !isDisabled && handleKeypress(key)} disabled={isDisabled} className={`h-14 rounded-lg font-wordmark text-2xl flex items-center justify-center transition-all ${isDisabled ? 'opacity-20 bg-white/5 text-gray-500 cursor-not-allowed' : key === 'X' || key === '/' ? 'bg-strike text-white shadow-[0_0_15px_rgba(232,32,48,0.4)] hover:bg-strike/80' : 'bg-white/10 text-white hover:bg-white/20 active:bg-white/30 hover:scale-[1.02]'}`}>
                                         {key}
                                     </button>
                                 );
                             })}
-                            <button
-                                type="button"
-                                onClick={() => handleKeypress('del')}
-                                className="col-span-3 h-14 mt-2 rounded-lg font-wordmark text-2xl flex items-center justify-center transition-all bg-red-500/20 text-red-400 hover:bg-red-500/40 active:scale-[1.02]"
-                            >
-                                ⌫ DELETE
-                            </button>
+                            <button type="button" onClick={() => handleKeypress('del')} className="col-span-3 h-14 mt-2 rounded-lg font-wordmark text-2xl flex items-center justify-center transition-all bg-red-500/20 text-red-400 hover:bg-red-500/40 active:scale-[1.02]">⌫ DELETE</button>
                         </div>
                     </div>
 
                     <div className="flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/5 pt-6 mt-4">
                         <div className="text-center md:text-left">
                             <p className="text-[10px] font-black text-gray-500 uppercase tracking-[3px] mb-1">Live Score</p>
-                            <p className="text-6xl font-wordmark text-white tabular-nums flex items-baseline gap-2">
-                                {totalScore}
-                                {sessionId && <span className="text-[10px] text-emerald-500 animate-pulse uppercase tracking-widest font-ui">Cloud Syncing</span>}
-                            </p>
+                            <p className="text-6xl font-wordmark text-white tabular-nums flex items-baseline gap-2">{totalScore}{sessionId && <span className="text-[10px] text-emerald-500 animate-pulse uppercase tracking-widest font-ui">Cloud Syncing</span>}</p>
                         </div>
-                        <button
-                            onClick={handleSubmit}
-                            disabled={isSubmitting || !selectedPlayer || activeFrame < 10}
-                            className="w-full md:w-auto bg-strike text-white px-10 py-4 rounded-xl font-ui font-black uppercase tracking-[3px] transition-all hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(232,32,48,0.3)] active:scale-95 disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-none"
-                        >
+                        <button onClick={handleSubmit} disabled={isSubmitting || !selectedPlayer || activeFrame < 10} className="w-full md:w-auto bg-strike text-white px-10 py-4 rounded-xl font-ui font-black uppercase tracking-[3px] transition-all hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(232,32,48,0.3)] active:scale-95 disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-none">
                             {isSubmitting ? 'Finalizing...' : 'Lock In Final Score'}
                         </button>
                     </div>
