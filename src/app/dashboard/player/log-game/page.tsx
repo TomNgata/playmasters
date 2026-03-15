@@ -27,6 +27,8 @@ export default function LogGame() {
     // Core state for new Conventional Bowling Scorecard
     const [rolls, setRolls] = useState<number[][]>(Array.from({ length: 10 }, () => []));
     const [activeFrame, setActiveFrame] = useState(0);
+    const [alley, setAlley] = useState('');
+    const [eventName, setEventName] = useState('');
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [pendingSession, setPendingSession] = useState<any | null>(null);
 
@@ -85,6 +87,8 @@ export default function LogGame() {
         if (!pendingSession) return;
         setRolls(pendingSession.frame_scores);
         setMatchType(pendingSession.match_type || 'practice');
+        setAlley(pendingSession.alley || '');
+        setEventName(pendingSession.event_name || '');
         setSessionId(pendingSession.id);
         
         // Calculate active frame based on rolls
@@ -121,6 +125,8 @@ export default function LogGame() {
         setPendingSession(null);
         setSessionId(null);
         setRolls(Array.from({ length: 10 }, () => []));
+        setAlley('');
+        setEventName('');
         setActiveFrame(0);
     };
 
@@ -189,6 +195,8 @@ export default function LogGame() {
             frame_scores: currentRolls,
             total_score: Math.max(...calculateRunningTotals(currentRolls), 0),
             match_type: matchType,
+            alley: alley,
+            event_name: eventName,
             status: 'in_progress',
             version: 1
         };
@@ -328,6 +336,8 @@ export default function LogGame() {
             frame_scores: rolls,
             player_name: selectedPlayer,
             match_type: matchType,
+            alley: alley,
+            event_name: eventName,
             status: 'completed',
             version: 1,
             updated_at: new Date().toISOString()
@@ -416,6 +426,38 @@ export default function LogGame() {
                                     </option>
                                 ))}
                             </select>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="relative">
+                            <input 
+                                type="text"
+                                placeholder="BOWLING ALLEY (E.G. STRIKEZ WESTGATE)"
+                                value={alley}
+                                onChange={(e) => {
+                                    const val = e.target.value.toUpperCase();
+                                    setAlley(val);
+                                    saveProgress(rolls); // Optional: Trigger save on blur might be better but for consistency:
+                                }}
+                                onBlur={() => saveProgress(rolls)}
+                                className="w-full bg-navy-dark border border-white/10 rounded-xl px-4 py-3 text-white font-black uppercase tracking-widest text-[10px] outline-none focus:border-strike transition-all"
+                            />
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[8px] text-gray-500 font-bold tracking-widest uppercase pointer-events-none">ALLEY</div>
+                        </div>
+                        <div className="relative">
+                            <input 
+                                type="text"
+                                placeholder="EVENT NAME (E.G. CHARITY OPEN X)"
+                                value={eventName}
+                                onChange={(e) => {
+                                    const val = e.target.value.toUpperCase();
+                                    setEventName(val);
+                                }}
+                                onBlur={() => saveProgress(rolls)}
+                                className="w-full bg-navy-dark border border-white/10 rounded-xl px-4 py-3 text-white font-black uppercase tracking-widest text-[10px] outline-none focus:border-strike transition-all"
+                            />
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[8px] text-gray-500 font-bold tracking-widest uppercase pointer-events-none">EVENT</div>
                         </div>
                     </div>
 
