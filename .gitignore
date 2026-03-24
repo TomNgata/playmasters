@@ -35,4 +35,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# local ephemeral files
 /.tmp/
+
+# data and temporary extraction files
+/Data/
+/extraction_temp/
+/*.zip
+/scripts/extracted_data.json
+/scripts/test_parse.txt
