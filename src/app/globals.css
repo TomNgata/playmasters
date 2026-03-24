@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Teko:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,400;0,700;1,400;1,700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Teko:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -51,10 +51,10 @@
 
     --radius: 6px;
 
-    /* Fonts */
+    /* Fonts Consistently Limited to 2 Families (Guide Rule 3A) */
     --font-wordmark: 'Anton', 'Impact', sans-serif;
-    --font-title: 'Libre Baskerville', Georgia, serif;
-    --font-ui: 'Barlow Condensed', 'Teko', 'Arial Narrow', sans-serif;
+    --font-title: 'Anton', 'Impact', sans-serif;
+    --font-ui: 'Inter', system-ui, sans-serif;
     --font-body: 'Inter', system-ui, sans-serif;
   }
 }

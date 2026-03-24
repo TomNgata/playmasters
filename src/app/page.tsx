@@ -1,5 +1,7 @@
 import ModernHero from "@/components/layout/Hero";
 import Link from 'next/link';
+import TeamStatsSummary from "@/components/layout/TeamStatsSummary";
+import ContactForm from "@/components/ui/ContactForm";
 
 export default function Home() {
   return (
@@ -20,17 +22,7 @@ export default function Home() {
           <p className="font-sans text-gray-mid leading-relaxed text-lg mb-8">
             Playmasters is more than a team. We are a family of competitors bound by the lanes. From casual bowling nights to high-stakes tournaments, we bowl to win, and we bowl together.
           </p>
-          <div className="flex flex-wrap items-center gap-8 pt-6 border-t border-white/10 mt-4">
-            <div className="flex flex-col">
-              <span className="font-wordmark text-4xl text-ball-pink">12+</span>
-              <span className="font-ui text-gray-mid uppercase tracking-wide text-xs">Active Roster</span>
-            </div>
-            <div className="h-10 w-px bg-white/10 hidden sm:block" />
-            <div className="flex flex-col">
-              <span className="font-wordmark text-4xl text-navy-mid">14</span>
-              <span className="font-ui text-gray-mid uppercase tracking-wide text-xs">Tournaments Won</span>
-            </div>
-          </div>
+          <TeamStatsSummary />
         </div>
         <div className="bg-navy rounded-2xl border border-white/5 h-[300px] sm:h-[450px] flex items-center justify-center relative overflow-hidden group">
           {/* Real Club Image as background */}
@@ -80,6 +72,36 @@ export default function Home() {
           <Link href="/dashboard/player" className="group px-8 py-4 sm:px-10 sm:py-5 bg-strike hover:bg-strike-deep text-white font-ui font-extrabold text-xl sm:text-2xl tracking-[4px] uppercase transition-all flex items-center gap-4 shadow-[0_4px_0_theme(colors.strike-deep)] active:translate-y-[2px] active:shadow-none">
             Access Hub <span className="text-white/40 group-hover:translate-x-1 transition-transform">/</span> View Stats
           </Link>
+        </div>
+      </section>
+
+      {/* 5. Contact / Join Section */}
+      <section id="contact" className="w-full bg-navy py-24 border-y border-white/5 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="flex flex-col items-start max-w-xl">
+                <div className="s-label font-ui text-strike tracking-widest uppercase text-sm font-bold mb-4">Recruitment</div>
+                <h2 className="font-title text-[clamp(28px,5vw,52px)] leading-tight text-white mb-6 uppercase">
+                    Ready to Join the <span className="text-strike italic">Squad?</span>
+                </h2>
+                <div className="w-20 h-1 bg-strike mb-8" />
+                <p className="font-sans text-gray-mid leading-relaxed text-lg mb-10">
+                    Whether you&apos;re an elite regular looking for a home or a rookie ready to learn the craft, Playmasters Kenya is open for tryouts. Leave your coordinates and our Unit Captain will initiate contact.
+                </p>
+                
+                <div className="flex flex-col gap-6 w-full">
+                    <div className="flex items-center gap-6 p-6 bg-navy-dark/40 border border-white/5 rounded-2xl group hover:border-strike/30 transition-all">
+                        <div className="w-12 h-12 rounded-full bg-strike/10 flex items-center justify-center text-strike text-xl">📍</div>
+                        <div>
+                            <p className="font-ui text-[10px] text-gray-dark uppercase tracking-widest mb-1">Base of Operations</p>
+                            <p className="font-sans text-white font-medium">Strikez, Westgate Mall, Nairobi</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="w-full">
+                <ContactForm />
+            </div>
         </div>
       </section>
 
