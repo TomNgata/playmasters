@@ -2,6 +2,7 @@ import ModernHero from "@/components/layout/Hero";
 import Link from 'next/link';
 import TeamStatsSummary from "@/components/layout/TeamStatsSummary";
 import ContactForm from "@/components/ui/ContactForm";
+import SponsorMarquee from "@/components/layout/SponsorMarquee";
 
 export default function Home() {
   return (
@@ -129,6 +130,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* 6. Strategic Partners / Sponsors */}
+      <SponsorMarquee />
 
       {/* Footer */}
       <footer className="w-full bg-navy-dark border-t-8 border-strike py-16">
