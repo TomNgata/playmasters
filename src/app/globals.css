@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Teko:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,400;0,700;1,400;1,700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Brand Kit v2 Tokens */
+    --navy: #0E1260;
+    --navy-dark: #080B3A;
+    --navy-mid: #1A2280;
+    --red: #E82030;
+    --red-deep: #B81828;
+    --ball-pink: #D42080;
+    --ball-purple: #8B1FA2;
+    --bat-blue: #4A52B8;
+    --bat-light: #6870CC;
+    --off-white: #F4F5FA;
+    --gray-mid: #8A8EBB;
+    --gray-dark: #2E3160;
+
+    /* Semantic Mappings */
+    --background: var(--navy-dark);
+    --foreground: #FFFFFF;
+
+    --card: var(--navy);
+    --card-foreground: #FFFFFF;
+
+    --popover: var(--navy);
+    --popover-foreground: #FFFFFF;
+
+    --primary: var(--red);
+    --primary-foreground: #FFFFFF;
+
+    --secondary: var(--navy-mid);
+    --secondary-foreground: #FFFFFF;
+
+    --muted: var(--navy-mid);
+    --muted-foreground: var(--gray-mid);
+
+    --accent: var(--ball-pink);
+    --accent-foreground: #FFFFFF;
+
+    --destructive: var(--red);
+    --destructive-foreground: #FFFFFF;
+
+    --border: rgba(255, 255, 255, 0.1);
+    --input: var(--navy-mid);
+    --ring: var(--red);
+
+    --radius: 6px;
+
+    /* Fonts */
+    --font-wordmark: 'Anton', 'Impact', sans-serif;
+    --font-title: 'Libre Baskerville', Georgia, serif;
+    --font-ui: 'Barlow Condensed', 'Teko', 'Arial Narrow', sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-body);
+  }
+}
+
+@layer utilities {
+  .font-wordmark {
+    font-family: var(--font-wordmark);
+  }
+
+  .font-title {
+    font-family: var(--font-title);
+  }
+
+  .font-ui {
+    font-family: var(--font-ui);
+  }
+}
