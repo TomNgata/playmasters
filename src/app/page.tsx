@@ -1,5 +1,6 @@
 import ModernHero from "@/components/layout/Hero";
 import Link from 'next/link';
+import Image from 'next/image';
 import TeamStatsSummary from "@/components/layout/TeamStatsSummary";
 import ContactForm from "@/components/ui/ContactForm";
 import SponsorMarquee from "@/components/layout/SponsorMarquee";
@@ -10,7 +11,7 @@ const publicPages = [
   { name: 'Players', href: '/players', icon: '👥', desc: 'Meet the full PlayMasters squad', color: 'ball-pink' },
   { name: 'Sponsors', href: '/sponsors', icon: '🤝', desc: 'Our partners & become a sponsor', color: 'strike' },
   { name: 'CSR', href: '/csr', icon: '❤️', desc: 'Community & charity initiatives', color: 'bat-blue' },
-  { name: 'Contact', href: '/#contact', icon: '📩', desc: 'Get in touch with us', color: 'ball-pink' },
+  { name: 'Contact', href: '/contact', icon: '📩', desc: 'Get in touch with us', color: 'ball-pink' },
 ];
 
 export default function Home() {
@@ -32,10 +33,10 @@ export default function Home() {
             <Link
               key={page.name}
               href={page.href}
-              className={`group flex flex-col items-center gap-3 p-5 bg-navy border border-white/8 rounded-xl hover:border-${page.color}/40 hover:bg-navy-dark/60 transition-all text-center`}
+              className={`group flex flex-col items-center gap-3 p-5 bg-navy border border-white/8 rounded-xl hover:border-${page.color}/40 hover:bg-navy-dark/60 transition-all text-center glass-glow`}
             >
-              <span className="text-3xl">{page.icon}</span>
-              <span className={`font-ui text-sm uppercase tracking-[2px] text-white group-hover:text-${page.color} transition-colors`}>{page.name}</span>
+              <span className="text-3xl group-hover:scale-110 transition-transform duration-300">{page.icon}</span>
+              <span className={`font-ui text-sm uppercase tracking-[2px] text-white group-hover:text-glow group-hover:text-${page.color} transition-colors`}>{page.name}</span>
               <span className="font-sans text-[10px] text-gray-dark leading-relaxed hidden md:block">{page.desc}</span>
             </Link>
           ))}
@@ -58,7 +59,12 @@ export default function Home() {
         <div className="bg-navy rounded-2xl border border-white/5 h-[300px] sm:h-[450px] flex items-center justify-center relative overflow-hidden group">
           {/* Real Club Image as background */}
           <div className="absolute inset-0 flex items-center justify-center opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-700">
-            <img src="/5860701352248413499.jpg" alt="Playmasters Training" className="w-full h-full object-cover" />
+            <Image 
+              src="/5860701352248413499.jpg" 
+              alt="Playmasters Training" 
+              fill
+              className="object-cover" 
+            />
           </div>
           <div className="absolute inset-0 bg-gradient-to-tr from-navy-dark via-transparent to-transparent opacity-80" />
           <div className="relative z-10 flex flex-col items-center gap-4">
@@ -106,35 +112,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. Contact / Join Section */}
-      <section id="contact" className="w-full bg-navy py-24 border-y border-white/5 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="flex flex-col items-start max-w-xl">
-                <div className="s-label font-ui text-strike tracking-widest uppercase text-sm font-bold mb-4">Recruitment</div>
-                <h2 className="font-title text-[clamp(28px,5vw,52px)] leading-tight text-white mb-6 uppercase">
-                    Ready to Join the <span className="text-strike italic">Squad?</span>
-                </h2>
-                <div className="w-20 h-1 bg-strike mb-8" />
-                <p className="font-sans text-gray-mid leading-relaxed text-lg mb-10">
-                    Whether you&apos;re an elite regular looking for a home or a rookie ready to learn the craft, Playmasters Kenya is open for tryouts. Leave your coordinates and our Unit Captain will initiate contact.
-                </p>
-                
-                <div className="flex flex-col gap-6 w-full">
-                    <div className="flex items-center gap-6 p-6 bg-navy-dark/40 border border-white/5 rounded-2xl group hover:border-strike/30 transition-all">
-                        <div className="w-12 h-12 rounded-full bg-strike/10 flex items-center justify-center text-strike text-xl">📍</div>
-                        <div>
-                            <p className="font-ui text-[10px] text-gray-dark uppercase tracking-widest mb-1">Nairobi Home Lanes</p>
-                            <p className="font-sans text-white font-medium">Multiple Venues (e.g. Pins Entertainment)</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="w-full">
-                <ContactForm />
-            </div>
-        </div>
-      </section>
+      {/* Contact Section Removed — See /contact standalone page */}
 
       {/* Gallery Section */}
       <section id="gallery" className="w-full max-w-7xl mx-auto px-6 py-24">
@@ -142,21 +120,21 @@ export default function Home() {
         <h2 className="font-title text-[clamp(24px,4vw,40px)] text-center text-white mb-12 uppercase">Gallery & Partners</h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-24">
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden">
-            <img src="/5858096969979465002.jpg" alt="Bowling Action" className="w-full h-full object-cover" />
+          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden relative">
+            <Image src="/5858096969979465002.jpg" alt="Bowling Action" fill className="object-cover" />
           </div>
           <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center md:col-span-2 md:row-span-2 relative group overflow-hidden">
-            <img src="/5860367998361734483.jpg" alt="Player Training Visualization" className="w-full h-full object-cover z-10 grayscale group-hover:grayscale-0 transition-opacity" />
+            <Image src="/5860367998361734483.jpg" alt="Player Training Visualization" fill className="z-10 grayscale group-hover:grayscale-0 transition-opacity object-cover" />
             <div className="absolute inset-0 bg-strike/5 group-hover:bg-strike/10 transition-colors" />
           </div>
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden">
-            <img src="/5858168725998079239.jpg" alt="Team Spirit" className="w-full h-full object-cover" />
+          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden relative">
+            <Image src="/5858168725998079239.jpg" alt="Team Spirit" fill className="object-cover" />
           </div>
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden">
-            <img src="/5860677712748416291.jpg" alt="Tournament Highlights" className="w-full h-full object-cover" />
+          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden relative">
+            <Image src="/5860677712748416291.jpg" alt="Tournament Highlights" fill className="object-cover" />
           </div>
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden">
-            <img src="/logo-md.png" alt="Playmasters Logo" className="w-1/2 object-contain" />
+          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden relative glass-glow">
+            <Image src="/logo-lg.svg" alt="Playmasters Logo" width={80} height={80} className="object-contain" />
           </div>
         </div>
       </section>
@@ -168,7 +146,9 @@ export default function Home() {
       <footer className="w-full bg-navy-dark border-t-8 border-strike py-16">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-12">
           <div className="flex flex-col sm:flex-row items-center gap-8">
-            <img src="/logo-sm.png" alt="Playmasters Branding" className="w-24 h-24 object-contain" />
+            <div className="relative w-24 h-24">
+              <img src="/logo-lg.svg" alt="Playmasters Branding" className="w-full h-full object-contain grayscale brightness-200 opacity-60" />
+            </div>
             <div className="flex flex-col gap-2 text-center sm:text-left">
               <div className="font-wordmark text-4xl tracking-tight text-white uppercase flex flex-col leading-none">
                 PLAYMASTERS

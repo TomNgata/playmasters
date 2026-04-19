@@ -152,32 +152,12 @@ export default function SponsorsPage() {
         </div>
       </section>
 
-      {/* Sponsorship Tiers */}
-      <section className="w-full bg-navy border-y border-white/5 py-20">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <span className="font-ui text-strike text-xs tracking-[6px] uppercase font-bold">Investment Levels</span>
-            <h2 className="font-wordmark text-4xl md:text-5xl uppercase mt-3">Sponsorship Tiers</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {sponsorTiers.map((tier) => (
-              <div key={tier.tier} className={`relative bg-navy-dark border border-${tier.color}/30 rounded-2xl overflow-hidden`}>
-                <div className={`absolute top-0 left-0 w-full h-1 bg-${tier.color}`} />
-                <div className="p-8">
-                  <span className={`font-ui text-xs tracking-[5px] uppercase text-${tier.color} font-bold block mb-2`}>{tier.tier}</span>
-                  <div className={`font-wordmark text-4xl md:text-5xl text-${tier.color} mb-6`}>{tier.amount}</div>
-                  <ul className="flex flex-col gap-3">
-                    {tier.perks.map((perk, i) => (
-                      <li key={i} className="flex items-start gap-3">
-                        <span className={`mt-1.5 w-1.5 h-1.5 rounded-full bg-${tier.color} flex-shrink-0`} />
-                        <span className="font-sans text-sm text-gray-mid leading-relaxed">{perk}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Sponsorship Tiers — Hidden for Public View as per User Request */}
+      <section className="w-full bg-navy border-y border-white/5 py-12">
+        <div className="max-w-5xl mx-auto px-6 text-center">
+          <p className="font-ui text-xs text-gray-mid tracking-[4px] uppercase">
+            Detailed sponsorship packages and investment tiers are available upon direct enquiry.
+          </p>
         </div>
       </section>
 

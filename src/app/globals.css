@@ -83,4 +83,22 @@
   .font-ui {
     font-family: var(--font-ui);
   }
+
+  .glass-glow {
+    @apply relative overflow-hidden;
+  }
+
+  .glass-glow::after {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-500 ease-in-out pointer-events-none;
+    background: radial-gradient(circle at center, rgba(232, 32, 48, 0.15), transparent 70%);
+  }
+
+  .glass-glow:hover::after {
+    @apply opacity-100;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px currentColor;
+  }
 }

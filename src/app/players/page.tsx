@@ -5,23 +5,38 @@ export const metadata: Metadata = {
   description: 'Meet the PlayMasters squad — Nairobi\'s most decorated bowling franchise. Player profiles, stats and achievements.',
 };
 
-// Known players from historical data
+// Verified players from Supabase/Historical Data
 const players = [
+  // PLAYMASTERS OG
   { name: 'Paras Chandaria', role: 'Captain — PlayMasters OG', team: 'OG', color: 'strike', records: ['Kenyan highest male score 2 lanes — 290'], highlights: ['UBL S9 MVP', 'USBT Ed.8 Runner-Up', '2023 Points Champion'] },
-  { name: 'Dillan Mandalia', role: 'Captain — PlayMasters Warriors', team: 'Warriors', color: 'bat-blue', records: [], highlights: ['USBT Edition 8 Champion 🥇', 'UBL S16 Male Highest Score — 195.69'] },
-  { name: 'Dorothy Williams', role: 'PlayMasters', team: 'OG', color: 'ball-pink', records: [], highlights: ['UBL S16 Female Highest Score — 224', 'UBL S16 Highest Average — 161.04', 'UBL S16 Highest Game Scratch — 381'] },
-  { name: 'Darshi Chandaria', role: 'PlayMasters', team: 'OG', color: 'ball-pink', records: ['Kenyan highest female score 2 lanes — 255'], highlights: ['UBL S15 Highest Scratch — 381'] },
+  { name: 'Suresh Bhudiya', role: 'Chairman — PlayMasters', team: 'OG', color: 'bat-blue', records: [], highlights: ['MILB 4 Gold — 2nd Place', 'UBL S16 Highest Score (Shared) — 258'] },
   { name: 'Sagar Joshi', role: 'PlayMasters OG', team: 'OG', color: 'strike', records: ['Kenyan highest male score 1 lane — 290'], highlights: ['UBL S15 Highest Scratch (Men) — 480'] },
-  { name: 'Hemang Rana', role: 'PlayMasters', team: 'OG', color: 'bat-blue', records: [], highlights: ['USBT Ed.8 — 5th Place', 'UBL S16 Highest Score (Shared) — 258'] },
-  { name: 'Suresh Bhudiya', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', records: [], highlights: ['MILB 4 Gold — 2nd Place', 'UBL S16 Highest Score (Shared) — 258'] },
+  { name: 'Hiren', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', records: [], highlights: ['Consistent Top 10 League Performer'] },
+  { name: 'James', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', records: [], highlights: ['League Veteran', 'Multi-Tournament Finalist'] },
+  { name: 'Nitin Pindoria', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', records: [], highlights: ['USBT Ed.8 — 6th Place'] },
+  { name: 'Parth', role: 'PlayMasters OG', team: 'OG', color: 'strike', records: [], highlights: ['UBL S15 Highest Average (Men) — 189.35'] },
   { name: 'Dhilan Chandaria', role: 'Junior — PlayMasters', team: 'OG', color: 'strike', records: ['U18 highest score 2 lanes — 237', 'U11 highest score (1 lane) — 152', 'U11 highest score (2 lanes) — 215'], highlights: ['MILB 5 Best Junior', 'Youngest player to score 167 in UBL'] },
-  { name: 'Sonika', role: 'PlayMasters Ladies', team: 'Ladies', color: 'ball-pink', records: [], highlights: ['UBL S9 MVP', 'UBL S9 Most Improved', 'MILB 5 Bronze Champion', 'MILB 5 Best Woman'] },
-  { name: 'Viraj', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', records: [], highlights: ['MILB 5 Silver Champion', '2023 Points — 4th'] },
-  { name: 'Ravi', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', records: [], highlights: ['S1 Division 1 — 2nd', 'UBL S9 Highest Series Scratch'] },
-  { name: 'Saif', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', records: [], highlights: ['MILB 4 Silver Champion 🥇', 'Double Trouble 2 Champion (with Viraj)'] },
-  { name: 'Tilak', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', records: [], highlights: ['2023 Points — 3rd', 'MILB 4 Gold — 3rd'] },
-  { name: 'Nitin Pindoria', role: 'PlayMasters', team: 'OG', color: 'bat-blue', records: [], highlights: ['USBT Ed.8 — 6th Place'] },
-  { name: 'Parth', role: 'PlayMasters', team: 'Warriors', color: 'bat-blue', records: [], highlights: ['UBL S15 Highest Average (Men) — 189.35'] },
+  
+  // PLAYMASTERS MAVERICKS
+  { name: 'Deepen Kerai', role: 'Captain — PlayMasters Mavericks', team: 'Mavericks', color: 'ball-pink', records: [], highlights: ['Leader of the Mavericks expansion'] },
+  { name: 'Mandela', role: 'PlayMasters Mavericks', team: 'Mavericks', color: 'ball-pink', records: [], highlights: ['UBL Season 16 Key Performer'] },
+  { name: 'Rahul', role: 'PlayMasters Mavericks', team: 'Mavericks', color: 'ball-pink', records: [], highlights: ['Consistent league average 160+'] },
+  { name: 'Avnish', role: 'PlayMasters Mavericks', team: 'Mavericks', color: 'ball-pink', records: [], highlights: ['Mavericks defensive anchor'] },
+  { name: 'Darshi Chandaria', role: 'PlayMasters Mavericks', team: 'Mavericks', color: 'ball-pink', records: ['Kenyan highest female score 2 lanes — 255'], highlights: ['UBL S15 Highest Scratch — 381'] },
+
+  // PLAYMASTERS RISING
+  { name: 'Dorothy Williams', role: 'Captain — PlayMasters Rising', team: 'Rising', color: 'strike', records: [], highlights: ['UBL S16 Female Highest Score — 224', 'UBL S16 Highest Average — 161.04', 'UBL S16 Highest Game Scratch — 381'] },
+  { name: 'Victor', role: 'PlayMasters Rising', team: 'Rising', color: 'strike', records: [], highlights: ['Rising Talent', 'Consistent Growth'] },
+  { name: 'Ian S.', role: 'PlayMasters Rising', team: 'Rising', color: 'strike', records: [], highlights: ['Squad Powerhouse'] },
+  { name: 'Sam G.', role: 'PlayMasters Rising', team: 'Rising', color: 'strike', records: [], highlights: ['Tactical Anchor'] },
+  { name: 'Vraj', role: 'PlayMasters Rising', team: 'Rising', color: 'strike', records: [], highlights: ['Junior development success'] },
+
+  // PLAYMASTERS WARRIORS
+  { name: 'Dillan Mandalia', role: 'Captain — PlayMasters Warriors', team: 'Warriors', color: 'bat-blue', records: [], highlights: ['USBT Edition 8 Champion 🥇', 'UBL S16 Male Highest Score — 195.69'] },
+  { name: 'Hemang Rana', role: 'PlayMasters Warriors', team: 'Warriors', color: 'bat-blue', records: [], highlights: ['USBT Ed.8 — 5th Place', 'UBL S16 Highest Score (Shared) — 258'] },
+
+  // LADIES
+  { name: 'Sonika Bhudiya', role: 'PlayMasters Ladies', team: 'Ladies', color: 'ball-pink', records: [], highlights: ['UBL S9 MVP', 'MILB 5 Best Woman'] },
   { name: 'Amrit Jandu', role: 'PlayMasters Ladies', team: 'Ladies', color: 'ball-pink', records: ['Kenyan highest female score 2 lanes (2023) — 215'], highlights: ['UBL S9 Highest Game Scratch'] },
 ];
 
@@ -29,6 +44,7 @@ const teamColors: Record<string, string> = {
   OG: 'strike',
   Warriors: 'bat-blue',
   Mavericks: 'ball-pink',
+  Rising: 'strike',
   Ladies: 'ball-pink',
 };
 
@@ -36,6 +52,7 @@ const teamLabels: Record<string, string> = {
   OG: 'PlayMasters OG',
   Warriors: 'PlayMasters Warriors',
   Mavericks: 'PlayMasters Mavericks',
+  Rising: 'PlayMasters Rising',
   Ladies: 'PlayMasters Ladies',
 };
 

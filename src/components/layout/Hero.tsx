@@ -1,12 +1,13 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 
 export default function ModernHero() {
     const [stats, setStats] = useState({
         totalPins: 46820,
         strikeRate: 78.4,
-        activeRoster: 14
+        activeRoster: 16
     });
 
     useEffect(() => {
@@ -62,9 +63,12 @@ export default function ModernHero() {
             {/* Main Title - LARGER Logo & Wordmark */}
             <div className="z-10 text-center px-4 flex flex-col items-center">
                 <div className="relative w-64 h-64 md:w-[450px] md:h-[450px] mb-4">
-                    <img
-                        src="/logo-lg.png"
+                    <Image
+                        src="/logo-lg.svg"
                         alt="Playmasters Official Logo"
+                        width={450}
+                        height={450}
+                        priority
                         className="w-full h-full object-contain drop-shadow-[0_0_50px_rgba(232,32,48,0.4)] animate-float"
                     />
                 </div>
@@ -78,7 +82,7 @@ export default function ModernHero() {
                 <div className="mt-4 flex items-center justify-center gap-4">
                     <span className="font-ui text-2xl text-ball-pink tracking-[8px] uppercase">Kenya</span>
                     <div className="h-6 w-[1px] bg-white/20" />
-                    <span className="font-title italic text-gray-mid text-lg">Est. 1994</span>
+                    <span className="font-title italic text-gray-mid text-lg">Est. 2022</span>
                 </div>
             </div>
 

@@ -40,7 +40,7 @@ export default function AboutPage() {
               <strong className="text-white">PlayMasters bowling was born in 2022</strong> — forged from a shared love of competition and a belief that Kenya&apos;s bowling scene deserved a franchise that showed up, showed out, and led from the front.
             </p>
             <p>
-              What started as one tight-knit team quickly grew into a full franchise. Today, PlayMasters fields multiple squads — <strong className="text-white">PlayMasters OG, PlayMasters Warriors, and PlayMasters Mavericks</strong> — each competing at the highest levels of Nairobi bowling across league and tournament play.
+              What started as one tight-knit team quickly grew into a full franchise. Today, PlayMasters fields multiple squads — <strong className="text-white">PlayMasters OG, PlayMasters Warriors, PlayMasters Mavericks, and PlayMasters Rising</strong> — each competing at the highest levels of Nairobi bowling across league and tournament play.
             </p>
             <p>
               Since 2022, we have been crowned league champions on <strong className="text-white">multiple occasions across seasons 2023, 2024, and 2025</strong>, dominating singles and doubles tournaments and setting national records along the way.
@@ -148,11 +148,14 @@ export default function AboutPage() {
               <span className="text-3xl">🎳</span>
             </div>
             <p className="font-sans text-gray-mid text-lg leading-relaxed italic ml-2 mb-6">
-              &ldquo;Message from the Chairman coming soon.&rdquo;
+              &ldquo;As Chairman, it is my privilege to lead the PlayMasters franchise during this period of unprecedented growth for Kenyan bowling. We are more than just a team; we are a community dedicated to the sport’s integrity, competitive spirit, and the development of our youth. Together, we strike for excellence.&rdquo;
+            </p>
+            <p className="font-ui text-[10px] text-strike/60 tracking-[2px] uppercase mb-6 ml-2 italic">
+              [Note: Placeholder Statement — Awaiting Final Draft from Suresh]
             </p>
             <div className="ml-2">
-              <p className="font-ui text-white text-lg tracking-wide uppercase">Paras Chandaria</p>
-              <p className="font-ui text-gray-mid text-sm tracking-widest uppercase mt-1">Chairman &amp; Captain, PlayMasters</p>
+              <p className="font-ui text-white text-lg tracking-wide uppercase">Suresh Bhudiya</p>
+              <p className="font-ui text-gray-mid text-sm tracking-widest uppercase mt-1">Chairman, PlayMasters</p>
             </div>
           </div>
         </div>
@@ -164,11 +167,12 @@ export default function AboutPage() {
           <span className="font-ui text-bat-blue text-xs tracking-[6px] uppercase font-bold">The Franchise</span>
           <h2 className="font-wordmark text-4xl md:text-5xl uppercase mt-3">Our Teams</h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             { name: 'PlayMasters OG', color: 'strike', desc: 'The original squad. The standard-setters. Where it all began in 2022.', captain: 'Paras Chandaria' },
             { name: 'PlayMasters Warriors', color: 'bat-blue', desc: 'Champions of UBL Season 10 & Season 16. The Warriors set the pace.', captain: 'Dillan Mandalia' },
-            { name: 'PlayMasters Mavericks', color: 'ball-pink', desc: 'The bold third arm of the franchise. Growing fast, competing faster.', captain: 'TBC' },
+            { name: 'PlayMasters Mavericks', color: 'ball-pink', desc: 'The bold third arm of the franchise. Growing fast, competing faster.', captain: 'Deepen Kerai' },
+            { name: 'PlayMasters Rising', color: 'strike', desc: 'Our newest competitive division. Focused on growth, talent, and teamwork.', captain: 'Dorothy Williams' },
           ].map(({ name, color, desc, captain }) => (
             <div key={name} className={`relative bg-navy border border-white/8 rounded-2xl p-7 overflow-hidden group hover:border-${color}/30 transition-all`}>
               <div className={`absolute top-0 left-0 w-full h-1 bg-${color}`} />
