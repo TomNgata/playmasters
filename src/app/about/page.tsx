@@ -55,7 +55,8 @@ export default function AboutPage() {
         </div>
       </section>
 
-        {/* Kenya Bowling Context */}
+      {/* Kenya Bowling Context (Integrated) */}
+      <section className="w-full max-w-6xl mx-auto px-6 pb-24">
         <div className="bg-navy/50 border border-white/8 rounded-2xl p-8 flex flex-col gap-5">
           <span className="font-ui text-bat-blue text-xs tracking-[5px] uppercase font-bold">Kenya&apos;s Bowling History</span>
           <h3 className="font-ui text-2xl uppercase text-white tracking-tight">The Bigger Picture</h3>
