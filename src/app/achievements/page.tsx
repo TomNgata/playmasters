@@ -254,30 +254,33 @@ export default function AchievementsPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <div className="group relative aspect-[4/5] overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
-              <img src="/images/achievements/trophy-dorothy.jpg" alt="Dorothy's Trophies" className="h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60" />
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 auto-rows-fr">
+            {/* Main Feature */}
+            <div className="col-span-2 row-span-2 aspect-[4/3] md:aspect-auto group relative overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/trophy-team-large.jpg" alt="Team Playmasters Success" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
-            <div className="md:col-span-2 group relative aspect-[16/9] md:aspect-auto overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
-              <img src="/images/achievements/trophy-team-large.jpg" alt="Team Playmasters Success" className="h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60" />
+            
+            {/* Square Gallery Items */}
+            <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/trophy-dorothy.jpg" alt="Dorothy's Trophies" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
             <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
-              <img src="/images/achievements/trophy-suresh.jpg" alt="Suresh Bhudiya Trophy" className="h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60" />
+              <img src="/images/achievements/trophy-suresh.jpg" alt="Suresh Bhudiya Trophy" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
             <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
-              <img src="/images/achievements/trophy-dillan.jpg" alt="Dillan Mandalia Trophy" className="h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60" />
-            </div>
-            <div className="group relative aspect-[4/5] overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
-              <img src="/images/achievements/trophy-team-celebration.jpg" alt="Team Celebration" className="h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60" />
+              <img src="/images/achievements/trophy-dillan.jpg" alt="Dillan Mandalia Trophy" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
             <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
-              <img src="/images/achievements/trophy-team-alt.jpg" alt="Team Trophy" className="h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60" />
+              <img src="/images/achievements/trophy-team-celebration.jpg" alt="Team Celebration" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
+            </div>
+            <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/trophy-team-alt.jpg" alt="Team Trophy" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
           </div>
         </div>
