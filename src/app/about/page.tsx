@@ -169,6 +169,30 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* ─── Management Board ─── */}
+      <section className="w-full max-w-6xl mx-auto px-6 pt-20">
+        <div className="text-center mb-14">
+          <span className="font-ui text-bat-blue text-xs tracking-[6px] uppercase font-bold">Club Administration</span>
+          <h2 className="font-wordmark text-4xl md:text-5xl uppercase mt-3">Management Board</h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            { role: 'Vice Chairman', name: '[ Placeholder Name ]' },
+            { role: 'Secretary', name: '[ Placeholder Name ]' },
+            { role: 'Treasurer', name: '[ Placeholder Name ]' },
+            { role: 'Club Manager', name: '[ Placeholder Name ]' },
+          ].map(({ role, name }, idx) => (
+            <div key={idx} className="bg-navy border border-white/8 rounded-2xl p-6 text-center group hover:border-strike/30 transition-all flex flex-col items-center">
+              <div className="w-20 h-20 rounded-full bg-navy-dark border border-white/10 flex items-center justify-center mb-4 text-gray-mid group-hover:border-strike/40 transition-colors">
+                <span className="font-ui text-xs tracking-[2px] uppercase opacity-40">Photo</span>
+              </div>
+              <h3 className="font-wordmark text-xl text-white uppercase mb-1">{name}</h3>
+              <span className="font-ui text-strike text-xs tracking-[3px] uppercase">{role}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* ─── Teams ─── */}
       <section className="w-full max-w-6xl mx-auto px-6 py-20">
         <div className="text-center mb-14">
