@@ -49,7 +49,7 @@ export default function AboutPage() {
         </div>
 
         <div className="order-1 lg:order-2 relative aspect-[4/3] rounded-2xl overflow-hidden border border-white/5 group shadow-2xl">
-          <img src="/images/achievements/trophy-team-alt-2.jpg" alt="Playmasters Team Success" className="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" />
+          <img src="/images/achievements/trophy-team-alt-2.jpg" alt="Playmasters Team Success" className="h-full w-full object-cover transition-all duration-700 group-hover:scale-105" />
           <div className="absolute inset-0 bg-gradient-to-tr from-navy-dark via-transparent to-transparent opacity-40" />
           <div className="absolute inset-0 border-2 border-strike/20 -m-3 group-hover:m-0 transition-all duration-500 rounded-2xl pointer-events-none" />
         </div>

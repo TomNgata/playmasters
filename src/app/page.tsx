@@ -58,7 +58,7 @@ export default function Home() {
         </div>
         <div className="bg-navy rounded-2xl border border-white/5 h-[300px] sm:h-[450px] flex items-center justify-center relative overflow-hidden group">
           {/* Real Club Image as background */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-700">
+          <div className="absolute inset-0 flex items-center justify-center opacity-40 group-hover:opacity-60 transition-all duration-700">
             <Image 
               src="/images/csr/faraja-group-stand.jpg" 
               alt="Playmasters Training" 
@@ -120,20 +120,20 @@ export default function Home() {
         <h2 className="font-title text-[clamp(24px,4vw,40px)] text-center text-white mb-12 uppercase">Gallery & Partners</h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-24">
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden relative">
+          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center opacity-60 hover:opacity-100 transition-all overflow-hidden relative">
             <Image src="/images/achievements/trophy-team-large.jpg" alt="Bowling Action" fill className="object-cover" />
           </div>
           <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center md:col-span-2 md:row-span-2 relative group overflow-hidden">
-            <Image src="/images/achievements/trophy-team-celebration.jpg" alt="Player Training Visualization" fill className="z-10 grayscale group-hover:grayscale-0 transition-opacity object-cover" />
+            <Image src="/images/achievements/trophy-team-celebration.jpg" alt="Player Training Visualization" fill className="z-10 transition-opacity object-cover" />
             <div className="absolute inset-0 bg-strike/5 group-hover:bg-strike/10 transition-colors" />
           </div>
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden relative">
+          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center opacity-60 hover:opacity-100 transition-all overflow-hidden relative">
             <Image src="/images/achievements/trophy-suresh.jpg" alt="Team Spirit" fill className="object-cover" />
           </div>
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden relative">
+          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center opacity-60 hover:opacity-100 transition-all overflow-hidden relative">
             <Image src="/images/achievements/trophy-dorothy.jpg" alt="Tournament Highlights" fill className="object-cover" />
           </div>
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden relative glass-glow">
+          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center opacity-60 hover:opacity-100 transition-all overflow-hidden relative glass-glow">
             <Image src="/logo-lg.svg" alt="Playmasters Logo" width={80} height={80} className="object-contain" />
           </div>
         </div>
@@ -147,7 +147,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-12">
           <div className="flex flex-col sm:flex-row items-center gap-8">
             <div className="relative w-24 h-24">
-              <img src="/logo-lg.svg" alt="Playmasters Branding" className="w-full h-full object-contain grayscale brightness-200 opacity-60" />
+              <img src="/logo-lg.svg" alt="Playmasters Branding" className="w-full h-full object-contain brightness-200 opacity-60" />
             </div>
             <div className="flex flex-col gap-2 text-center sm:text-left">
               <div className="font-wordmark text-4xl tracking-tight text-white uppercase flex flex-col leading-none">
