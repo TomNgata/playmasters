@@ -51,7 +51,7 @@ export default function ContactPage() {
         {/* Contact Info */}
         <div className="flex flex-col gap-10">
           <div>
-            <SectionHeader title="Contact Details" subtitle="How to reach us" />
+            <SectionHeader label="HQ" title="Contact Details" subtitle="How to reach us" />
             <p className="font-sans text-gray-mid leading-relaxed mt-6">
               Our team operates primarily across Nairobi&apos;s leading bowling lanes. For official enquiries, please reach out via the following channels.
             </p>
