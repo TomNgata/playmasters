@@ -13,7 +13,8 @@ import {
   MessageSquare, 
   LayoutDashboard,
   Menu,
-  X
+  X,
+  Camera
 } from 'lucide-react';
 
 const publicLinks = [
@@ -21,6 +22,7 @@ const publicLinks = [
   { name: 'Achievements', href: '/achievements', icon: Trophy },
   { name: 'Players', href: '/players', icon: Users },
   { name: 'Sponsors', href: '/sponsors', icon: Handshake },
+  { name: 'Gallery', href: '/gallery', icon: Camera },
   { name: 'CSR', href: '/csr', icon: Heart },
   { name: 'Contact', href: '/contact', icon: MessageSquare },
 ];

@@ -275,11 +275,23 @@ export default function AchievementsPage() {
               <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
             <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
-              <img src="/images/achievements/trophy-team-celebration.jpg" alt="Team Celebration" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+              <img src="/images/achievements/IMG_3149.jpg" alt="Trophy Celebration" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
             <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
-              <img src="/images/achievements/trophy-team-alt.jpg" alt="Team Trophy" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+              <img src="/images/achievements/IMG_3158.jpg" alt="Team Victory" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
+            </div>
+            <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/IMG_3160.jpg" alt="Trophy Showcase" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
+            </div>
+            <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/IMG_3165.jpg" alt="Champion Medals" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
+            </div>
+            <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/IMG_3167.jpg" alt="Playmasters Dominance" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
           </div>
