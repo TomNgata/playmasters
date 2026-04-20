@@ -69,8 +69,8 @@ export default function ContactPage() {
             <div className="bg-navy border border-white/8 rounded-2xl p-6 glass-glow">
               <Instagram className="text-ball-pink mb-4" size={24} />
               <h3 className="font-ui text-sm tracking-[2px] uppercase text-white mb-1">Instagram</h3>
-              <a href="https://instagram.com/playmasters.ke" target="_blank" className="font-sans text-sm text-gray-mid hover:text-white transition-colors">
-                @playmasters.ke
+              <a href="https://instagram.com/playmasterske" target="_blank" className="font-sans text-sm text-gray-mid hover:text-white transition-colors">
+                @playmasterske
               </a>
             </div>
 
