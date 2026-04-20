@@ -239,6 +239,50 @@ export default function AchievementsPage() {
         </div>
       </section>
 
+      {/* Trophy Cabinet Gallery */}
+      <section className="w-full bg-navy py-24 border-y border-white/5 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-wordmark text-[15vw] opacity-[0.01] whitespace-nowrap pointer-events-none select-none">
+          TROPHY CABINET
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="text-center mb-12">
+            <span className="font-ui text-strike text-xs tracking-[6px] uppercase font-bold">Showcase</span>
+            <h2 className="font-wordmark text-4xl md:text-5xl uppercase mt-3">The Trophy Cabinet</h2>
+            <p className="font-sans text-gray-mid text-sm mt-4 max-w-xl mx-auto leading-relaxed">
+              Snapshots of our dominant runs across Nairobi&apos;s premier bowling venues. From Pin Entertainment to Village Bowl.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="group relative aspect-[4/5] overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/trophy-dorothy.jpg" alt="Dorothy's Trophies" className="h-full w-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60" />
+            </div>
+            <div className="md:col-span-2 group relative aspect-[16/9] md:aspect-auto overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/trophy-team-large.jpg" alt="Team Playmasters Success" className="h-full w-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60" />
+            </div>
+            <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/trophy-suresh.jpg" alt="Suresh Bhudiya Trophy" className="h-full w-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60" />
+            </div>
+            <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/trophy-dillan.jpg" alt="Dillan Mandalia Trophy" className="h-full w-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60" />
+            </div>
+            <div className="group relative aspect-[4/5] overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/trophy-team-celebration.jpg" alt="Team Celebration" className="h-full w-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60" />
+            </div>
+            <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/trophy-team-alt.jpg" alt="Team Trophy" className="h-full w-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60" />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Season Timeline */}
       <section className="w-full max-w-6xl mx-auto px-6 pb-24">
         <div className="text-center mb-14">

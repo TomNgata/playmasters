@@ -60,7 +60,7 @@ export default function Home() {
           {/* Real Club Image as background */}
           <div className="absolute inset-0 flex items-center justify-center opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-700">
             <Image 
-              src="/5860701352248413499.jpg" 
+              src="/images/csr/faraja-group-stand.jpg" 
               alt="Playmasters Training" 
               fill
               className="object-cover" 
@@ -121,17 +121,17 @@ export default function Home() {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-24">
           <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden relative">
-            <Image src="/5858096969979465002.jpg" alt="Bowling Action" fill className="object-cover" />
+            <Image src="/images/achievements/trophy-team-large.jpg" alt="Bowling Action" fill className="object-cover" />
           </div>
           <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center md:col-span-2 md:row-span-2 relative group overflow-hidden">
-            <Image src="/5860367998361734483.jpg" alt="Player Training Visualization" fill className="z-10 grayscale group-hover:grayscale-0 transition-opacity object-cover" />
+            <Image src="/images/achievements/trophy-team-celebration.jpg" alt="Player Training Visualization" fill className="z-10 grayscale group-hover:grayscale-0 transition-opacity object-cover" />
             <div className="absolute inset-0 bg-strike/5 group-hover:bg-strike/10 transition-colors" />
           </div>
           <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden relative">
-            <Image src="/5858168725998079239.jpg" alt="Team Spirit" fill className="object-cover" />
+            <Image src="/images/achievements/trophy-suresh.jpg" alt="Team Spirit" fill className="object-cover" />
           </div>
           <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden relative">
-            <Image src="/5860677712748416291.jpg" alt="Tournament Highlights" fill className="object-cover" />
+            <Image src="/images/achievements/trophy-dorothy.jpg" alt="Tournament Highlights" fill className="object-cover" />
           </div>
           <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all overflow-hidden relative glass-glow">
             <Image src="/logo-lg.svg" alt="Playmasters Logo" width={80} height={80} className="object-contain" />

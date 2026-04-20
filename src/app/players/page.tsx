@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 const players = [
   // PLAYMASTERS OG
   { name: 'Paras Chandaria', role: 'Captain — PlayMasters OG', team: 'OG', color: 'strike', records: ['Kenyan highest male score 2 lanes — 290'], highlights: ['UBL S9 MVP', 'USBT Ed.8 Runner-Up', '2023 Points Champion'] },
-  { name: 'Suresh Bhudiya', role: 'Chairman — PlayMasters', team: 'OG', color: 'bat-blue', records: [], highlights: ['MILB 4 Gold — 2nd Place', 'UBL S16 Highest Score (Shared) — 258'] },
+  { name: 'Suresh Bhudiya', role: 'Chairman — PlayMasters', team: 'OG', color: 'bat-blue', image: '/images/achievements/trophy-suresh.jpg', records: [], highlights: ['MILB 4 Gold — 2nd Place', 'UBL S16 Highest Score (Shared) — 258'] },
   { name: 'Sagar Joshi', role: 'PlayMasters OG', team: 'OG', color: 'strike', records: ['Kenyan highest male score 1 lane — 290'], highlights: ['UBL S15 Highest Scratch (Men) — 480'] },
   { name: 'Hiren', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', records: [], highlights: ['Consistent Top 10 League Performer'] },
   { name: 'James', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', records: [], highlights: ['League Veteran', 'Multi-Tournament Finalist'] },
@@ -25,14 +25,14 @@ const players = [
   { name: 'Darshi Chandaria', role: 'PlayMasters Mavericks', team: 'Mavericks', color: 'ball-pink', records: ['Kenyan highest female score 2 lanes — 255'], highlights: ['UBL S15 Highest Scratch — 381'] },
 
   // PLAYMASTERS RISING
-  { name: 'Dorothy Williams', role: 'Captain — PlayMasters Rising', team: 'Rising', color: 'strike', records: [], highlights: ['UBL S16 Female Highest Score — 224', 'UBL S16 Highest Average — 161.04', 'UBL S16 Highest Game Scratch — 381'] },
+  { name: 'Dorothy Williams', role: 'Captain — PlayMasters Rising', team: 'Rising', color: 'strike', image: '/images/achievements/trophy-dorothy.jpg', records: [], highlights: ['UBL S16 Female Highest Score — 224', 'UBL S16 Highest Average — 161.04', 'UBL S16 Highest Game Scratch — 381'] },
   { name: 'Victor', role: 'PlayMasters Rising', team: 'Rising', color: 'strike', records: [], highlights: ['Rising Talent', 'Consistent Growth'] },
   { name: 'Ian S.', role: 'PlayMasters Rising', team: 'Rising', color: 'strike', records: [], highlights: ['Squad Powerhouse'] },
   { name: 'Sam G.', role: 'PlayMasters Rising', team: 'Rising', color: 'strike', records: [], highlights: ['Tactical Anchor'] },
   { name: 'Vraj', role: 'PlayMasters Rising', team: 'Rising', color: 'strike', records: [], highlights: ['Junior development success'] },
 
   // PLAYMASTERS WARRIORS
-  { name: 'Dillan Mandalia', role: 'Captain — PlayMasters Warriors', team: 'Warriors', color: 'bat-blue', records: [], highlights: ['USBT Edition 8 Champion 🥇', 'UBL S16 Male Highest Score — 195.69'] },
+  { name: 'Dillan Mandalia', role: 'Captain — PlayMasters Warriors', team: 'Warriors', color: 'bat-blue', image: '/images/achievements/trophy-dillan.jpg', records: [], highlights: ['USBT Edition 8 Champion 🥇', 'UBL S16 Male Highest Score — 195.69'] },
   { name: 'Hemang Rana', role: 'PlayMasters Warriors', team: 'Warriors', color: 'bat-blue', records: [], highlights: ['USBT Ed.8 — 5th Place', 'UBL S16 Highest Score (Shared) — 258'] },
 
   // LADIES
@@ -104,11 +104,20 @@ export default function PlayersPage() {
                 {/* Avatar placeholder */}
                 <div className="w-full aspect-square bg-navy-dark/60 flex items-center justify-center relative overflow-hidden">
                   <div className={`absolute inset-0 bg-gradient-to-br from-${teamColor}/10 via-transparent to-transparent`} />
-                  <div className="flex flex-col items-center gap-2 relative z-10">
-                    <div className={`w-20 h-20 rounded-full border-2 border-${teamColor}/30 bg-navy flex items-center justify-center`}>
-                      <span className="text-4xl">🎳</span>
-                    </div>
-                    <span className={`font-ui text-[10px] tracking-[3px] uppercase text-${teamColor} opacity-60`}>Photo Coming</span>
+                  <div className="flex flex-col items-center gap-2 relative z-10 w-full h-full">
+                    {player.image ? (
+                        <div className="w-full h-full relative group-hover:scale-110 transition-transform duration-700">
+                            <img src={player.image} alt={player.name} className="w-full h-full object-cover" />
+                            <div className={`absolute inset-0 bg-gradient-to-t from-${teamColor}/40 via-transparent to-transparent`} />
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center h-full gap-2">
+                             <div className={`w-20 h-20 rounded-full border-2 border-${teamColor}/30 bg-navy flex items-center justify-center`}>
+                                <span className="text-4xl">🎳</span>
+                             </div>
+                             <span className={`font-ui text-[10px] tracking-[3px] uppercase text-${teamColor} opacity-60`}>Photo Coming</span>
+                        </div>
+                    )}
                   </div>
                   {/* Team badge */}
                   <div className={`absolute top-3 right-3 px-2 py-1 bg-${teamColor}/15 border border-${teamColor}/25 rounded font-ui text-[9px] tracking-[2px] uppercase text-${teamColor}`}>

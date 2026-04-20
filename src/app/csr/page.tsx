@@ -81,7 +81,7 @@ export default function CsrPage() {
       </section>
 
       {/* Initiatives Grid */}
-      <section className="w-full max-w-6xl mx-auto px-6 pb-20">
+      <section className="w-full max-w-6xl mx-auto px-6 pb-24">
         <div className="text-center mb-14">
           <span className="font-ui text-strike text-xs tracking-[6px] uppercase font-bold">Our Work</span>
           <h2 className="font-wordmark text-4xl md:text-5xl uppercase mt-3">CSR Initiatives</h2>
@@ -119,6 +119,45 @@ export default function CsrPage() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Community in Action Gallery */}
+      <section className="w-full bg-navy py-24 border-y border-white/5 relative overflow-hidden">
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-strike via-transparent to-ball-pink opacity-20" />
+        
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="text-center mb-16">
+            <span className="font-ui text-ball-pink text-xs tracking-[6px] uppercase font-bold">Community in Action</span>
+            <h2 className="font-wordmark text-4xl md:text-5xl uppercase mt-3 text-white">Making an Impact</h2>
+            <p className="font-sans text-gray-mid text-sm mt-4 max-w-xl mx-auto leading-relaxed">
+              At Playmasters, we believe our responsibility extends beyond the lanes. Here are some of our recent community outreach and support initiatives.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="md:col-span-2 md:row-span-2 group relative overflow-hidden rounded-2xl border border-white/10 bg-navy-dark aspect-square md:aspect-auto">
+              <img src="/images/csr/faraja-group-stand.jpg" alt="Faraja Cancer Support Group" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/80 via-transparent to-transparent" />
+              <div className="absolute bottom-6 left-6">
+                <span className="font-ui text-ball-pink text-[10px] tracking-[3px] uppercase font-bold">Health & Wellness</span>
+                <h3 className="font-ui text-lg text-white uppercase mt-1">Faraja Cancer Support Trust</h3>
+              </div>
+            </div>
+            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-navy-dark aspect-square">
+              <img src="/images/csr/banner-close.jpg" alt="Never Give Up Banner" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-navy-dark/20 group-hover:bg-transparent transition-colors" />
+            </div>
+            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-navy-dark aspect-square">
+              <img src="/images/csr/faraja-group-sit.jpg" alt="Faraja Activity" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            </div>
+            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-navy-dark aspect-square">
+              <img src="/images/csr/csr-activity-1.jpg" alt="Community Activity 1" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            </div>
+            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-navy-dark aspect-square">
+              <img src="/images/csr/csr-activity-2.jpg" alt="Community Activity 2" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            </div>
+          </div>
         </div>
       </section>
 

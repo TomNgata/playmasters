@@ -28,8 +28,8 @@ export default function AboutPage() {
       </section>
 
       {/* ─── Our Story ─── */}
-      <section className="w-full max-w-6xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-        <div>
+      <section className="w-full max-w-6xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="order-2 lg:order-1">
           <span className="font-ui text-strike text-xs tracking-[5px] uppercase font-bold">The Origin</span>
           <h2 className="font-wordmark text-4xl md:text-5xl uppercase mt-3 mb-6 leading-none">
             Born on the <span className="text-strike">Lanes</span>
@@ -47,6 +47,13 @@ export default function AboutPage() {
             </p>
           </div>
         </div>
+
+        <div className="order-1 lg:order-2 relative aspect-[4/3] rounded-2xl overflow-hidden border border-white/5 group shadow-2xl">
+          <img src="/images/achievements/trophy-team-alt-2.jpg" alt="Playmasters Team Success" className="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" />
+          <div className="absolute inset-0 bg-gradient-to-tr from-navy-dark via-transparent to-transparent opacity-40" />
+          <div className="absolute inset-0 border-2 border-strike/20 -m-3 group-hover:m-0 transition-all duration-500 rounded-2xl pointer-events-none" />
+        </div>
+      </section>
 
         {/* Kenya Bowling Context */}
         <div className="bg-navy/50 border border-white/8 rounded-2xl p-8 flex flex-col gap-5">
