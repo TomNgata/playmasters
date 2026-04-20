@@ -100,9 +100,6 @@ export default function Home() {
             </div>
           </div>
 
-          <Link href="/dashboard/player" className="group px-8 py-4 sm:px-10 sm:py-5 bg-strike hover:bg-strike-deep text-white font-ui font-extrabold text-xl sm:text-2xl tracking-[4px] uppercase transition-all flex items-center gap-4 shadow-[0_4px_0_theme(colors.strike-deep)] active:translate-y-[2px] active:shadow-none">
-            Access Hub <span className="text-white/40 group-hover:translate-x-1 transition-transform">/</span> View Stats
-          </Link>
         </div>
       </section>
 

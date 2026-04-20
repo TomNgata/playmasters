@@ -90,7 +90,7 @@ export default function Navbar() {
           {/* Team Hub CTA */}
           <div className="hidden lg:flex items-center gap-4 flex-shrink-0">
             <Link
-              href="/dashboard/player"
+              href="/login"
               className="px-5 py-2.5 bg-strike hover:bg-strike-deep text-white font-ui font-bold text-sm tracking-[3px] uppercase transition-all shadow-[0_2px_10px_rgba(232,32,48,0.3)] active:translate-y-[1px] active:shadow-none flex items-center gap-2 glass-glow overflow-hidden"
             >
               <LayoutDashboard size={16} />
@@ -134,7 +134,7 @@ export default function Navbar() {
 
           <div className="mt-4 pt-4 border-t border-white/10">
             <Link
-              href="/dashboard/player"
+              href="/login"
               onClick={closeMenu}
               className="w-full py-4 px-6 bg-navy-mid border border-white/10 text-white font-ui text-xl tracking-[4px] uppercase transition-all text-center rounded-xl flex items-center justify-center gap-3 glass-glow"
             >
