@@ -182,11 +182,11 @@ export default function AboutPage() {
             { name: 'PlayMasters Mavericks', color: 'ball-pink', desc: 'The bold third arm of the franchise. Growing fast, competing faster.', captain: 'Deepen Kerai' },
             { name: 'PlayMasters Rising', color: 'strike', desc: 'Our newest competitive division. Focused on growth, talent, and teamwork.', captain: 'Dorothy Williams' },
           ].map(({ name, color, desc, captain }) => (
-            <div key={name} className={`relative bg-navy border border-white/8 rounded-2xl p-7 overflow-hidden group hover:border-${color}/30 transition-all`}>
+            <div key={name} className={`relative h-full flex flex-col items-center text-center bg-navy border border-white/8 rounded-2xl p-7 overflow-hidden group hover:border-${color}/30 transition-all`}>
               <div className={`absolute top-0 left-0 w-full h-1 bg-${color}`} />
               <h3 className="font-wordmark text-2xl uppercase mt-2 mb-3">{name}</h3>
-              <p className="font-sans text-gray-mid text-sm leading-relaxed mb-4">{desc}</p>
-              <div className="flex items-center gap-2 mt-auto">
+              <p className="font-sans text-gray-mid text-sm leading-relaxed mb-4 flex-grow">{desc}</p>
+              <div className="flex items-center justify-center gap-2 mt-auto">
                 <span className={`w-1.5 h-1.5 rounded-full bg-${color}`} />
                 <span className="font-ui text-xs text-gray-mid tracking-widest uppercase">Captain: {captain}</span>
               </div>
