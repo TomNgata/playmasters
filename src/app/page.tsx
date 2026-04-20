@@ -57,22 +57,16 @@ export default function Home() {
           <TeamStatsSummary />
         </div>
         <div className="bg-navy rounded-2xl border border-white/5 h-[300px] sm:h-[450px] flex items-center justify-center relative overflow-hidden group">
-          {/* Real Club Image as background */}
+          {/* Featured Club Image as background */}
           <div className="absolute inset-0 flex items-center justify-center opacity-40 group-hover:opacity-60 transition-all duration-700">
             <Image 
-              src="/images/csr/faraja-group-stand.jpg" 
-              alt="Playmasters Training" 
+              src="/images/achievements/trophy-team-large.jpg" 
+              alt="Playmasters Team" 
               fill
               className="object-cover" 
             />
           </div>
           <div className="absolute inset-0 bg-gradient-to-tr from-navy-dark via-transparent to-transparent opacity-80" />
-          <div className="relative z-10 flex flex-col items-center gap-4">
-            <div className="w-16 h-16 border border-white/20 rounded-full flex items-center justify-center bg-navy-dark/40 backdrop-blur-sm">
-              <div className="w-2 h-2 rounded-full bg-strike animate-ping" />
-            </div>
-            <p className="font-ui text-white text-lg tracking-[4px] uppercase drop-shadow-lg">[ Training Session Active ]</p>
-          </div>
         </div>
       </section>
 
