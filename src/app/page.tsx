@@ -73,7 +73,7 @@ export default function Home() {
       {/* Performance Teaser */}
       <section id="performance" className="w-full bg-navy py-24 border-y border-white/5 relative overflow-hidden text-center">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-wordmark text-[20vw] opacity-[0.02] whitespace-nowrap pointer-events-none select-none">
-          PERFORMANCE
+          ELITE HUB
         </div>
 
         <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col items-center">
@@ -84,19 +84,19 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 w-full border border-white/10 bg-navy-dark/80 mb-12">
             <div className="p-8 lg:p-12 border-b md:border-b-0 md:border-r border-white/10 flex flex-col items-start text-left group hover:bg-white/[0.02] transition-colors">
-              <span className="font-ui text-ball-pink text-xs font-bold tracking-[3px] uppercase mb-4 opacity-70">Focus Engine</span>
-              <h3 className="font-ui text-3xl uppercase tracking-tighter text-white mb-4 group-hover:text-ball-pink transition-colors">Focus Fatigue</h3>
-              <p className="text-sm font-sans text-gray-mid leading-relaxed">Pinpoint exactly where your mental game dips across 10 frames vs historical baselines.</p>
+              <span className="font-ui text-ball-pink text-xs font-bold tracking-[3px] uppercase mb-4 opacity-70">The Elite Edge</span>
+              <h3 className="font-ui text-3xl uppercase tracking-tighter text-white mb-4 group-hover:text-ball-pink transition-colors">Pro Performance</h3>
+              <p className="text-sm font-sans text-gray-mid leading-relaxed">Gain the competitive edge with advanced performance tracking that turns every frame into a masterclass in precision.</p>
             </div>
             <div className="p-8 lg:p-12 border-b md:border-b-0 md:border-r border-white/10 flex flex-col items-start text-left group hover:bg-white/[0.02] transition-colors">
-              <span className="font-ui text-bat-blue text-xs font-bold tracking-[3px] uppercase mb-4 opacity-70">Metric 02</span>
-              <h3 className="font-ui text-3xl uppercase tracking-tighter text-white mb-4 group-hover:text-bat-blue transition-colors">Competition Analysis</h3>
-              <p className="text-sm font-sans text-gray-mid leading-relaxed">Real-time UBL Division benchmarks, median tracking, and peak score volatility.</p>
+              <span className="font-ui text-bat-blue text-xs font-bold tracking-[3px] uppercase mb-4 opacity-70">Strategic Insight</span>
+              <h3 className="font-ui text-3xl uppercase tracking-tighter text-white mb-4 group-hover:text-bat-blue transition-colors">Rivalry Tracking</h3>
+              <p className="text-sm font-sans text-gray-mid leading-relaxed">Know your competition. Stay ahead of the pack with real-time benchmarks and head-to-head metrics designed for winners.</p>
             </div>
             <div className="p-8 lg:p-12 flex flex-col items-start text-left group hover:bg-white/[0.02] transition-colors">
-              <span className="font-ui text-strike text-xs font-bold tracking-[3px] uppercase mb-4 opacity-70">Metric 03</span>
-              <h3 className="font-ui text-3xl uppercase tracking-tighter text-white mb-4 group-hover:text-strike transition-colors">Social Performance</h3>
-              <p className="text-sm font-sans text-gray-mid leading-relaxed">PvP comparisons, Women&apos;s Elite tracking, and automated tournament bracket generation.</p>
+              <span className="font-ui text-strike text-xs font-bold tracking-[3px] uppercase mb-4 opacity-70">Championship Tools</span>
+              <h3 className="font-ui text-3xl uppercase tracking-tighter text-white mb-4 group-hover:text-strike transition-colors">Digital Clubhouse</h3>
+              <p className="text-sm font-sans text-gray-mid leading-relaxed">Manage your bowling legacy. From automated tournament brackets to career high-scores, your journey is archived here.</p>
             </div>
           </div>
 

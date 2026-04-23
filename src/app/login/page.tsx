@@ -67,7 +67,7 @@ export default function LoginPage() {
           <div className="mt-8 text-center border-t border-white/5 pt-6">
             <p className="font-sans text-sm text-gray-mid leading-relaxed inline-flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-strike animate-pulse" />
-              OAuth infrastructure currently undergoing scheduled updates for Season 16.
+              The Vault is currently locked. We&apos;re recalibrating our systems for the Season 16 championship run.
             </p>
           </div>
         </div>

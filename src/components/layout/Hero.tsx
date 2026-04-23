@@ -89,15 +89,15 @@ export default function ModernHero() {
             {/* Data Panels */}
             <div className="z-10 mt-12 w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 border-y border-white/10 bg-navy-dark/50 backdrop-blur-md">
                 <div className="p-8 border-r border-white/10 flex flex-col items-center justify-center gap-2 group transition-colors hover:bg-white/[0.02]">
-                    <span className="font-ui text-gray-mid uppercase tracking-widest text-xs">Total Pins Down</span>
+                    <span className="font-ui text-gray-mid uppercase tracking-widest text-xs">Pins Crushed</span>
                     <span className="font-wordmark text-5xl text-white group-hover:text-strike transition-colors">{stats.totalPins.toLocaleString()}</span>
                 </div>
                 <div className="p-8 border-r border-white/10 flex flex-col items-center justify-center gap-2 group transition-colors hover:bg-white/[0.02]">
-                    <span className="font-ui text-gray-mid uppercase tracking-widest text-xs">Strike Rate</span>
+                    <span className="font-ui text-gray-mid uppercase tracking-widest text-xs">Pure Dominance</span>
                     <span className="font-wordmark text-5xl text-white group-hover:text-ball-pink transition-colors">{stats.strikeRate}%</span>
                 </div>
                 <div className="p-8 flex flex-col items-center justify-center gap-2 group transition-colors hover:bg-white/[0.02]">
-                    <span className="font-ui text-gray-mid uppercase tracking-widest text-xs">Active Roster</span>
+                    <span className="font-ui text-gray-mid uppercase tracking-widest text-xs">Elite Athletes</span>
                     <span className="font-wordmark text-5xl text-white group-hover:text-bat-blue transition-colors">{stats.activeRoster}</span>
                 </div>
             </div>
