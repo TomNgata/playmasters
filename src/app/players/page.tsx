@@ -34,10 +34,6 @@ const players = [
   // PLAYMASTERS WARRIORS
   { name: 'Dillan Mandalia', role: 'Captain — PlayMasters Warriors', team: 'Warriors', color: 'bat-blue', image: '/images/achievements/trophy-dillan.jpg', records: [], highlights: ['USBT Edition 8 Champion 🥇', 'UBL S16 Male Highest Score — 195.69'] },
   { name: 'Hemang Rana', role: 'PlayMasters Warriors', team: 'Warriors', color: 'bat-blue', records: [], highlights: ['USBT Ed.8 — 5th Place', 'UBL S16 Highest Score (Shared) — 258'] },
-
-  // LADIES
-  { name: 'Sonika Bhudiya', role: 'PlayMasters Ladies', team: 'Ladies', color: 'ball-pink', records: [], highlights: ['UBL S9 MVP', 'MILB 5 Best Woman'] },
-  { name: 'Amrit Jandu', role: 'PlayMasters Ladies', team: 'Ladies', color: 'ball-pink', records: ['Kenyan highest female score 2 lanes (2023) — 215'], highlights: ['UBL S9 Highest Game Scratch'] },
 ];
 
 const teamColors: Record<string, string> = {
@@ -45,7 +41,6 @@ const teamColors: Record<string, string> = {
   Warriors: 'bat-blue',
   Mavericks: 'ball-pink',
   Rising: 'strike',
-  Ladies: 'ball-pink',
 };
 
 const teamLabels: Record<string, string> = {
@@ -53,7 +48,6 @@ const teamLabels: Record<string, string> = {
   Warriors: 'PlayMasters Warriors',
   Mavericks: 'PlayMasters Mavericks',
   Rising: 'PlayMasters Rising',
-  Ladies: 'PlayMasters Ladies',
 };
 
 export default function PlayersPage() {

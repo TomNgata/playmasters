@@ -112,10 +112,9 @@ const seasons = [
         highlights: [
           { label: '🥇 Strikes Season 5', detail: 'PlayMasters — 1st Place' },
           { label: '🥇 Strikes Season 6', detail: 'PlayMasters — 1st Place' },
-          { label: '🥇 Strikes Season 6 Plate', detail: 'PlayMasters Ladies — 1st Place' },
+          { label: '🥇 Strikes Season 6 Plate', detail: 'PlayMasters — 1st Place' },
           { label: '🥇 UBL Season 9', detail: 'PlayMasters — 1st Place' },
           { label: 'UBL Season 8', detail: 'PlayMasters — 4th Place' },
-          { label: 'UBL Season 9 Plate', detail: 'PlayMasters Ladies — 2nd Place' },
         ],
       },
       {

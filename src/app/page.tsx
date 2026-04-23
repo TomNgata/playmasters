@@ -130,6 +130,51 @@ export default function Home() {
         </div>
       </section>
 
+      {/* National Records Highlight */}
+      <section className="w-full bg-navy-dark py-20 border-b border-white/5 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-strike/5 blur-[120px] pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center gap-12">
+          <div className="flex-1 text-left">
+            <span className="font-ui text-strike text-xs tracking-[5px] uppercase font-bold block mb-4">Kenyan Legacy</span>
+            <h2 className="font-wordmark text-4xl md:text-5xl uppercase mb-6 leading-tight">
+              Dominating the <br /><span className="text-strike">National Leaderboards</span>
+            </h2>
+            <p className="font-sans text-gray-mid text-lg max-w-xl leading-relaxed mb-8">
+              PlayMasters athletes currently hold 6 Kenyan National Records. From junior phenoms to veteran champions, our franchise sets the standard for excellence on the lanes.
+            </p>
+            <Link 
+              href="/achievements" 
+              className="inline-flex items-center gap-3 px-8 py-4 bg-navy border border-white/10 rounded-lg font-ui text-sm tracking-[3px] uppercase hover:border-strike hover:bg-strike/5 transition-all group"
+            >
+              View Full Cabinet
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </Link>
+          </div>
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+            <div className="p-6 bg-navy border border-white/8 rounded-xl glass-glow">
+              <span className="font-ui text-[10px] text-gray-mid tracking-[3px] uppercase mb-2 block">Highest Score (1 Lane)</span>
+              <span className="font-wordmark text-3xl text-white block mb-1">290 PINS</span>
+              <span className="font-ui text-[10px] text-strike tracking-[2px] uppercase">Sagar Joshi — OG</span>
+            </div>
+            <div className="p-6 bg-navy border border-white/8 rounded-xl glass-glow">
+              <span className="font-ui text-[10px] text-gray-mid tracking-[3px] uppercase mb-2 block">Junior (2 Lanes)</span>
+              <span className="font-wordmark text-3xl text-white block mb-1">237 PINS</span>
+              <span className="font-ui text-[10px] text-strike tracking-[2px] uppercase">Dhilan Chandaria — OG</span>
+            </div>
+            <div className="p-6 bg-navy border border-white/8 rounded-xl glass-glow">
+              <span className="font-ui text-[10px] text-gray-mid tracking-[3px] uppercase mb-2 block">Female (2 Lanes)</span>
+              <span className="font-wordmark text-3xl text-white block mb-1">255 PINS</span>
+              <span className="font-ui text-[10px] text-strike tracking-[2px] uppercase">Darshi Chandaria — Mavericks</span>
+            </div>
+            <div className="p-6 bg-navy border border-white/8 rounded-xl glass-glow">
+              <span className="font-ui text-[10px] text-gray-mid tracking-[3px] uppercase mb-2 block">Highest Score (2 Lanes)</span>
+              <span className="font-wordmark text-3xl text-white block mb-1">290 PINS</span>
+              <span className="font-ui text-[10px] text-strike tracking-[2px] uppercase">Paras Chandaria — OG</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 6. Strategic Partners / Sponsors */}
       <SponsorMarquee />
 

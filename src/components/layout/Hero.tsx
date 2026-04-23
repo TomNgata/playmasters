@@ -40,7 +40,7 @@ export default function ModernHero() {
                 setStats({
                     totalPins,
                     strikeRate: parseFloat(strikeRate),
-                    activeRoster: activePlayers || 16
+                    activeRoster: activePlayers || 32
                 });
             } else if (activePlayers) {
                 setStats(prev => ({ ...prev, activeRoster: activePlayers }));
