@@ -10,7 +10,7 @@ const publicPages = [
   { name: 'Achievements', href: '/achievements', icon: '🏆', desc: 'Records & trophies 2023–2026', color: 'bat-blue' },
   { name: 'Players', href: '/players', icon: '👥', desc: 'Meet the full PlayMasters squad', color: 'ball-pink' },
   { name: 'Sponsors', href: '/sponsors', icon: '🤝', desc: 'Our partners & become a sponsor', color: 'strike' },
-  { name: 'CSR', href: '/csr', icon: '❤️', desc: 'Community & charity initiatives', color: 'bat-blue' },
+  { name: 'CSR', href: '/csr', icon: '❤️', desc: 'Community & impact records', color: 'bat-blue' },
   { name: 'Contact', href: '/contact', icon: '📩', desc: 'Get in touch with us', color: 'ball-pink' },
 ];
 

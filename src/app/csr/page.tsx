@@ -5,39 +5,13 @@ export const metadata: Metadata = {
   description: 'PlayMasters\'s commitment to community — charity events, cancer center support, and partnerships that go beyond the bowling lanes.',
 };
 
-const initiatives = [
+const pillars = [
   {
     icon: '❤️',
     title: 'Charity Events & Fundraisers',
     color: 'strike',
     desc: 'PlayMasters organises and participates in charity bowling events, with proceeds and additional donations channelled directly to local causes in Nairobi.',
     details: ['Charity bowling fundraisers', 'Additional donations for each event', 'Community-led participation'],
-    status: 'Active',
-  },
-  {
-    icon: '🎗️',
-    title: 'Faraja Cancer Support Trust',
-    color: 'ball-pink',
-    desc: 'In 2025, PlayMasters raised KES 100,000 through a performance-based campaign where KES 1,000 was contributed for every 200+ score achieved by players.',
-    details: [
-      'Partnered with Faraja Cancer Support Trust',
-      'KES 100,000 raised in the 2025 season',
-      'Performance-based giving: KES 1,000 per 200+ score',
-      'Using sport as a platform for health and wellbeing'
-    ],
-    status: 'Active',
-  },
-  {
-    icon: '🏠',
-    title: 'Raha Kids Centre (Lions Club)',
-    color: 'strike',
-    desc: 'Participated in the Lions Club Fundraising Bowling Extravaganza on 14th September 2025 to support brighter futures for children in need.',
-    details: [
-      'Beneficiary: Raha Kids Education, Rehabilitation & Reintegration Centre',
-      'In partnership with Lions Club Nairobi',
-      'Participated in Fundraising Bowling Extravaganza',
-      'Contributing to child education and rehabilitation'
-    ],
     status: 'Active',
   },
   {
@@ -63,6 +37,35 @@ const initiatives = [
     desc: 'Before 2017, bowling was nearly non-existent in Kenya. PlayMasters is at the forefront of building the sporting infrastructure and culture needed for Kenya to bowl internationally.',
     details: ['Participation in all major Nairobi leagues', 'Ambassadors for the sport', "Vision: fly Kenya's flag internationally"],
     status: 'Mission',
+  },
+];
+
+const projects = [
+  {
+    year: '2025',
+    icon: '🎗️',
+    title: 'Faraja Cancer Support Trust',
+    color: 'ball-pink',
+    desc: 'Raised KES 100,000 through a performance-based campaign where KES 1,000 was contributed for every 200+ score achieved by players.',
+    details: [
+      'Partnered with Faraja Cancer Support Trust',
+      'KES 100,000 raised in the 2025 season',
+      'Performance-based giving: KES 1,000 per 200+ score',
+    ],
+    status: 'Completed',
+  },
+  {
+    year: '2025',
+    icon: '🏠',
+    title: 'Raha Kids Centre (Lions Club)',
+    color: 'strike',
+    desc: 'Participated in the Lions Club Fundraising Bowling Extravaganza on 14th September 2025 to support brighter futures for children in need.',
+    details: [
+      'Beneficiary: Raha Kids Education, Rehabilitation & Reintegration Centre',
+      'In partnership with Lions Club Nairobi',
+      'Participated in Fundraising Bowling Extravaganza',
+    ],
+    status: 'Completed',
   },
 ];
 
@@ -98,16 +101,16 @@ export default function CsrPage() {
         </div>
       </section>
 
-      {/* Initiatives Grid */}
+      {/* 1. Impact Pillars */}
       <section className="w-full max-w-6xl mx-auto px-6 pb-24">
         <div className="text-center mb-14">
-          <span className="font-ui text-strike text-xs tracking-[6px] uppercase font-bold">Our Work</span>
-          <h2 className="font-wordmark text-4xl md:text-5xl uppercase mt-3">CSR Initiatives</h2>
+          <span className="font-ui text-strike text-xs tracking-[6px] uppercase font-bold">Our Commitment</span>
+          <h2 className="font-wordmark text-4xl md:text-5xl uppercase mt-3">Impact Pillars</h2>
           <div className="w-12 h-1 bg-strike mx-auto mt-4" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {initiatives.map((item) => (
+          {pillars.map((item) => (
             <div
               key={item.title}
               className={`relative bg-navy border border-white/8 rounded-xl overflow-hidden group hover:border-${item.color}/30 transition-all`}
@@ -137,6 +140,45 @@ export default function CsrPage() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* 2. Historical Impact Records */}
+      <section className="w-full bg-navy/30 border-y border-white/5 py-24">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-14">
+            <span className="font-ui text-ball-pink text-xs tracking-[6px] uppercase font-bold">The Archives</span>
+            <h2 className="font-wordmark text-4xl md:text-5xl uppercase mt-3">Impact Records</h2>
+            <p className="font-sans text-gray-mid text-sm mt-4 max-w-xl mx-auto">
+              Tangible milestones where PlayMasters has translated sports performance into community impact.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {projects.map((project) => (
+              <div key={project.title} className="relative p-8 bg-navy border border-white/5 rounded-2xl overflow-hidden group hover:border-white/20 transition-all">
+                <div className="absolute top-6 right-8 font-wordmark text-6xl text-white/[0.03] group-hover:text-white/[0.06] transition-colors">{project.year}</div>
+                <div className="flex items-center gap-4 mb-6">
+                  <span className="text-4xl">{project.icon}</span>
+                  <div>
+                    <h3 className="font-ui text-2xl uppercase tracking-tighter text-white">{project.title}</h3>
+                    <span className="font-ui text-[10px] text-strike tracking-[3px] uppercase font-bold">{project.status}</span>
+                  </div>
+                </div>
+                <p className="font-sans text-gray-mid text-base leading-relaxed mb-6">
+                  {project.desc}
+                </p>
+                <div className="space-y-3">
+                   {project.details.map((d, idx) => (
+                     <div key={idx} className="flex items-center gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-strike" />
+                        <span className="font-ui text-xs text-white uppercase tracking-wider">{d}</span>
+                     </div>
+                   ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
