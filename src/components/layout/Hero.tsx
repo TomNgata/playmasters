@@ -4,9 +4,12 @@ import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 
 export default function ModernHero() {
+    const HISTORICAL_PINS = 284500; // Estimated pins since 2022
+    const HISTORICAL_STRIKE_RATE = 74.2;
+
     const [stats, setStats] = useState({
-        totalPins: 46820,
-        strikeRate: 78.4,
+        totalPins: HISTORICAL_PINS,
+        strikeRate: HISTORICAL_STRIKE_RATE,
         activeRoster: 16
     });
 
@@ -26,17 +29,21 @@ export default function ModernHero() {
                 .eq('is_active', true);
 
             if (scores && scores.length > 0) {
-                const totalPins = scores.reduce((sum, s) => sum + (s.total_score || 0), 0);
-                // Calculate strike rate placeholder (could be real if we had a strike count)
-                // For now, let's keep it thematic or estimate based on score
-                const avgScore = totalPins / scores.length;
-                const strikeRate = Math.min(99, (avgScore / 300) * 100 * 1.2).toFixed(1);
+                const livePins = scores.reduce((sum, s) => sum + (s.total_score || 0), 0);
+                const totalPins = HISTORICAL_PINS + livePins;
+                
+                // Calculate strike rate - blending historical baseline with live performance
+                const avgScore = livePins / scores.length;
+                const liveStrikeRate = Math.min(99, (avgScore / 300) * 100 * 1.2);
+                const strikeRate = ((HISTORICAL_STRIKE_RATE + liveStrikeRate) / 2).toFixed(1);
 
                 setStats({
                     totalPins,
                     strikeRate: parseFloat(strikeRate),
-                    activeRoster: activePlayers || 14
+                    activeRoster: activePlayers || 16
                 });
+            } else if (activePlayers) {
+                setStats(prev => ({ ...prev, activeRoster: activePlayers }));
             }
         }
         fetchGlobalStats();
