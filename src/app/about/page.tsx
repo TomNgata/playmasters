@@ -55,8 +55,45 @@ export default function AboutPage() {
         </div>
       </section>
 
+  {/* ─── The Jersey Legacy ─── */}
+      <section className="w-full bg-navy py-20 border-y border-white/5 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none select-none flex items-center justify-center opacity-[0.03]">
+          <span className="font-wordmark text-[15vw] text-white uppercase whitespace-nowrap">JERSEY HISTORY</span>
+        </div>
+        <div className="max-w-6xl mx-auto px-6 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="bg-navy-dark border border-white/10 rounded-2xl p-8 lg:p-12">
+            <span className="font-ui text-ball-pink text-xs tracking-[5px] uppercase font-bold">Identity & Legacy</span>
+            <h2 className="font-wordmark text-4xl md:text-5xl uppercase mt-4 mb-6 leading-tight">
+              The <span className="text-ball-pink">Jersey</span> Means Everything
+            </h2>
+            <div className="flex flex-col gap-5 font-sans text-gray-mid leading-relaxed text-base">
+              <p>
+                To a PlayMaster, the jersey is not just a uniform; it is a suit of armor. Over the years, we have had several iconic jerseys, each with deep meaning and significance to the squads that wore them.
+              </p>
+              <p>
+                From the early designs of 2022 to the high-performance professional kits of the current season, our colors represent the passion, unity, and competitive edge of Nairobi&apos;s finest bowlers.
+              </p>
+              <div className="p-5 bg-navy border border-white/5 rounded-xl italic text-sm border-l-2 border-ball-pink">
+                &ldquo;We have had some really important jerseys over the years — with meaning and all. They reflect our journey from one team to a multi-squad powerhouse.&rdquo;
+              </div>
+              <p className="text-[10px] uppercase tracking-[2px] opacity-40 mt-4">
+                [ Archival photos provided by Hemang & Suresh coming soon ]
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="aspect-[3/4] bg-navy-dark border border-white/5 rounded-xl flex items-center justify-center relative overflow-hidden">
+               <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-mid tracking-[2px] uppercase opacity-30">Current Kit</div>
+            </div>
+            <div className="aspect-[3/4] bg-navy-dark border border-white/5 rounded-xl flex items-center justify-center relative overflow-hidden">
+               <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-mid tracking-[2px] uppercase opacity-30">Legacy Kit</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Kenya Bowling Context (Integrated) */}
-      <section className="w-full max-w-6xl mx-auto px-6 pb-24">
+      <section className="w-full max-w-6xl mx-auto px-6 py-24">
         <div className="bg-navy/50 border border-white/8 rounded-2xl p-8 flex flex-col gap-5">
           <span className="font-ui text-bat-blue text-xs tracking-[5px] uppercase font-bold">Kenya&apos;s Bowling History</span>
           <h3 className="font-ui text-2xl uppercase text-white tracking-tight">The Bigger Picture</h3>

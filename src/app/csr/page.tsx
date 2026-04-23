@@ -16,10 +16,28 @@ const initiatives = [
   },
   {
     icon: '🎗️',
-    title: 'Cancer Center Support',
+    title: 'Faraja Cancer Support Trust',
     color: 'ball-pink',
-    desc: 'PlayMasters has championed support for cancer care initiatives — recognising that sport and community have a role to play in health and wellbeing.',
-    details: ['Awareness campaigns', 'Fundraising drives', 'Patient support contributions'],
+    desc: 'In 2025, PlayMasters raised KES 100,000 through a performance-based campaign where KES 1,000 was contributed for every 200+ score achieved by players.',
+    details: [
+      'Partnered with Faraja Cancer Support Trust',
+      'KES 100,000 raised in the 2025 season',
+      'Performance-based giving: KES 1,000 per 200+ score',
+      'Using sport as a platform for health and wellbeing'
+    ],
+    status: 'Active',
+  },
+  {
+    icon: '🏠',
+    title: 'Raha Kids Centre (Lions Club)',
+    color: 'strike',
+    desc: 'Participated in the Lions Club Fundraising Bowling Extravaganza on 14th September 2025 to support brighter futures for children in need.',
+    details: [
+      'Beneficiary: Raha Kids Education, Rehabilitation & Reintegration Centre',
+      'In partnership with Lions Club Nairobi',
+      'Participated in Fundraising Bowling Extravaganza',
+      'Contributing to child education and rehabilitation'
+    ],
     status: 'Active',
   },
   {
