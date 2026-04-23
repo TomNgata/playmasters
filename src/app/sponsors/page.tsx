@@ -1,16 +1,62 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: 'Sponsors | PlayMasters Kenya',
-  description: 'Support Kenya\'s premier bowling franchise. View our current sponsors and learn how to become a PlayMasters sponsor.',
+  description:
+    "Support Kenya's premier bowling franchise. View our current sponsors and learn how to become a PlayMasters sponsor.",
 };
+
+/* ─── Sponsor Data ──────────────────────────────────────────────── */
+
+const mainSponsors = [
+  {
+    name: 'Parklane Construction',
+    slug: 'parklane-construction-logo',
+    since: '2023',
+    note: 'Main Sponsor',
+  },
+  {
+    name: 'Emami Mentho Plus',
+    slug: 'emami-mentho-plus',
+    since: '2024',
+    note: 'Main Sponsor',
+  },
+];
+
+const longStandingSponsors = [
+  { name: 'RAA Limited',         slug: 'raa-logo',                since: '2023', note: 'First Sponsor' },
+  { name: 'Kenya Builders CCL',  slug: 'kenya-builders-ccl-logo', since: '2023' },
+  { name: 'Cameras Africa',      slug: 'cameras-africa',          since: '2023' },
+  { name: 'Mayfair Insurance',   slug: 'mayfair-insurance-logo',  since: '2023' },
+  { name: 'WOW Safaris',         slug: 'wow-safaris-logo',        since: '2023' },
+  { name: 'CBM',                 slug: 'cbm-logos',               since: '2023' },
+];
+
+const sponsors2026 = [
+  { name: 'Mzuri Sweets (Mr. Berry\'s)', slug: 'mr-berry-s-logo' },
+  { name: 'Ideal Ceramics',              slug: 'ideal-ceramics-logo' },
+  { name: 'Nextcraft',                   slug: 'nextcraft-logo' },
+  { name: 'Dentex Industries',           slug: 'dentex-industries' },
+  { name: 'Elkay & Sons Builders',       slug: 'elkay-sons-builders-ltd' },
+  { name: 'Power Parts',                 slug: 'power-parts' },
+  { name: 'Techno Roots',               slug: 'techno-roots-logo' },
+  { name: 'Chief Imports',              slug: 'chief-imports-new-logo-2' },
+  { name: 'Roto Tanks',                 slug: 'roto-tanks' },
+  { name: 'GCS / Velogic',             slug: 'gcs-velogic-logo' },
+];
+
+const pastSponsors = [
+  { name: 'Europa', slug: 'europalogo', years: '2023 – 2024' },
+];
+
+/* ─── Benefit Cards ─────────────────────────────────────────────── */
 
 const sponsorBenefits = [
   {
     icon: '👕',
     title: 'Brand on All Merchandise',
-    desc: 'Your logo prominently displayed on uniforms, towels, bottles, caps and bags at every tournament we compete in.',
+    desc: 'Your logo prominently displayed on uniforms, towels, bottles, caps and bags at every tournament.',
   },
   {
     icon: '📱',
@@ -39,38 +85,50 @@ const sponsorBenefits = [
   },
 ];
 
-const sponsorTiers = [
-  {
-    tier: 'Main Sponsor',
-    amount: 'KES 1,000,000',
-    color: 'strike',
-    perks: [
-      'Logo on ALL merchandise for every tournament',
-      'Maximum brand exposure across all platforms',
-      'Priority corporate hospitality at all events',
-      'Featured prominently in all media and press',
-      'All benefits below included',
-    ],
-  },
-  {
-    tier: 'Junior Sponsor',
-    amount: 'KES 200,000',
-    color: 'bat-blue',
-    perks: [
-      'Logo on team merchandise',
-      'Social media brand mentions',
-      'Corporate hospitality access',
-      'Employee bowling engagement event',
-      'Brand promotion across channels',
-    ],
-  },
-];
+/* ─── Reusable Logo Card ─────────────────────────────────────────── */
+
+function LogoCard({
+  name,
+  slug,
+  badge,
+  dim = false,
+}: {
+  name: string;
+  slug: string;
+  badge?: string;
+  dim?: boolean;
+}) {
+  return (
+    <div
+      className={`relative bg-white rounded-xl overflow-hidden border border-white/10 aspect-video flex items-center justify-center p-4
+        group transition-all duration-300
+        ${dim ? 'opacity-40 grayscale hover:opacity-70 hover:grayscale-0' : 'hover:scale-[1.03] hover:shadow-[0_0_28px_theme(colors.strike/25%)]'}`}
+    >
+      {badge && (
+        <span className="absolute top-2 left-2 bg-strike text-white font-ui text-[9px] tracking-[2px] uppercase px-2 py-0.5 rounded z-10">
+          {badge}
+        </span>
+      )}
+      <div className="relative w-full h-full">
+        <Image
+          src={`/sponsors/${slug}.png`}
+          alt={`${name} logo`}
+          fill
+          className="object-contain"
+          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+        />
+      </div>
+    </div>
+  );
+}
+
+/* ─── Page ───────────────────────────────────────────────────────── */
 
 export default function SponsorsPage() {
   return (
     <main className="min-h-screen bg-navy-dark text-white overflow-x-hidden">
 
-      {/* Hero */}
+      {/* ── Hero ── */}
       <section className="relative w-full py-28 md:py-36 overflow-hidden border-b border-white/5">
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-strike via-ball-pink to-bat-blue" />
         <div className="absolute inset-0 pointer-events-none select-none flex items-center justify-center">
@@ -87,72 +145,108 @@ export default function SponsorsPage() {
         </div>
       </section>
 
-      {/* Current Sponsors */}
-      <section className="w-full max-w-6xl mx-auto px-6 py-20">
-        <div className="flex items-center gap-4 mb-12">
-          <div>
-            <span className="font-ui text-strike text-xs tracking-[5px] uppercase font-bold block">2025 / 2026</span>
-            <h2 className="font-wordmark text-3xl md:text-4xl uppercase leading-none">Current Sponsors</h2>
-          </div>
+      {/* ── Main Sponsors ── */}
+      <section className="w-full max-w-6xl mx-auto px-6 pt-20 pb-12">
+        <div className="mb-10">
+          <span className="font-ui text-strike text-xs tracking-[5px] uppercase font-bold block">Headline Partners</span>
+          <h2 className="font-wordmark text-3xl md:text-4xl uppercase leading-none mt-1">Main Sponsors</h2>
         </div>
-
-        {/* Logo grid — placeholders until folder shared */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-            <div key={i} className="bg-navy border border-white/8 rounded-xl aspect-video flex items-center justify-center group hover:border-strike/20 transition-all">
-              <div className="text-center">
-                <div className="w-10 h-10 bg-white/5 rounded-lg mx-auto mb-2 flex items-center justify-center">
-                  <span className="text-gray-dark text-xl">🤝</span>
-                </div>
-                <p className="font-ui text-[10px] text-gray-dark tracking-[2px] uppercase">Partner Logo</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl">
+          {mainSponsors.map((s) => (
+            <div key={s.slug}>
+              <LogoCard name={s.name} slug={s.slug} badge="Main Sponsor" />
+              <div className="mt-3 flex items-center justify-between px-1">
+                <span className="font-ui text-sm text-white uppercase tracking-wide">{s.name}</span>
+                <span className="font-ui text-xs text-gray-mid tracking-[2px]">Since {s.since}</span>
               </div>
             </div>
           ))}
         </div>
-        <p className="font-ui text-xs text-gray-dark tracking-widest uppercase text-center">
-          Sponsor logos being uploaded — contact <a href="mailto:playmasters.bowling@gmail.com" className="text-gray-mid hover:text-strike transition-colors">playmasters.bowling@gmail.com</a>
-        </p>
       </section>
 
-      {/* Past Supporters */}
-      <section className="w-full bg-navy border-y border-white/5 py-20">
+      {/* ── Long-Standing Partners ── */}
+      <section className="w-full max-w-6xl mx-auto px-6 py-12">
+        <div className="mb-10">
+          <span className="font-ui text-bat-blue text-xs tracking-[5px] uppercase font-bold block">Since 2023</span>
+          <h2 className="font-wordmark text-3xl md:text-4xl uppercase leading-none mt-1">Long-Standing Partners</h2>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {longStandingSponsors.map((s) => (
+            <div key={s.slug}>
+              <LogoCard name={s.name} slug={s.slug} badge={s.note} />
+              <div className="mt-2 px-1">
+                <p className="font-ui text-xs text-white uppercase tracking-wide truncate">{s.name}</p>
+                <p className="font-ui text-[10px] text-gray-dark tracking-[2px]">Since {s.since}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── 2026 New Sponsors ── */}
+      <section className="w-full bg-navy border-y border-white/5 py-12">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <span className="font-ui text-bat-blue text-xs tracking-[5px] uppercase font-bold">Legacy</span>
-            <h2 className="font-wordmark text-3xl md:text-4xl uppercase mt-2">Past Supporters</h2>
-            <p className="font-sans text-gray-mid text-sm mt-3 max-w-xl mx-auto">
-              Brands and individuals who have believed in PlayMasters across our journey from 2022 to today.
-            </p>
+          <div className="mb-10">
+            <span className="font-ui text-ball-pink text-xs tracking-[5px] uppercase font-bold block">New Additions</span>
+            <h2 className="font-wordmark text-3xl md:text-4xl uppercase leading-none mt-1">2026 Sponsors</h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="bg-navy-dark border border-white/5 rounded-xl py-8 flex items-center justify-center opacity-50 hover:opacity-80 transition-all">
-                <span className="font-ui text-xs text-gray-dark tracking-[3px] uppercase">Past Sponsor {i}</span>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {sponsors2026.map((s) => (
+              <div key={s.slug}>
+                <LogoCard name={s.name} slug={s.slug} />
+                <p className="mt-2 font-ui text-[10px] text-gray-mid uppercase tracking-[2px] px-1 truncate">{s.name}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Benefits */}
-      <section className="w-full max-w-6xl mx-auto px-6 py-20">
-        <div className="text-center mb-14">
-          <span className="font-ui text-ball-pink text-xs tracking-[6px] uppercase font-bold">Why Partner With Us</span>
-          <h2 className="font-wordmark text-4xl md:text-5xl uppercase mt-3">Sponsorship Benefits</h2>
-          <div className="w-12 h-1 bg-strike mx-auto mt-4" />
+      {/* ── Past Supporters ── */}
+      <section className="w-full max-w-6xl mx-auto px-6 py-12">
+        <div className="mb-10">
+          <span className="font-ui text-gray-dark text-xs tracking-[5px] uppercase font-bold block">Legacy</span>
+          <h2 className="font-wordmark text-3xl md:text-4xl uppercase leading-none mt-1 text-white/50">Past Supporters</h2>
+          <p className="font-sans text-gray-dark text-sm mt-2 max-w-lg">
+            Brands and individuals who have backed PlayMasters on our journey — we&apos;re grateful for every chapter.
+          </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {sponsorBenefits.map((b) => (
-            <div key={b.title} className="bg-navy border border-white/8 rounded-xl p-6 group hover:border-strike/20 hover:bg-navy-dark/40 transition-all">
-              <div className="text-3xl mb-4">{b.icon}</div>
-              <h3 className="font-ui text-lg uppercase tracking-wide text-white mb-2">{b.title}</h3>
-              <p className="font-sans text-gray-mid text-sm leading-relaxed">{b.desc}</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-lg">
+          {pastSponsors.map((s) => (
+            <div key={s.slug}>
+              <LogoCard name={s.name} slug={s.slug} dim />
+              <div className="mt-2 px-1">
+                <p className="font-ui text-[10px] text-gray-dark uppercase tracking-[2px]">{s.name}</p>
+                <p className="font-ui text-[10px] text-gray-dark/60 tracking-[1px]">{s.years}</p>
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Sponsorship Tiers — Hidden for Public View as per User Request */}
+      {/* ── Benefits ── */}
+      <section className="w-full bg-navy border-t border-white/5 py-20">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-14">
+            <span className="font-ui text-ball-pink text-xs tracking-[6px] uppercase font-bold">Why Partner With Us</span>
+            <h2 className="font-wordmark text-4xl md:text-5xl uppercase mt-3">Sponsorship Benefits</h2>
+            <div className="w-12 h-1 bg-strike mx-auto mt-4" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {sponsorBenefits.map((b) => (
+              <div
+                key={b.title}
+                className="bg-navy-dark border border-white/8 rounded-xl p-6 hover:border-strike/20 hover:bg-navy-dark/60 transition-all"
+              >
+                <div className="text-3xl mb-4">{b.icon}</div>
+                <h3 className="font-ui text-lg uppercase tracking-wide text-white mb-2">{b.title}</h3>
+                <p className="font-sans text-gray-mid text-sm leading-relaxed">{b.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Tiers disclaimer ── */}
       <section className="w-full bg-navy border-y border-white/5 py-12">
         <div className="max-w-5xl mx-auto px-6 text-center">
           <p className="font-ui text-xs text-gray-mid tracking-[4px] uppercase">
@@ -161,14 +255,15 @@ export default function SponsorsPage() {
         </div>
       </section>
 
-      {/* Become a Sponsor CTA */}
+      {/* ── CTA ── */}
       <section className="w-full max-w-4xl mx-auto px-6 py-20 text-center">
         <span className="font-ui text-strike text-xs tracking-[6px] uppercase font-bold block mb-4">Ready to Partner?</span>
         <h2 className="font-wordmark text-4xl md:text-5xl uppercase mb-6">
           Become a <span className="text-strike">Sponsor</span>
         </h2>
         <p className="font-sans text-gray-mid text-lg max-w-xl mx-auto mb-10 leading-relaxed">
-          We believe a partnership with PlayMasters will offer significant benefits — increased brand exposure, enhanced community engagement, and networking with Nairobi&apos;s bowling community. Let&apos;s build something great together.
+          We believe a partnership with PlayMasters will offer significant benefits — increased brand exposure,
+          enhanced community engagement, and networking with Nairobi&apos;s bowling community. Let&apos;s build something great together.
         </p>
         <a
           href="mailto:playmasters.bowling@gmail.com?subject=Sponsorship Enquiry — PlayMasters Kenya"
