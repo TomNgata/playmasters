@@ -1,11 +1,7 @@
-import type { Metadata } from 'next';
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
-
-export const metadata: Metadata = {
-  title: 'Team Login | PlayMasters Hub',
-  description: 'Authentication portal for PlayMasters players, captains, and management.',
-};
 
 export default function LoginPage() {
   return (
