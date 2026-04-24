@@ -74,7 +74,7 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`px-4 py-2 font-ui text-[11px] tracking-[3px] uppercase transition-all rounded-sm flex items-center gap-2 glass-glow ${
+                  className={`px-4 py-2 font-ui text-[13px] tracking-[2px] uppercase transition-all rounded-sm flex items-center gap-2 glass-glow ${
                     isActive
                       ? 'text-white bg-white/5 border-b-2 border-strike'
                       : 'text-gray-mid hover:text-white hover:bg-white/[0.04]'
