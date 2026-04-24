@@ -2,7 +2,6 @@ import ModernHero from "@/components/layout/Hero";
 import Link from 'next/link';
 import Image from 'next/image';
 import TeamStatsSummary from "@/components/layout/TeamStatsSummary";
-import ContactForm from "@/components/ui/ContactForm";
 import SponsorMarquee from "@/components/layout/SponsorMarquee";
 
 const publicPages = [

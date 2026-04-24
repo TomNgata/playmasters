@@ -1,29 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { Mail, Phone, Instagram, MapPin, Send } from 'lucide-react';
+import { Mail, Phone, Instagram, MapPin } from 'lucide-react';
 import SectionHeader from '@/components/ui/SectionHeader';
 
 export default function ContactPage() {
-  const [formState, setFormState] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    // Simulate submission
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsSubmitting(false);
-    setSubmitted(true);
-    setFormState({ name: '', email: '', subject: '', message: '' });
-  };
 
   return (
     <main className="min-h-screen bg-navy-dark text-white overflow-x-hidden">
@@ -92,87 +72,35 @@ export default function ContactPage() {
           </div>
         </div>
 
-        {/* Contact Form */}
-        <div className="bg-navy border border-white/8 rounded-3xl p-8 md:p-10 relative overflow-hidden">
+        {/* Contact CTA */}
+        <div className="bg-navy border border-white/8 rounded-3xl p-8 md:p-12 relative overflow-hidden flex flex-col items-center justify-center text-center">
           <div className="absolute top-0 left-0 w-full h-1 bg-strike" />
           
-          {submitted ? (
-            <div className="h-full flex flex-col items-center justify-center text-center animate-in fade-in zoom-in duration-500">
-              <div className="w-20 h-20 bg-strike/20 rounded-full flex items-center justify-center mb-6">
-                <Send className="text-strike" size={32} />
-              </div>
-              <h3 className="font-wordmark text-3xl uppercase mb-2">Message Sent!</h3>
-              <p className="font-sans text-gray-mid max-w-sm mx-auto">
-                Thank you for reaching out. A PlayMasters representative will be in touch shortly.
-              </p>
-              <button 
-                onClick={() => setSubmitted(false)}
-                className="mt-8 font-ui text-xs tracking-[4px] uppercase text-strike hover:underline"
-              >
-                Send another message
-              </button>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex flex-col gap-2">
-                  <label className="font-ui text-[10px] tracking-[3px] uppercase text-gray-mid ml-1">Full Name</label>
-                  <input 
-                    type="text" 
-                    required
-                    value={formState.name}
-                    onChange={(e) => setFormState({...formState, name: e.target.value})}
-                    placeholder="Enter your name" 
-                    className="bg-navy-dark border border-white/10 rounded-xl px-5 py-4 font-sans text-white placeholder:text-gray-dark focus:border-strike outline-none transition-all"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="font-ui text-[10px] tracking-[3px] uppercase text-gray-mid ml-1">Email Address</label>
-                  <input 
-                    type="email" 
-                    required
-                    value={formState.email}
-                    onChange={(e) => setFormState({...formState, email: e.target.value})}
-                    placeholder="name@example.com" 
-                    className="bg-navy-dark border border-white/10 rounded-xl px-5 py-4 font-sans text-white placeholder:text-gray-dark focus:border-strike outline-none transition-all"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label className="font-ui text-[10px] tracking-[3px] uppercase text-gray-mid ml-1">Subject</label>
-                <input 
-                  type="text" 
-                  required
-                  value={formState.subject}
-                  onChange={(e) => setFormState({...formState, subject: e.target.value})}
-                  placeholder="What is this regarding?" 
-                  className="bg-navy-dark border border-white/10 rounded-xl px-5 py-4 font-sans text-white placeholder:text-gray-dark focus:border-strike outline-none transition-all"
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label className="font-ui text-[10px] tracking-[3px] uppercase text-gray-mid ml-1">Message</label>
-                <textarea 
-                  required
-                  rows={5}
-                  value={formState.message}
-                  onChange={(e) => setFormState({...formState, message: e.target.value})}
-                  placeholder="How can we help?" 
-                  className="bg-navy-dark border border-white/10 rounded-xl px-5 py-4 font-sans text-white placeholder:text-gray-dark focus:border-strike outline-none transition-all resize-none"
-                ></textarea>
-              </div>
-
-              <button 
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full mt-2 py-5 bg-strike hover:bg-strike-deep text-white font-ui font-bold text-lg tracking-[5px] uppercase transition-all shadow-[0_4px_20px_rgba(232,32,48,0.3)] active:translate-y-[2px] disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-3 glass-glow"
-              >
-                {isSubmitting ? 'Sending...' : 'Send Message'}
-                <Send size={18} />
-              </button>
-            </form>
-          )}
+          <div className="w-20 h-20 bg-strike/10 rounded-full flex items-center justify-center mb-8 border border-strike/20">
+            <Instagram className="text-strike" size={36} />
+          </div>
+          
+          <h2 className="font-wordmark text-4xl md:text-5xl uppercase mb-6 leading-tight">
+            Let&apos;s Talk on <span className="text-strike">Instagram</span>
+          </h2>
+          
+          <p className="font-sans text-gray-mid text-lg max-w-sm mx-auto mb-10 leading-relaxed">
+            The fastest way to reach our management or squad captains is via Instagram DM. We respond to all serious enquiries within 24 hours.
+          </p>
+          
+          <a 
+            href="https://ig.me/m/playmasterske" 
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full py-6 bg-strike hover:bg-strike-deep text-white font-ui font-bold text-xl tracking-[6px] uppercase transition-all shadow-[0_4px_30px_rgba(232,32,48,0.4)] active:translate-y-[2px] flex items-center justify-center gap-4 glass-glow"
+          >
+            Open Instagram DM
+            <Instagram size={24} />
+          </a>
+          
+          <p className="mt-8 font-ui text-[10px] tracking-[3px] uppercase text-gray-dark">
+            Direct Link to @playmasterske
+          </p>
         </div>
       </section>
 
