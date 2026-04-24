@@ -2,8 +2,40 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
+import { login, signup } from './actions';
 
 export default function LoginPage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setErrorMsg('');
+    setSuccessMsg('');
+
+    const formData = new FormData(e.currentTarget);
+    const actionType = (e.nativeEvent as SubmitEvent).submitter?.getAttribute('data-action');
+
+    try {
+      const result = actionType === 'login' 
+        ? await login(formData) 
+        : await signup(formData);
+        
+      if (result?.error) {
+        setErrorMsg(result.error);
+      } else if (result?.success) {
+        setSuccessMsg(result.success);
+      }
+    } catch (err) {
+      setErrorMsg('An unexpected error occurred.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-navy-dark text-white flex flex-col items-center justify-center p-6 relative overflow-hidden">
       
@@ -34,42 +66,66 @@ export default function LoginPage() {
             <p className="font-ui text-xs text-gray-mid tracking-[2px] uppercase mt-2">Authorized Access Only</p>
           </div>
 
-          <form className="flex flex-col gap-5" onSubmit={(e) => e.preventDefault()}>
+          <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
             <div>
-              <label className="font-ui text-xs text-gray-mid tracking-[2px] uppercase block mb-2">Email Address</label>
+              <label className="font-ui text-xs text-gray-mid tracking-[2px] uppercase block mb-2" htmlFor="email">Email Address</label>
               <input 
+                id="email"
+                name="email"
                 type="email" 
                 placeholder="player@playmasters.co.ke"
+                required
                 className="w-full bg-navy-dark border border-white/10 rounded-lg px-4 py-3 font-sans text-sm text-white placeholder-gray-dark focus:outline-none focus:border-strike transition-colors"
-                disabled
+                disabled={isLoading}
               />
             </div>
 
             <div>
-              <label className="font-ui text-xs text-gray-mid tracking-[2px] uppercase block mb-2">Password</label>
+              <label className="font-ui text-xs text-gray-mid tracking-[2px] uppercase block mb-2" htmlFor="password">Password</label>
               <input 
+                id="password"
+                name="password"
                 type="password" 
                 placeholder="••••••••"
+                required
                 className="w-full bg-navy-dark border border-white/10 rounded-lg px-4 py-3 font-sans text-sm text-white placeholder-gray-dark focus:outline-none focus:border-strike transition-colors"
-                disabled
+                disabled={isLoading}
               />
             </div>
 
-            <button 
-              type="button" 
-              disabled
-              className="mt-2 w-full px-6 py-4 bg-strike/50 text-white/50 font-ui font-bold text-lg tracking-[3px] uppercase rounded-lg border border-strike/50 transition-all flex items-center justify-center gap-2 cursor-not-allowed"
-            >
-              System Offline
-            </button>
+            {errorMsg && (
+              <div className="p-3 bg-red-500/10 border border-red-500/50 rounded text-red-500 text-sm font-sans text-center">
+                {errorMsg}
+              </div>
+            )}
+            
+            {successMsg && (
+              <div className="p-3 bg-green-500/10 border border-green-500/50 rounded text-green-500 text-sm font-sans text-center">
+                {successMsg}
+              </div>
+            )}
+
+            <div className="flex flex-col gap-3 mt-2">
+              <button 
+                type="submit" 
+                data-action="login"
+                disabled={isLoading}
+                className="w-full px-6 py-4 bg-strike text-white font-ui font-bold text-lg tracking-[3px] uppercase rounded-lg border border-transparent hover:bg-strike/90 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? 'Authenticating...' : 'Log In'}
+              </button>
+              
+              <button 
+                type="submit" 
+                data-action="signup"
+                disabled={isLoading}
+                className="w-full px-6 py-4 bg-transparent text-white font-ui font-bold text-sm tracking-[2px] uppercase rounded-lg border border-white/20 hover:border-white/50 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Sign Up
+              </button>
+            </div>
           </form>
 
-          <div className="mt-8 text-center border-t border-white/5 pt-6">
-            <p className="font-sans text-sm text-gray-mid leading-relaxed inline-flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-strike animate-pulse" />
-              The Vault is currently locked. We&apos;re recalibrating our systems for the Season 16 championship run.
-            </p>
-          </div>
         </div>
 
         {/* Footer Link */}
