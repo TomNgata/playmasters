@@ -37,6 +37,20 @@ const seasons = [
     color: 'strike',
     events: [
       {
+        title: 'PINS UBL Season 16 — League',
+        subtitle: 'Ultimate Bowling League',
+        type: 'league',
+        highlights: [
+          { label: '🥇 Ultimate Champions', detail: 'PlayMasters Warriors' },
+          { label: '🥈 Ultimate 2nd Place', detail: 'PlayMasters OG' },
+          { label: 'Female Highest Score', detail: 'Dorothy Williams — 224' },
+          { label: 'Female Highest Average', detail: 'Dorothy Williams — 161.04' },
+          { label: 'Female Highest Game Scratch', detail: 'Dorothy Williams — 381' },
+          { label: 'Male Highest Score', detail: 'Dillan Mandalia — 195.69' },
+          { label: 'Male Highest Score (Shared)', detail: 'Suresh Bhudiya & Hemang Rana — 258' },
+        ],
+      },
+      {
         title: 'USBT Edition 8 — 2026 Season Opener',
         subtitle: 'Ultimate Singles Bowling Tournament',
         type: 'tournament',
@@ -54,20 +68,6 @@ const seasons = [
     year: '2025',
     color: 'bat-blue',
     events: [
-      {
-        title: 'PINS UBL Season 16 — League',
-        subtitle: 'Ultimate Bowling League',
-        type: 'league',
-        highlights: [
-          { label: '🥇 Ultimate Champions', detail: 'PlayMasters Warriors' },
-          { label: '🥈 Ultimate 2nd Place', detail: 'PlayMasters OG' },
-          { label: 'Female Highest Score', detail: 'Dorothy Williams — 224' },
-          { label: 'Female Highest Average', detail: 'Dorothy Williams — 161.04' },
-          { label: 'Female Highest Game Scratch', detail: 'Dorothy Williams — 381' },
-          { label: 'Male Highest Score', detail: 'Dillan Mandalia — 195.69' },
-          { label: 'Male Highest Score (Shared)', detail: 'Suresh Bhudiya & Hemang Rana — 258' },
-        ],
-      },
       {
         title: 'UBL Season 15 Finals',
         subtitle: 'Ultimate Bowling League',

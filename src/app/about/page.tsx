@@ -69,7 +69,7 @@ export default function AboutPage() {
               <div className="absolute top-0 left-0 w-full h-1 bg-strike" />
               <span className="font-ui text-strike text-xs tracking-[5px] uppercase font-bold block mb-4">Mission</span>
               <p className="font-sans text-white text-lg leading-relaxed">
-                To promote ten pin bowling in Kenya as an important sports activity and provide the required infrastructure, knowhow, services and opportunities for our players, coaches and the youth — to build &amp; develop their game.
+                To promote ten pin bowling in Kenya as an important sports activity and provide the required infrastructure, knowhow, services and opportunities for our players, coaches and the youth to build &amp; develop their game.
               </p>
             </div>
 
@@ -78,7 +78,7 @@ export default function AboutPage() {
               <div className="absolute top-0 left-0 w-full h-1 bg-bat-blue" />
               <span className="font-ui text-bat-blue text-xs tracking-[5px] uppercase font-bold block mb-4">Vision</span>
               <p className="font-sans text-white text-lg leading-relaxed">
-                PlayMasters is devoted to fostering a high quality ten pin bowling environment — giving all players, coaches, and youth every opportunity to enjoy the game, achieve their maximum potential, and to <strong>fly the flag of Kenya on the international bowling stage.</strong>
+                PlayMasters is devoted to fostering a high quality ten pin bowling environment giving all players, coaches, and youth every opportunity to enjoy the game, achieve their maximum potential, and to <strong>fly the flag of Kenya on the international bowling stage.</strong>
               </p>
             </div>
           </div>
