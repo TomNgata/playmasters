@@ -55,6 +55,36 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* ─── Mission & Vision ─── */}
+      <section className="w-full bg-navy border-y border-white/5 py-20">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-14">
+            <span className="font-ui text-ball-pink text-xs tracking-[6px] uppercase font-bold">What Drives Us</span>
+            <h2 className="font-wordmark text-4xl md:text-5xl uppercase mt-3">Mission &amp; Vision</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Mission */}
+            <div className="relative bg-navy-dark border border-white/8 rounded-2xl p-8 overflow-hidden group hover:border-strike/30 transition-all">
+              <div className="absolute top-0 left-0 w-full h-1 bg-strike" />
+              <span className="font-ui text-strike text-xs tracking-[5px] uppercase font-bold block mb-4">Mission</span>
+              <p className="font-sans text-white text-lg leading-relaxed">
+                To promote ten pin bowling in Kenya as an important sports activity and provide the required infrastructure, knowhow, services and opportunities for our players, coaches and the youth — to build &amp; develop their game.
+              </p>
+            </div>
+
+            {/* Vision */}
+            <div className="relative bg-navy-dark border border-white/8 rounded-2xl p-8 overflow-hidden group hover:border-bat-blue/30 transition-all">
+              <div className="absolute top-0 left-0 w-full h-1 bg-bat-blue" />
+              <span className="font-ui text-bat-blue text-xs tracking-[5px] uppercase font-bold block mb-4">Vision</span>
+              <p className="font-sans text-white text-lg leading-relaxed">
+                PlayMasters is devoted to fostering a high quality ten pin bowling environment — giving all players, coaches, and youth every opportunity to enjoy the game, achieve their maximum potential, and to <strong>fly the flag of Kenya on the international bowling stage.</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
   {/* ─── The Jersey Legacy ─── */}
       <section className="w-full bg-navy py-20 border-y border-white/5 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none select-none flex items-center justify-center opacity-[0.03]">
@@ -76,9 +106,6 @@ export default function AboutPage() {
               <div className="p-5 bg-navy border border-white/5 rounded-xl italic text-sm border-l-2 border-ball-pink">
                 &ldquo;We have had some really important jerseys over the years — with meaning and all. They reflect our journey from one team to a multi-squad powerhouse.&rdquo;
               </div>
-              <p className="text-[10px] uppercase tracking-[2px] opacity-40 mt-4">
-                [ Archival photos provided by Hemang & Suresh coming soon ]
-              </p>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -122,35 +149,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ─── Mission & Vision ─── */}
-      <section className="w-full bg-navy border-y border-white/5 py-20">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <span className="font-ui text-ball-pink text-xs tracking-[6px] uppercase font-bold">What Drives Us</span>
-            <h2 className="font-wordmark text-4xl md:text-5xl uppercase mt-3">Mission &amp; Vision</h2>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Mission */}
-            <div className="relative bg-navy-dark border border-white/8 rounded-2xl p-8 overflow-hidden group hover:border-strike/30 transition-all">
-              <div className="absolute top-0 left-0 w-full h-1 bg-strike" />
-              <span className="font-ui text-strike text-xs tracking-[5px] uppercase font-bold block mb-4">Mission</span>
-              <p className="font-sans text-white text-lg leading-relaxed">
-                To promote ten pin bowling in Kenya as an important sports activity and provide the required infrastructure, knowhow, services and opportunities for our players, coaches and the youth — to build &amp; develop their game.
-              </p>
-            </div>
-
-            {/* Vision */}
-            <div className="relative bg-navy-dark border border-white/8 rounded-2xl p-8 overflow-hidden group hover:border-bat-blue/30 transition-all">
-              <div className="absolute top-0 left-0 w-full h-1 bg-bat-blue" />
-              <span className="font-ui text-bat-blue text-xs tracking-[5px] uppercase font-bold block mb-4">Vision</span>
-              <p className="font-sans text-white text-lg leading-relaxed">
-                PlayMasters is devoted to fostering a high quality ten pin bowling environment — giving all players, coaches, and youth every opportunity to enjoy the game, achieve their maximum potential, and to <strong>fly the flag of Kenya on the international bowling stage.</strong>
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ─── Values ─── */}
       <section className="w-full max-w-6xl mx-auto px-6 py-20">
