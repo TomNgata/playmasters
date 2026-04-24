@@ -58,7 +58,7 @@ export default function Home() {
         </div>
         <div className="bg-navy rounded-2xl border border-white/5 h-[300px] sm:h-[450px] flex items-center justify-center relative overflow-hidden group">
           {/* Featured Club Image as background */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-40 group-hover:opacity-60 transition-all duration-700">
+          <div className="absolute inset-0 flex items-center justify-center transition-all duration-700">
             <Image 
               src="/images/achievements/trophy-team-large.jpg" 
               alt="Playmasters Team" 
@@ -66,7 +66,6 @@ export default function Home() {
               className="object-cover" 
             />
           </div>
-          <div className="absolute inset-0 bg-gradient-to-tr from-navy-dark via-transparent to-transparent opacity-80" />
         </div>
       </section>
 
