@@ -7,6 +7,21 @@ export const metadata: Metadata = {
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 
+const ladiesHighlights = [
+  { label: '🥇 MILB 5 Bronze Division', detail: 'Sonika — 1st Place' },
+  { label: '🥇 MILB 5 Best Woman', detail: 'Sonika' },
+  { label: '🥇 UBL Season 9 MVP', detail: 'Sonika' },
+  { label: '🥇 UBL Season 9 Most Improved', detail: 'Sonika' },
+  { label: '🥇 UBL Season 9 Highest Series Scratch', detail: 'Sonika (shared)' },
+  { label: 'UBL S15 Highest Scratch (Women)', detail: 'Darshi Chandaria — 381' },
+  { label: 'UBL S15 Highest Score (Women)', detail: 'Dorothy — 224' },
+  { label: 'UBL S15 Most Improved (Women)', detail: 'Dorothy — +19.2' },
+  { label: 'UBL S16 Female Highest Score', detail: 'Dorothy Williams — 224' },
+  { label: 'UBL S16 Female Highest Average', detail: 'Dorothy Williams — 161.04' },
+  { label: 'UBL S16 Female Highest Game Scratch', detail: 'Dorothy Williams — 381' },
+  { label: 'Kenyan National Record (Female, 2 Lanes)', detail: 'Darshi Chandaria — 255 pins' },
+];
+
 const kenyanRecords = [
   { record: 'Highest Male Score (1 Lane)', holder: 'Sagar Joshi', score: '290' },
   { record: 'Highest Male Score (2 Lanes)', holder: 'Paras Chandaria', score: '290' },
@@ -235,6 +250,28 @@ export default function AchievementsPage() {
               ))}
             </tbody>
           </table>
+        </div>
+      </section>
+
+      {/* Playmasters Ladies — Historical Legacy */}
+      <section className="w-full max-w-6xl mx-auto px-6 py-16">
+        <div className="flex items-center gap-4 mb-10">
+          <div className="flex-shrink-0 w-10 h-10 bg-ball-pink/10 rounded-lg flex items-center justify-center text-xl">💪</div>
+          <div>
+            <span className="font-ui text-ball-pink text-xs tracking-[5px] uppercase font-bold block">Historical Legacy</span>
+            <h2 className="font-wordmark text-3xl md:text-4xl uppercase leading-none">Playmasters Ladies</h2>
+            <p className="font-sans text-gray-mid text-sm mt-1 max-w-2xl">
+              A legacy of female excellence within the PlayMasters franchise — individual awards, records and standout performances across all seasons.
+            </p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {ladiesHighlights.map((h, i) => (
+            <div key={i} className="flex items-start gap-4 bg-navy border border-white/8 rounded-xl px-5 py-4 hover:border-ball-pink/20 transition-all">
+              <span className="font-ui text-sm text-white flex-shrink-0 min-w-[220px] sm:min-w-[260px]">{h.label}</span>
+              {h.detail && <span className="font-sans text-xs text-gray-mid leading-relaxed">{h.detail}</span>}
+            </div>
+          ))}
         </div>
       </section>
 
