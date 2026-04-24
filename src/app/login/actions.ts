@@ -35,14 +35,7 @@ export async function login(formData: FormData) {
   }
 
   revalidatePath('/', 'layout');
-  
-  if (userRole === 'admin') {
-    redirect('/dashboard/admin');
-  } else if (userRole === 'captain') {
-    redirect('/dashboard/captain/onboarding');
-  } else {
-    redirect('/dashboard/player');
-  }
+  redirect('/dashboard');
 }
 
 export async function signup(formData: FormData) {

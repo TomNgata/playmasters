@@ -70,40 +70,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Performance Teaser */}
-      <section id="performance" className="w-full bg-navy py-24 border-y border-white/5 relative overflow-hidden text-center">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-wordmark text-[20vw] opacity-[0.02] whitespace-nowrap pointer-events-none select-none">
-          ELITE HUB
-        </div>
 
-        <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col items-center">
-          <div className="s-label font-ui text-ball-pink tracking-widest uppercase text-sm font-bold mb-2">Team Hub</div>
-          <h2 className="font-title text-[clamp(32px,6vw,64px)] text-white mb-6 uppercase tracking-tight leading-none">
-            Stop Guessing. <br /> <span className="text-strike italic">Start Striking.</span>
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 w-full border border-white/10 bg-navy-dark/80 mb-12">
-            <div className="p-8 lg:p-12 border-b md:border-b-0 md:border-r border-white/10 flex flex-col items-start text-left group hover:bg-white/[0.02] transition-colors">
-              <span className="font-ui text-ball-pink text-xs font-bold tracking-[3px] uppercase mb-4 opacity-70">The Elite Edge</span>
-              <h3 className="font-ui text-3xl uppercase tracking-tighter text-white mb-4 group-hover:text-ball-pink transition-colors">Pro Performance</h3>
-              <p className="text-sm font-sans text-gray-mid leading-relaxed">Gain the competitive edge with advanced performance tracking that turns every frame into a masterclass in precision.</p>
-            </div>
-            <div className="p-8 lg:p-12 border-b md:border-b-0 md:border-r border-white/10 flex flex-col items-start text-left group hover:bg-white/[0.02] transition-colors">
-              <span className="font-ui text-bat-blue text-xs font-bold tracking-[3px] uppercase mb-4 opacity-70">Strategic Insight</span>
-              <h3 className="font-ui text-3xl uppercase tracking-tighter text-white mb-4 group-hover:text-bat-blue transition-colors">Rivalry Tracking</h3>
-              <p className="text-sm font-sans text-gray-mid leading-relaxed">Know your competition. Stay ahead of the pack with real-time benchmarks and head-to-head metrics designed for winners.</p>
-            </div>
-            <div className="p-8 lg:p-12 flex flex-col items-start text-left group hover:bg-white/[0.02] transition-colors">
-              <span className="font-ui text-strike text-xs font-bold tracking-[3px] uppercase mb-4 opacity-70">Championship Tools</span>
-              <h3 className="font-ui text-3xl uppercase tracking-tighter text-white mb-4 group-hover:text-strike transition-colors">Digital Clubhouse</h3>
-              <p className="text-sm font-sans text-gray-mid leading-relaxed">Manage your bowling legacy. From automated tournament brackets to career high-scores, your journey is archived here.</p>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* Contact Section Removed — See /contact standalone page */}
 
       {/* Gallery Section */}
       <section id="gallery" className="w-full max-w-7xl mx-auto px-6 py-24">

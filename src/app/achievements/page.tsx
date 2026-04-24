@@ -81,7 +81,6 @@ const seasons = [
           { label: 'Most Improved (Women)', detail: 'Dorothy — +19.2' },
           { label: 'Highest Scratch (Women)', detail: 'Darshi — 381' },
           { label: 'Highest Scratch (Men)', detail: 'Sagar — 480' },
-          { label: 'Highest Average (Men)', detail: 'Parth — 189.35' },
           { label: 'Youngest Player (Men)', detail: 'Dhilan — 167' },
         ],
       },

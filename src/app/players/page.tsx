@@ -14,7 +14,6 @@ const players = [
   { name: 'Hiren', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', records: [], highlights: ['Consistent Top 10 League Performer'] },
   { name: 'James', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', records: [], highlights: ['League Veteran', 'Multi-Tournament Finalist'] },
   { name: 'Nitin Pindoria', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', records: [], highlights: ['USBT Ed.8 — 6th Place'] },
-  { name: 'Parth', role: 'PlayMasters OG', team: 'OG', color: 'strike', records: [], highlights: ['UBL S15 Highest Average (Men) — 189.35'] },
   { name: 'Dhilan Chandaria', role: 'Junior — PlayMasters', team: 'OG', color: 'strike', records: ['U18 highest score 2 lanes — 237', 'U11 highest score (1 lane) — 152', 'U11 highest score (2 lanes) — 215'], highlights: ['MILB 5 Best Junior', 'Youngest player to score 167 in UBL'] },
   
   // PLAYMASTERS MAVERICKS
