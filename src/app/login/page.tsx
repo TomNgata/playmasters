@@ -24,10 +24,10 @@ export default function LoginPage() {
         ? await login(formData) 
         : await signup(formData);
         
-      if (result?.error) {
-        setErrorMsg(result.error);
-      } else if (result?.success) {
-        setSuccessMsg(result.success);
+      if (result && 'error' in result) {
+        setErrorMsg(result.error as string);
+      } else if (result && 'success' in result) {
+        setSuccessMsg(result.success as string);
       }
     } catch (err) {
       setErrorMsg('An unexpected error occurred.');
@@ -94,13 +94,13 @@ export default function LoginPage() {
             </div>
 
             {errorMsg && (
-              <div className="p-3 bg-red-500/10 border border-red-500/50 rounded text-red-500 text-sm font-sans text-center">
+              <div aria-live="polite" className="p-3 bg-red-500/10 border border-red-500/50 rounded text-red-500 text-sm font-sans text-center">
                 {errorMsg}
               </div>
             )}
             
             {successMsg && (
-              <div className="p-3 bg-green-500/10 border border-green-500/50 rounded text-green-500 text-sm font-sans text-center">
+              <div aria-live="polite" className="p-3 bg-green-500/10 border border-green-500/50 rounded text-green-500 text-sm font-sans text-center">
                 {successMsg}
               </div>
             )}

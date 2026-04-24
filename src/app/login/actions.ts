@@ -20,8 +20,8 @@ export async function login(formData: FormData) {
     return { error: error.message };
   }
 
-  // Check if the user is a captain
-  let isCaptain = false;
+  // Check if the user is a captain or admin
+  let userRole = 'player';
   if (authData?.user?.id) {
     const { data: profile } = await supabase
       .from('profiles')
@@ -29,21 +29,16 @@ export async function login(formData: FormData) {
       .eq('id', authData.user.id)
       .single();
     
-    const captainNames = [
-      'paras chandaria', 
-      'deepen kerai', 
-      'darshi chandaria', 
-      'kevin njihia'
-    ];
-    
-    if (profile?.role === 'captain' || (profile?.name && captainNames.includes(profile.name.toLowerCase()))) {
-      isCaptain = true;
+    if (profile?.role) {
+      userRole = profile.role;
     }
   }
 
   revalidatePath('/', 'layout');
   
-  if (isCaptain) {
+  if (userRole === 'admin') {
+    redirect('/dashboard/admin');
+  } else if (userRole === 'captain') {
     redirect('/dashboard/captain/onboarding');
   } else {
     redirect('/dashboard/player');

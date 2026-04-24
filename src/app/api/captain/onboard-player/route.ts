@@ -34,27 +34,47 @@ export async function POST(req: NextRequest) {
         const { email, name } = await req.json();
         if (!email || !name) return NextResponse.json({ error: 'Name and Email are required.' }, { status: 400 });
 
-        // 4. Create Profile (Assuming Auth user is created separately or later)
-        // Note: For a true "invite", we would use supabase.auth.admin.inviteUserByEmail(email)
-        // But that requires a SERVICE_ROLE_KEY which shouldn't be exposed or used without care.
-        // For now, we create the profile. If the user signs up with this email, we link them.
+        // 4. Invite User & Create Profile
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+        if (!supabaseUrl || !serviceRoleKey) {
+            return NextResponse.json({ error: 'Server configuration error. Missing Service Role Key.' }, { status: 500 });
+        }
+
+        // We need an admin client to invite users
+        const { createClient: createAdminClient } = await import('@supabase/supabase-js');
+        const adminAuthClient = createAdminClient(supabaseUrl, serviceRoleKey, {
+            auth: { autoRefreshToken: false, persistSession: false }
+        });
+
+        // Send email invitation
+        const { data: inviteData, error: inviteError } = await adminAuthClient.auth.admin.inviteUserByEmail(email);
+
+        if (inviteError) {
+            return NextResponse.json({ error: inviteError.message }, { status: 400 });
+        }
+
+        // Insert profile using the generated auth user ID
         const { data: newProfile, error: insertError } = await supabase
             .from('profiles')
             .insert({
+                id: inviteData.user.id,
                 name,
                 team_id: captainProfile.team_id,
                 role: 'player',
-                // We don't set ID here if we want it to be linked later, 
-                // but usually, it's better to have a placeholder or handle invite.
             })
             .select()
             .single();
 
-        if (insertError) throw insertError;
+        if (insertError) {
+            // Clean up if profile creation fails
+            await adminAuthClient.auth.admin.deleteUser(inviteData.user.id);
+            throw insertError;
+        }
 
         return NextResponse.json({
-            message: `Player ${name} onboarded to your team successfully.`,
+            message: `Player ${name} invited and onboarded to your team successfully.`,
             profile: newProfile
         });
 

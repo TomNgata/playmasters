@@ -50,6 +50,10 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Only .csv files are accepted.' }, { status: 400 });
         }
 
+        if (file.size > 5 * 1024 * 1024) { // 5MB limit
+            return NextResponse.json({ error: 'File size exceeds the 5MB limit.' }, { status: 400 });
+        }
+
         const text = await file.text();
         const rows = parseCSV(text);
 

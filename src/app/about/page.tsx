@@ -212,12 +212,13 @@ export default function AboutPage() {
           <span className="font-ui text-bat-blue text-xs tracking-[6px] uppercase font-bold">Club Administration</span>
           <h2 className="font-wordmark text-4xl md:text-5xl uppercase mt-3">Management Board</h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           {[
-            { role: 'Vice Chairman', name: '[ Placeholder Name ]' },
-            { role: 'Secretary', name: '[ Placeholder Name ]' },
-            { role: 'Treasurer', name: '[ Placeholder Name ]' },
-            { role: 'Club Manager', name: '[ Placeholder Name ]' },
+            { role: 'Chairperson', name: 'Suresh' },
+            { role: 'Management', name: 'Paras' },
+            { role: 'Management', name: 'Darshi' },
+            { role: 'Management', name: 'Dillan' },
+            { role: 'Management', name: 'Hemang' },
           ].map(({ role, name }, idx) => (
             <div key={idx} className="bg-navy border border-white/8 rounded-2xl p-6 text-center group hover:border-strike/30 transition-all flex flex-col items-center">
               <div className="w-20 h-20 rounded-full bg-navy-dark border border-white/10 flex items-center justify-center mb-4 text-gray-mid group-hover:border-strike/40 transition-colors">
@@ -238,10 +239,10 @@ export default function AboutPage() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { name: 'PlayMasters OG', color: 'strike', desc: 'The original squad. The standard-setters. Where it all began in 2022.', captain: 'Paras Chandaria' },
-            { name: 'PlayMasters Warriors', color: 'bat-blue', desc: 'Champions of UBL Season 10 & Season 16. The Warriors set the pace.', captain: 'Dillan Mandalia' },
-            { name: 'PlayMasters Mavericks', color: 'ball-pink', desc: 'The bold third arm of the franchise. Growing fast, competing faster.', captain: 'Deepen Kerai' },
-            { name: 'PlayMasters Rising', color: 'strike', desc: 'Our newest competitive division. Focused on growth, talent, and teamwork.', captain: 'Dorothy Williams' },
+            { name: 'PlayMasters OG', color: 'strike', desc: 'The original squad. The standard-setters. Where it all began in 2022.', captain: 'Dillan Mandalia' },
+            { name: 'PlayMasters Warriors', color: 'bat-blue', desc: 'Champions of UBL Season 10 & Season 16. The Warriors set the pace.', captain: 'Deepen Kerai' },
+            { name: 'PlayMasters Mavericks', color: 'ball-pink', desc: 'The bold third arm of the franchise. Growing fast, competing faster.', captain: 'Darshi Chandaria' },
+            { name: 'PlayMasters Rising', color: 'strike', desc: 'Our newest competitive division. Focused on growth, talent, and teamwork.', captain: 'Kevin Njihia' },
           ].map(({ name, color, desc, captain }) => (
             <div key={name} className={`relative h-full flex flex-col items-center text-center bg-navy border border-white/8 rounded-2xl p-7 overflow-hidden group hover:border-${color}/30 transition-all`}>
               <div className={`absolute top-0 left-0 w-full h-1 bg-${color}`} />

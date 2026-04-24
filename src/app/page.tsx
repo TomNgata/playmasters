@@ -183,7 +183,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-12">
           <div className="flex flex-col sm:flex-row items-center gap-8">
             <div className="relative w-24 h-24">
-              <img src="/logo-lg.svg" alt="Playmasters Branding" className="w-full h-full object-contain brightness-200 opacity-60" />
+              <Image src="/logo-lg.svg" alt="Playmasters Branding" fill className="object-contain brightness-200 opacity-60" />
             </div>
             <div className="flex flex-col gap-2 text-center sm:text-left">
               <div className="font-wordmark text-4xl tracking-tight text-white uppercase flex flex-col leading-none">

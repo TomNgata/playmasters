@@ -44,6 +44,7 @@ export default function ModernHero() {
                     <div className="h-6 w-[1px] bg-white/20" />
                     <span className="font-title italic text-gray-mid text-lg">Est. 2022</span>
                 </div>
+
             </div>
 
             <style jsx>{`
