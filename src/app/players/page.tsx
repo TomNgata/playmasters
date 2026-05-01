@@ -8,32 +8,39 @@ export const metadata: Metadata = {
 // Verified players from Supabase/Historical Data
 const players = [
   // PLAYMASTERS OG
-  { name: 'Paras Chandaria', role: 'Captain — PlayMasters OG', team: 'OG', color: 'strike', records: ['Kenyan highest male score 2 lanes — 290'], highlights: ['UBL S9 MVP', 'USBT Ed.8 Runner-Up', '2023 Points Champion'] },
-  { name: 'Suresh Bhudiya', role: 'Chairman — PlayMasters', team: 'OG', color: 'bat-blue', image: '/images/achievements/trophy-suresh.jpg', records: [], highlights: ['MILB 4 Gold — 2nd Place', 'UBL S16 Highest Score (Shared) — 258'] },
-  { name: 'Sagar Joshi', role: 'PlayMasters OG', team: 'OG', color: 'strike', records: ['Kenyan highest male score 1 lane — 290'], highlights: ['UBL S15 Highest Scratch (Men) — 480'] },
-  { name: 'Hiren', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', records: [], highlights: ['Consistent Top 10 League Performer'] },
-  { name: 'James', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', records: [], highlights: ['League Veteran', 'Multi-Tournament Finalist'] },
-  { name: 'Nitin Pindoria', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', records: [], highlights: ['USBT Ed.8 — 6th Place'] },
-  { name: 'Dhilan Chandaria', role: 'Junior — PlayMasters', team: 'OG', color: 'strike', records: ['U18 highest score 2 lanes — 237', 'U11 highest score (1 lane) — 152', 'U11 highest score (2 lanes) — 215'], highlights: ['MILB 5 Best Junior', 'Youngest player to score 167 in UBL'] },
+  { name: 'Paras Chandaria', role: 'Captain — PlayMasters OG', team: 'OG', color: 'strike', image: '/images/players/Paras.jpg', records: ['Kenyan highest male score 2 lanes — 290'], highlights: ['UBL S9 MVP', 'USBT Ed.8 Runner-Up', '2023 Points Champion'] },
+  { name: 'Suresh Bhudiya', role: 'Chairman — PlayMasters', team: 'OG', color: 'bat-blue', image: '/images/players/Suresh.jpg', records: [], highlights: ['MILB 4 Gold — 2nd Place', 'UBL S16 Highest Score (Shared) — 258'] },
+  { name: 'Sagar Joshi', role: 'PlayMasters OG', team: 'OG', color: 'strike', image: '/images/players/Sagar.jpg', records: ['Kenyan highest male score 1 lane — 290'], highlights: ['UBL S15 Highest Scratch (Men) — 480'] },
+  { name: 'Hiren', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', image: '/images/players/Hiren.jpg', records: [], highlights: ['Consistent Top 10 League Performer'] },
+  { name: 'James', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', image: '/images/players/James.jpg', records: [], highlights: ['League Veteran', 'Multi-Tournament Finalist'] },
+  { name: 'Nitin Pindoria', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', image: '/images/players/Nitin.jpg', records: [], highlights: ['USBT Ed.8 — 6th Place'] },
+  { name: 'Dhilan Chandaria', role: 'Junior — PlayMasters', team: 'OG', color: 'strike', image: '/images/players/Dhilan.jpg', records: ['U18 highest score 2 lanes — 237', 'U11 highest score (1 lane) — 152', 'U11 highest score (2 lanes) — 215'], highlights: ['MILB 5 Best Junior', 'Youngest player to score 167 in UBL'] },
+  { name: 'Mike Williams', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', image: '/images/players/Mike.jpg', records: [], highlights: ['PlayMasters OG Member'] },
+  { name: 'Tilak Vekaria', role: 'PlayMasters OG', team: 'OG', color: 'bat-blue', image: '/images/players/Tilak.jpg', records: [], highlights: ['PlayMasters OG Member'] },
   
   // PLAYMASTERS MAVERICKS
   { name: 'Deepen Kerai', role: 'Captain — PlayMasters Mavericks', team: 'Mavericks', color: 'ball-pink', records: [], highlights: ['Leader of the Mavericks expansion'] },
-  { name: 'Mandela', role: 'PlayMasters Mavericks', team: 'Mavericks', color: 'ball-pink', records: [], highlights: ['UBL Season 16 Key Performer'] },
-  { name: 'Rahul', role: 'PlayMasters Mavericks', team: 'Mavericks', color: 'ball-pink', records: [], highlights: ['Consistent league average 160+'] },
-  { name: 'Avnish', role: 'PlayMasters Mavericks', team: 'Mavericks', color: 'ball-pink', records: [], highlights: ['Mavericks defensive anchor'] },
-  { name: 'Darshi Chandaria', role: 'PlayMasters Mavericks', team: 'Mavericks', color: 'ball-pink', records: ['Kenyan highest female score 2 lanes — 255'], highlights: ['UBL S15 Highest Scratch — 381'] },
+  { name: 'Mandela', role: 'PlayMasters Mavericks', team: 'Mavericks', color: 'ball-pink', image: '/images/players/Mandela.jpg', records: [], highlights: ['UBL Season 16 Key Performer'] },
+  { name: 'Rahul', role: 'PlayMasters Mavericks', team: 'Mavericks', color: 'ball-pink', image: '/images/players/Rahul.jpg', records: [], highlights: ['Consistent league average 160+'] },
+  { name: 'Avnish', role: 'PlayMasters Mavericks', team: 'Mavericks', color: 'ball-pink', image: '/images/players/Avnish.jpg', records: [], highlights: ['Mavericks defensive anchor'] },
+  { name: 'Darshi Chandaria', role: 'PlayMasters Mavericks', team: 'Mavericks', color: 'ball-pink', image: '/images/players/Darshi.jpg', records: ['Kenyan highest female score 2 lanes — 255'], highlights: ['UBL S15 Highest Scratch — 381'] },
+  { name: 'Kishan Naker', role: 'PlayMasters Mavericks', team: 'Mavericks', color: 'ball-pink', image: '/images/players/Kishan.jpg', records: [], highlights: ['PlayMasters Maverick'] },
+  { name: 'Mohamed Abshirkov', role: 'PlayMasters Mavericks', team: 'Mavericks', color: 'ball-pink', image: '/images/players/Moha.jpg', records: [], highlights: ['PlayMasters Maverick'] },
+  { name: 'Nirali', role: 'PlayMasters Mavericks', team: 'Mavericks', color: 'ball-pink', image: '/images/players/Nirali.jpg', records: [], highlights: ['PlayMasters Maverick'] },
 
   // PLAYMASTERS RISING
-  { name: 'Dorothy Williams', role: 'Captain — PlayMasters Rising', team: 'Rising', color: 'strike', image: '/images/achievements/trophy-dorothy.jpg', records: [], highlights: ['UBL S16 Female Highest Score — 224', 'UBL S16 Highest Average — 161.04', 'UBL S16 Highest Game Scratch — 381'] },
+  { name: 'Dorothy Williams', role: 'Captain — PlayMasters Rising', team: 'Rising', color: 'strike', image: '/images/players/Dorothy.jpg', records: [], highlights: ['UBL S16 Female Highest Score — 224', 'UBL S16 Highest Average — 161.04', 'UBL S16 Highest Game Scratch — 381'] },
+  { name: 'Kevin Ndungu', role: 'PlayMasters Rising', team: 'Rising', color: 'strike', image: '/images/players/Kevin.jpg', records: [], highlights: ['PlayMasters Rising Member'] },
   { name: 'Victor', role: 'PlayMasters Rising', team: 'Rising', color: 'strike', records: [], highlights: ['Rising Talent', 'Consistent Growth'] },
   { name: 'Ian S.', role: 'PlayMasters Rising', team: 'Rising', color: 'strike', records: [], highlights: ['Squad Powerhouse'] },
-  { name: 'Sam G.', role: 'PlayMasters Rising', team: 'Rising', color: 'strike', records: [], highlights: ['Tactical Anchor'] },
-  { name: 'Vraj', role: 'PlayMasters Rising', team: 'Rising', color: 'strike', records: [], highlights: ['Junior development success'] },
+  { name: 'Sam G.', role: 'PlayMasters Rising', team: 'Rising', color: 'strike', image: '/images/players/Sam.jpg', records: [], highlights: ['Tactical Anchor'] },
+  { name: 'Vraj', role: 'PlayMasters Rising', team: 'Rising', color: 'strike', image: '/images/players/Vraj.jpg', records: [], highlights: ['Junior development success'] },
 
   // PLAYMASTERS WARRIORS
-  { name: 'Dillan Mandalia', role: 'Captain — PlayMasters Warriors', team: 'Warriors', color: 'bat-blue', image: '/images/achievements/trophy-dillan.jpg', records: [], highlights: ['USBT Edition 8 Champion 🥇', 'UBL S16 Male Highest Score — 195.69'] },
-  { name: 'Hemang Rana', role: 'PlayMasters Warriors', team: 'Warriors', color: 'bat-blue', records: [], highlights: ['USBT Ed.8 — 5th Place', 'UBL S16 Highest Score (Shared) — 258'] },
+  { name: 'Dillan Mandalia', role: 'Captain — PlayMasters Warriors', team: 'Warriors', color: 'bat-blue', image: '/images/players/Dillan.jpg', records: [], highlights: ['USBT Edition 8 Champion 🥇', 'UBL S16 Male Highest Score — 195.69'] },
+  { name: 'Hemang Rana', role: 'PlayMasters Warriors', team: 'Warriors', color: 'bat-blue', image: '/images/players/Hemang.jpg', records: [], highlights: ['USBT Ed.8 — 5th Place', 'UBL S16 Highest Score (Shared) — 258'] },
 ];
+
 
 const teamColors: Record<string, string> = {
   OG: 'strike',
