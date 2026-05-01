@@ -27,9 +27,9 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-body)', 'Inter', 'system-ui', 'sans-serif'],
         mono: ['monospace'],
-        title: ['var(--font-title)', 'Libre Baskerville', 'serif'],
+        title: ['var(--font-wordmark)', 'Anton', 'Impact', 'sans-serif'],
         wordmark: ['var(--font-wordmark)', 'Anton', 'Impact', 'sans-serif'],
-        ui: ['var(--font-ui)', 'Teko', 'Arial Narrow', 'sans-serif'],
+        ui: ['var(--font-body)', 'Inter', 'system-ui', 'sans-serif'],
       },
     },
   },

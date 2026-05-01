@@ -317,7 +317,7 @@ export default function PlayerDashboard() {
 
             <div className="max-w-7xl mx-auto px-6 py-12">
                 {/* Hero Header */}
-                <header className="mb-16 animate-in fade-in slide-in-from-top-4 duration-700">
+                <header className="mb-16 animate-in fade-in slide-in-from-top-4 duration-500">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 pb-8 border-b border-white/5">
                         <div className="space-y-4">
                             <div className="flex items-center gap-3">
@@ -350,7 +350,7 @@ export default function PlayerDashboard() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                     {/* Main Content (3 cols) */}
-                    <div className="lg:col-span-3 space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+                    <div className="lg:col-span-3 space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500 delay-200">
                         {/* 4-Stat Cockpit */}
                         <section className="grid grid-cols-2 md:grid-cols-4 gap-6">
                             {[
@@ -397,7 +397,7 @@ export default function PlayerDashboard() {
                                             <div className="text-2xl font-['Barlow_Condensed'] font-black text-white">{g.val}</div>
                                             <div className="w-full relative h-[100%]">
                                                 <div 
-                                                    className={`absolute bottom-0 w-full rounded-t-xl ${g.col} transition-all duration-1000 ease-out shadow-[0_0_20px_rgba(255,255,255,0.05)]`}
+                                                    className={`absolute bottom-0 w-full rounded-t-xl ${g.col} transition-all duration-500 ease-out shadow-[0_0_20px_rgba(255,255,255,0.05)]`}
                                                     style={{ height: mounted ? `${Math.min(100, (g.val / 300) * 100)}%` : '0%' }}
                                                 >
                                                     <div className="w-full h-full bg-gradient-to-tr from-black/20 to-transparent flex items-start justify-center pt-2">
@@ -412,7 +412,7 @@ export default function PlayerDashboard() {
                             </section>
 
                             <section className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl relative group overflow-hidden">
-                                <div className="absolute bottom-[-20%] right-[-10%] w-48 h-48 bg-pink-500/5 rounded-full blur-3xl group-hover:bg-pink-500/10 transition-all duration-700" />
+                                <div className="absolute bottom-[-20%] right-[-10%] w-48 h-48 bg-pink-500/5 rounded-full blur-3xl group-hover:bg-pink-500/10 transition-all duration-500" />
                                 <h3 className="text-xl font-['Barlow_Condensed'] font-black uppercase italic text-white mb-8 flex items-center gap-3">
                                     <span className="text-pink-500 animate-spin-slow">❂</span>
                                     Team Context
@@ -569,7 +569,7 @@ export default function PlayerDashboard() {
                     </div>
 
                     {/* Sidebar Components (1 col) */}
-                    <div className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-1000 delay-500">
+                    <div className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500 delay-500">
                         {/* Hall of Fame Highlights */}
                         <section className="bg-white/[0.03] backdrop-blur-xl border border-white/10 p-8 rounded-3xl relative overflow-hidden shadow-2xl">
                             <h3 className="text-xl font-['Barlow_Condensed'] font-black uppercase italic text-white mb-8 flex items-center gap-3">

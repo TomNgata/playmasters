@@ -57,7 +57,7 @@ export default function Home() {
         </div>
         <div className="bg-navy rounded-2xl border border-white/5 h-[300px] sm:h-[450px] flex items-center justify-center relative overflow-hidden group">
           {/* Featured Club Image as background */}
-          <div className="absolute inset-0 flex items-center justify-center transition-all duration-700">
+          <div className="absolute inset-0 flex items-center justify-center transition-all duration-500">
             <Image 
               src="/images/achievements/trophy-team-large.jpg" 
               alt="Playmasters Team" 
@@ -75,21 +75,21 @@ export default function Home() {
         <div className="s-label font-ui text-strike tracking-widest uppercase text-sm font-bold text-center mb-2">On The Lanes</div>
         <h2 className="font-title text-[clamp(24px,4vw,40px)] text-center text-white mb-12 uppercase">Gallery & Partners</h2>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-24">
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center opacity-60 hover:opacity-100 transition-all overflow-hidden relative">
+        <div className="columns-2 md:columns-3 lg:columns-4 gap-4 mb-24">
+          <div className="break-inside-avoid mb-4 relative w-full aspect-[4/5] bg-navy rounded-lg border border-white/5 flex items-center justify-center opacity-60 hover:opacity-100 transition-all overflow-hidden">
             <Image src="/images/achievements/trophy-team-large.jpg" alt="Bowling Action" fill className="object-cover" />
           </div>
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center md:col-span-2 md:row-span-2 relative group overflow-hidden">
+          <div className="break-inside-avoid mb-4 relative w-full aspect-[3/4] bg-navy rounded-lg border border-white/5 flex items-center justify-center group overflow-hidden">
             <Image src="/images/achievements/trophy-team-celebration.jpg" alt="Player Training Visualization" fill className="z-10 transition-opacity object-cover" />
             <div className="absolute inset-0 bg-strike/5 group-hover:bg-strike/10 transition-colors" />
           </div>
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center opacity-60 hover:opacity-100 transition-all overflow-hidden relative">
+          <div className="break-inside-avoid mb-4 relative w-full aspect-square bg-navy rounded-lg border border-white/5 flex items-center justify-center opacity-60 hover:opacity-100 transition-all overflow-hidden">
             <Image src="/images/achievements/trophy-suresh.jpg" alt="Team Spirit" fill className="object-cover" />
           </div>
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center opacity-60 hover:opacity-100 transition-all overflow-hidden relative">
+          <div className="break-inside-avoid mb-4 relative w-full aspect-video bg-navy rounded-lg border border-white/5 flex items-center justify-center opacity-60 hover:opacity-100 transition-all overflow-hidden">
             <Image src="/images/achievements/trophy-dorothy.jpg" alt="Tournament Highlights" fill className="object-cover" />
           </div>
-          <div className="bg-navy aspect-square rounded-lg border border-white/5 flex items-center justify-center opacity-60 hover:opacity-100 transition-all overflow-hidden relative glass-glow">
+          <div className="break-inside-avoid mb-4 relative w-full aspect-[5/4] bg-navy rounded-lg border border-white/5 flex items-center justify-center opacity-60 hover:opacity-100 transition-all overflow-hidden glass-glow">
             <Image src="/logo-lg.svg" alt="Playmasters Logo" width={80} height={80} className="object-contain" />
           </div>
         </div>

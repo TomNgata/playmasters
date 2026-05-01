@@ -106,7 +106,7 @@ export default function PlayersPage() {
                   <div className={`absolute inset-0 bg-gradient-to-br from-${teamColor}/10 via-transparent to-transparent`} />
                   <div className="flex flex-col items-center gap-2 relative z-10 w-full h-full">
                     {player.image ? (
-                        <div className="w-full h-full relative group-hover:scale-110 transition-transform duration-700">
+                        <div className="w-full h-full relative group-hover:scale-110 transition-transform duration-500">
                             <img src={player.image} alt={player.name} className="w-full h-full object-cover" />
                             <div className={`absolute inset-0 bg-gradient-to-t from-${teamColor}/40 via-transparent to-transparent`} />
                         </div>

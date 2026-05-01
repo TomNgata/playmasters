@@ -263,11 +263,11 @@ export default function RivalryEngine() {
                                     <div className="w-px h-full bg-white/20" />
                                 </div>
                                 <div 
-                                    className="h-full bg-gradient-to-r from-blue-700 to-blue-400 rounded-full transition-all duration-1000 origin-left scale-x-100 group-hover/stat:brightness-125 shadow-[0_0_15px_rgba(37,99,235,0.4)]"
+                                    className="h-full bg-gradient-to-r from-blue-700 to-blue-400 rounded-full transition-all duration-500 origin-left scale-x-100 group-hover/stat:brightness-125 shadow-[0_0_15px_rgba(37,99,235,0.4)]"
                                     style={{ width: `${p1Pct / 2}%` }}
                                 />
                                 <div 
-                                    className="h-full bg-gradient-to-l from-red-700 to-red-500 rounded-full transition-all duration-1000 origin-right ml-auto group-hover/stat:brightness-125 shadow-[0_0_15px_rgba(232,32,48,0.4)]"
+                                    className="h-full bg-gradient-to-l from-red-700 to-red-500 rounded-full transition-all duration-500 origin-right ml-auto group-hover/stat:brightness-125 shadow-[0_0_15px_rgba(232,32,48,0.4)]"
                                     style={{ width: `${p2Pct / 2}%` }}
                                 />
                             </div>

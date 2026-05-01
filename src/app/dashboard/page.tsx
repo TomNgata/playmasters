@@ -9,7 +9,7 @@ export default function DashboardLandingPage() {
           <div className="absolute bottom-[-10%] right-[-10%] w-1/2 h-1/2 bg-purple-600 blur-[200px] rounded-full" />
       </div>
 
-      <div className="w-full max-w-7xl mx-auto relative z-10 flex flex-col items-center animate-in fade-in slide-in-from-bottom-8 duration-1000 mt-16">
+      <div className="w-full max-w-7xl mx-auto relative z-10 flex flex-col items-center animate-in fade-in slide-in-from-bottom-8 duration-500 mt-16">
         <div className="px-3 py-1 bg-red-600 text-[10px] font-black uppercase tracking-[2px] rounded italic mb-4">Team Hub</div>
         <h2 className="font-['Barlow_Condensed'] text-[clamp(40px,8vw,80px)] text-white mb-8 uppercase font-black italic tracking-tight leading-none text-center">
           Stop Guessing. <br /> <span className="text-red-600">Start Striking.</span>

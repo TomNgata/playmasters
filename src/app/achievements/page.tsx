@@ -289,44 +289,44 @@ export default function AchievementsPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 auto-rows-fr">
+          <div className="columns-2 md:columns-3 gap-4">
             {/* Main Feature */}
-            <div className="col-span-2 row-span-2 aspect-[4/3] md:aspect-auto group relative overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
-              <img src="/images/achievements/trophy-team-large.jpg" alt="Team Playmasters Success" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+            <div className="break-inside-avoid mb-4 group relative aspect-[4/3] md:aspect-[3/4] overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/trophy-team-large.jpg" alt="Team Playmasters Success" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
             
-            {/* Square Gallery Items */}
-            <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
-              <img src="/images/achievements/trophy-dorothy.jpg" alt="Dorothy's Trophies" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+            {/* Gallery Items */}
+            <div className="break-inside-avoid mb-4 group relative aspect-[3/4] overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/trophy-dorothy.jpg" alt="Dorothy's Trophies" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
-            <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
-              <img src="/images/achievements/trophy-suresh.jpg" alt="Suresh Bhudiya Trophy" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+            <div className="break-inside-avoid mb-4 group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/trophy-suresh.jpg" alt="Suresh Bhudiya Trophy" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
-            <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
-              <img src="/images/achievements/trophy-dillan.jpg" alt="Dillan Mandalia Trophy" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+            <div className="break-inside-avoid mb-4 group relative aspect-[4/5] overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/trophy-dillan.jpg" alt="Dillan Mandalia Trophy" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
-            <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
-              <img src="/images/achievements/IMG_3149.jpg" alt="Trophy Celebration" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+            <div className="break-inside-avoid mb-4 group relative aspect-[5/4] overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/IMG_3149.jpg" alt="Trophy Celebration" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
-            <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
-              <img src="/images/achievements/IMG_3158.jpg" alt="Team Victory" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+            <div className="break-inside-avoid mb-4 group relative aspect-video overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/IMG_3158.jpg" alt="Team Victory" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
-            <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
-              <img src="/images/achievements/IMG_3160.jpg" alt="Trophy Showcase" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+            <div className="break-inside-avoid mb-4 group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/IMG_3160.jpg" alt="Trophy Showcase" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
-            <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
-              <img src="/images/achievements/IMG_3165.jpg" alt="Champion Medals" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+            <div className="break-inside-avoid mb-4 group relative aspect-[3/4] overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/IMG_3165.jpg" alt="Champion Medals" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
-            <div className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
-              <img src="/images/achievements/IMG_3167.jpg" alt="Playmasters Dominance" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+            <div className="break-inside-avoid mb-4 group relative aspect-[4/3] overflow-hidden rounded-xl border border-white/10 bg-navy-dark">
+              <img src="/images/achievements/IMG_3167.jpg" alt="Playmasters Dominance" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
           </div>

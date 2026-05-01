@@ -37,6 +37,9 @@ export default function AboutPage() {
           <div className="w-12 h-1 bg-strike mb-8" />
           <div className="flex flex-col gap-5 font-sans text-gray-mid leading-relaxed text-base">
             <p>
+              Before 2022, the local bowling scene lacked a unified standard of excellence. We recognized the need for a professional, fiercely competitive entity to elevate the game and set a new benchmark for players across the country.
+            </p>
+            <p>
               <strong className="text-white">PlayMasters bowling was born in 2022</strong> — forged from a shared love of competition and a belief that Kenya&apos;s bowling scene deserved a franchise that showed up, showed out, and led from the front.
             </p>
             <p>
@@ -49,7 +52,7 @@ export default function AboutPage() {
         </div>
 
         <div className="order-1 lg:order-2 relative aspect-[4/3] rounded-2xl overflow-hidden border border-white/5 group shadow-2xl">
-          <img src="/images/achievements/trophy-team-alt-2.jpg" alt="Playmasters Team Success" className="h-full w-full object-cover transition-all duration-700 group-hover:scale-105" />
+          <img src="/images/achievements/trophy-team-alt-2.jpg" alt="Playmasters Team Success" className="h-full w-full object-cover transition-all duration-500 group-hover:scale-105" />
           <div className="absolute inset-0 bg-gradient-to-tr from-navy-dark via-transparent to-transparent opacity-40" />
           <div className="absolute inset-0 border-2 border-strike/20 -m-3 group-hover:m-0 transition-all duration-500 rounded-2xl pointer-events-none" />
         </div>

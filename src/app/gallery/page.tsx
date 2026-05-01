@@ -49,7 +49,7 @@ export default function GalleryPage() {
                   alt={`Playmasters Action ${i + 1}`} 
                   fill
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                  className="object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105"
+                  className="object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
                 />
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-transparent opacity-60 pointer-events-none" />

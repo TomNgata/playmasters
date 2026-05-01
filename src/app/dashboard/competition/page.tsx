@@ -292,7 +292,7 @@ export default function CompetitionHQ() {
                                 </div>
                                 <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
                                     <div 
-                                        className={`h-full transition-all duration-1000 ${p.stability === 'STABLE' ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]'}`}
+                                        className={`h-full transition-all duration-500 ${p.stability === 'STABLE' ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]'}`}
                                         style={{ width: `${Math.max(10, 100 - (p.stdDev * 2))}%` }}
                                     />
                                 </div>

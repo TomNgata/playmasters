@@ -197,7 +197,7 @@ export default function CsrPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="md:col-span-2 md:row-span-2 group relative overflow-hidden rounded-2xl border border-white/10 bg-navy-dark aspect-square md:aspect-auto">
-              <img src="/images/csr/faraja-group-stand.jpg" alt="Faraja Cancer Support Group" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <img src="/images/csr/faraja-group-stand.jpg" alt="Faraja Cancer Support Group" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/80 via-transparent to-transparent" />
               <div className="absolute bottom-6 left-6">
                 <span className="font-ui text-ball-pink text-[10px] tracking-[3px] uppercase font-bold">Health & Wellness</span>
@@ -205,17 +205,17 @@ export default function CsrPage() {
               </div>
             </div>
             <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-navy-dark aspect-square">
-              <img src="/images/csr/banner-close.jpg" alt="Never Give Up Banner" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <img src="/images/csr/banner-close.jpg" alt="Never Give Up Banner" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
               <div className="absolute inset-0 bg-navy-dark/20 group-hover:bg-transparent transition-colors" />
             </div>
             <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-navy-dark aspect-square">
-              <img src="/images/csr/faraja-group-sit.jpg" alt="Faraja Activity" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <img src="/images/csr/faraja-group-sit.jpg" alt="Faraja Activity" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
             </div>
             <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-navy-dark aspect-square">
-              <img src="/images/csr/csr-activity-1.jpg" alt="Community Activity 1" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <img src="/images/csr/csr-activity-1.jpg" alt="Community Activity 1" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
             </div>
             <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-navy-dark aspect-square">
-              <img src="/images/csr/csr-activity-2.jpg" alt="Community Activity 2" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <img src="/images/csr/csr-activity-2.jpg" alt="Community Activity 2" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
             </div>
           </div>
         </div>
